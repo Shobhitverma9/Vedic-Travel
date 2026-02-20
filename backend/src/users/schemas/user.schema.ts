@@ -49,6 +49,39 @@ export class User {
 
     @Prop({ type: [String], default: [] })
     wishlist: string[];
+
+    @Prop({ enum: ['Male', 'Female', 'Other'] })
+    gender: string;
+
+    @Prop()
+    dateOfBirth: Date;
+
+    @Prop({ enum: ['Single', 'Married', 'Divorced', 'Widowed'] })
+    maritalStatus: string;
+
+    @Prop({
+        type: [{
+            title: String,
+            firstName: String,
+            lastName: String,
+            dateOfBirth: Date,
+            gender: String,
+            mealPreference: String,
+            passportNumber: String,
+            passportExpiry: Date,
+        }],
+        default: []
+    })
+    travellers: {
+        title: string;
+        firstName: string;
+        lastName: string;
+        dateOfBirth: Date;
+        gender: string;
+        mealPreference: string;
+        passportNumber?: string;
+        passportExpiry?: Date;
+    }[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

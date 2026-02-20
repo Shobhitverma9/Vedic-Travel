@@ -16,7 +16,7 @@ export class BookingsService {
     ) { }
 
     async create(userId: string, createBookingDto: CreateBookingDto) {
-        const { tourId, numberOfTravelers, travelDate, travelerDetails } = createBookingDto;
+        const { tourId, numberOfTravelers, travelDate, travelerDetails, email, phone } = createBookingDto;
 
         // Validate tour
         const tour = await this.tourModel.findById(tourId);
@@ -45,6 +45,8 @@ export class BookingsService {
             travelerDetails,
             bookingReference,
             specialRequests: createBookingDto.specialRequests,
+            email,
+            phone,
         });
 
         return booking.populate(['user', 'tour']);
@@ -114,7 +116,7 @@ export class BookingsService {
         }
 
         await booking.save();
-        return booking;
+        return booking.populate('tour');
     }
 
     async cancelBooking(id: string, userId: string, reason: string) {

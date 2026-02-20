@@ -16,4 +16,22 @@ export class UpdateProfileDto {
     @IsOptional()
     @IsString()
     avatar?: string;
+
+    @ApiProperty({ required: false, enum: ['Male', 'Female', 'Other'] })
+    @IsOptional()
+    @IsString()
+    gender?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    dateOfBirth?: Date;
+
+    @ApiProperty({ required: false, enum: ['Single', 'Married', 'Divorced', 'Widowed'] })
+    @IsOptional()
+    @IsString()
+    maritalStatus?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    travellers?: any[];
 }

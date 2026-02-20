@@ -26,8 +26,10 @@ export class AuthController {
 
     @Post('register')
     @ApiOperation({ summary: 'Register new user with email (traditional)' })
-    async register(@Body() registerDto: RegisterDto) {
-        return this.authService.register(registerDto);
+    async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response) {
+        const result = await this.authService.register(registerDto);
+        this.setAuthCookie(res, result.token);
+        return result;
     }
 
     @Post('send-otp')
@@ -38,8 +40,10 @@ export class AuthController {
 
     @Post('verify-otp')
     @ApiOperation({ summary: 'Verify OTP and create account' })
-    async verifyOTP(@Body() verifyOTPDto: VerifyOTPDto) {
-        return this.authService.verifyAndRegister(verifyOTPDto);
+    async verifyOTP(@Body() verifyOTPDto: VerifyOTPDto, @Res({ passthrough: true }) res: Response) {
+        const result = await this.authService.verifyAndRegister(verifyOTPDto);
+        this.setAuthCookie(res, result.token);
+        return result;
     }
 
     @Post('resend-otp')
@@ -50,8 +54,10 @@ export class AuthController {
 
     @Post('login')
     @ApiOperation({ summary: 'Login with email and password' })
-    async login(@Body() loginDto: LoginDto) {
-        return this.authService.login(loginDto);
+    async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+        const result = await this.authService.login(loginDto);
+        this.setAuthCookie(res, result.token);
+        return result;
     }
 
     @Post('send-login-otp')
@@ -62,8 +68,30 @@ export class AuthController {
 
     @Post('login-with-otp')
     @ApiOperation({ summary: 'Login with OTP code' })
-    async loginWithOTP(@Body() loginWithOTPDto: LoginWithOTPDto) {
-        return this.authService.loginWithOTP(loginWithOTPDto);
+    async loginWithOTP(@Body() loginWithOTPDto: LoginWithOTPDto, @Res({ passthrough: true }) res: Response) {
+        const result = await this.authService.loginWithOTP(loginWithOTPDto);
+        this.setAuthCookie(res, result.token);
+        return result;
+    }
+
+    @Post('logout')
+    @ApiOperation({ summary: 'Logout user' })
+    async logout(@Res({ passthrough: true }) res: Response) {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+        });
+        return { message: 'Logged out successfully' };
+    }
+
+    private setAuthCookie(res: Response, token: string) {
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
     }
 
     @Get('google')

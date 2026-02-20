@@ -15,15 +15,45 @@ export class YatrasService {
     }
 
     async findAll(query: any = {}): Promise<Yatra[]> {
-        const { isActive } = query;
+        const { isActive, search } = query;
         const filter: any = {};
 
         if (isActive !== undefined) {
             filter.isActive = isActive === 'true';
         }
 
+        if (search) {
+            const searchRegex = new RegExp(search, 'i');
+            filter.$or = [
+                { title: { $regex: searchRegex } },
+                { description: { $regex: searchRegex } },
+            ];
+        }
+
         if (query.isVedicImprint !== undefined) {
-            filter.isVedicImprint = query.isVedicImprint === 'true';
+            if (query.isVedicImprint === 'false') {
+                filter.isVedicImprint = { $ne: true };
+            } else {
+                filter.isVedicImprint = query.isVedicImprint === 'true';
+            }
+        }
+
+        if (query.showOnHome !== undefined) {
+            filter.showOnHome = query.showOnHome === 'true';
+        }
+
+
+        // If isTrending=true, only return yatras that have at least one trending package
+        if (query.isTrending === 'true') {
+            const allYatras = await this.yatraModel
+                .find(filter)
+                .sort({ rank: 1 })
+                .populate('packages')
+                .exec();
+
+            return allYatras.filter((yatra: any) =>
+                yatra.packages && yatra.packages.some((pkg: any) => pkg.isTrending === true)
+            );
         }
 
         return this.yatraModel

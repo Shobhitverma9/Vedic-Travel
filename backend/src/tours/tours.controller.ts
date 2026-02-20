@@ -8,7 +8,9 @@ import {
     Param,
     Query,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ToursService } from './tours.service';
@@ -24,18 +26,21 @@ export class ToursController {
     constructor(private toursService: ToursService) { }
 
     @Get()
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get all tours with filters' })
     async findAll(@Query() query: any) {
         return this.toursService.findAll(query);
     }
 
     @Get(':id')
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get tour by ID' })
     async findOne(@Param('id') id: string) {
         return this.toursService.findOne(id);
     }
 
     @Get('slug/:slug')
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get tour by slug' })
     async findBySlug(@Param('slug') slug: string) {
         return this.toursService.findBySlug(slug);

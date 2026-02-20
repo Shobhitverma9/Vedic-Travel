@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
@@ -16,6 +17,7 @@ export class BlogsController {
     }
 
     @Get()
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get all blogs' })
     findAll(@Query('limit') limit?: number) {
         return this.blogsService.findAll(limit);
@@ -28,12 +30,14 @@ export class BlogsController {
     }
 
     @Get(':id')
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get blog by ID' })
     findOne(@Param('id') id: string) {
         return this.blogsService.findOne(id);
     }
 
     @Get('slug/:slug')
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get blog by slug' })
     findBySlug(@Param('slug') slug: string) {
         return this.blogsService.findBySlug(slug);

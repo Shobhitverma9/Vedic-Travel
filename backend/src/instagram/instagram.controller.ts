@@ -8,7 +8,9 @@ import {
     Param,
     Query,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { InstagramService } from './instagram.service';
@@ -24,12 +26,14 @@ export class InstagramController {
     constructor(private readonly instagramService: InstagramService) { }
 
     @Get()
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get all instagram posts' })
     async findAll(@Query() query: any) {
         return this.instagramService.findAll(query);
     }
 
     @Get(':id')
+    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: 'Get instagram post by ID' })
     async findOne(@Param('id') id: string) {
         return this.instagramService.findOne(id);

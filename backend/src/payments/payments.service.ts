@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import * as crypto from 'crypto';
 import { Booking, BookingDocument, PaymentStatus } from '../bookings/schemas/booking.schema';
 import { BookingsService } from '../bookings/bookings.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class PaymentsService {
@@ -18,6 +19,7 @@ export class PaymentsService {
         private configService: ConfigService,
         @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
         private bookingsService: BookingsService,
+        private emailService: EmailService,
     ) {
         this.merchantKey = this.configService.get<string>('PAYU_MERCHANT_KEY');
         this.merchantSalt = this.configService.get<string>('PAYU_MERCHANT_SALT');
@@ -29,26 +31,43 @@ export class PaymentsService {
 
 
     async getEmiOptions(amount: number) {
-        // Mock EMI options for now as we don't have direct PayU API access details for this
-        // In a real implementation, we would call PayU's API here
-        const interestRate = 14; // 14% p.a.
-        const months = [3, 6, 9, 12];
+        // Mock EMI options from major banks
+        const banks = [
+            { name: 'HDFC Bank', interestRate: 13.5 },
+            { name: 'ICICI Bank', interestRate: 14 },
+            { name: 'SBI', interestRate: 13 },
+            { name: 'Axis Bank', interestRate: 14.5 }
+        ];
 
-        const options = months.map(month => {
-            const monthlyInterest = interestRate / 12 / 100;
-            const emi = amount * monthlyInterest * Math.pow(1 + monthlyInterest, month) / (Math.pow(1 + monthlyInterest, month) - 1);
+        const tenures = [3, 6, 9, 12];
+
+        const bankPlans = banks.map(bank => {
+            const plans = tenures.map(month => {
+                const monthlyInterest = (bank.interestRate / 12) / 100;
+                const emi = amount * monthlyInterest * Math.pow(1 + monthlyInterest, month) / (Math.pow(1 + monthlyInterest, month) - 1);
+                return {
+                    tenure: month,
+                    interestRate: bank.interestRate,
+                    emi: Math.round(emi),
+                    totalAmount: Math.round(emi * month),
+                };
+            });
             return {
-                tenure: month,
-                interestRate: interestRate,
-                emi: Math.round(emi),
-                totalAmount: Math.round(emi * month),
+                bank: bank.name,
+                plans
             };
         });
 
-        // Return the lowest EMI capability
+        // Flatten plans for "all plans" view or just return structure
+        const allPlans = bankPlans.flatMap(bp => bp.plans.map(p => ({ ...p, bank: bp.bank })));
+
+        // Find absolute lowest emi across all banks and tenures
+        const lowestEmi = Math.min(...allPlans.map(p => p.emi));
+
         return {
-            lowestEmi: options[options.length - 1].emi,
-            plans: options
+            lowestEmi,
+            bankWisePlans: bankPlans,
+            allPlans: allPlans.sort((a, b) => a.tenure - b.tenure)
         };
     }
 
@@ -68,7 +87,13 @@ export class PaymentsService {
             throw new BadRequestException('Payment already completed');
         }
 
-        const txnid = this.generateTransactionId();
+        let txnid = booking.payuTransactionId;
+        if (!txnid) {
+            txnid = this.generateTransactionId();
+            // Save the transaction ID immediately for reliability and reconciliation
+            await this.bookingModel.findByIdAndUpdate(bookingId, { payuTransactionId: txnid });
+        }
+
         const amount = booking.totalAmount.toFixed(2);
         const productinfo = `Tour Booking - ${booking.bookingReference}`;
 
@@ -87,13 +112,14 @@ export class PaymentsService {
             phone = (booking as any).phone || '';
         }
 
-        // Generate hash
+        // Generate hash — must match: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||SALT
         const hash = this.generatePayUHash(
             txnid,
             amount,
             productinfo,
             firstname,
             email,
+            bookingId, // udf1
         );
 
         return {
@@ -144,17 +170,41 @@ export class PaymentsService {
 
         if (calculatedHash !== receivedHash) {
             console.warn(`Hash mismatch for booking ${bookingId}. Received: ${receivedHash}, Calculated: ${calculatedHash}`);
-            // throw new BadRequestException('Invalid payment hash');
+            throw new BadRequestException('Invalid payment hash');
         }
 
         // Update booking payment status
         if (status === 'success') {
-            await this.bookingsService.updatePaymentStatus(
+            const updatedBooking = await this.bookingsService.updatePaymentStatus(
                 bookingId,
                 PaymentStatus.SUCCESS,
                 mihpayid,
                 txnid,
             );
+
+            // Send booking confirmation email
+            try {
+                const tour = (updatedBooking as any).tour;
+                const recipientEmail = email || (updatedBooking as any).email || '';
+                const recipientName = firstname || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+
+                if (recipientEmail) {
+                    await this.emailService.sendBookingConfirmationEmail(
+                        recipientEmail,
+                        recipientName,
+                        {
+                            bookingReference: (updatedBooking as any).bookingReference,
+                            tourName: tour?.title || 'Your Yatra',
+                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                            numberOfTravelers: (updatedBooking as any).numberOfTravelers,
+                            totalAmount: (updatedBooking as any).totalAmount,
+                        },
+                    );
+                }
+            } catch (emailErr) {
+                console.error('Failed to send booking confirmation email:', emailErr);
+                // Do not fail the payment response if email fails
+            }
         } else {
             await this.bookingsService.updatePaymentStatus(
                 bookingId,
@@ -178,8 +228,11 @@ export class PaymentsService {
         productinfo: string,
         firstname: string,
         email: string,
+        udf1: string = '',
     ): string {
-        const hashString = `${this.merchantKey}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|||||||||||${this.merchantSalt}`;
+        // Formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||SALT
+        // = udf1 + 10 pipes after it (udf2,udf3,udf4,udf5 empty + 5 blanks + SALT) = 10 separators
+        const hashString = `${this.merchantKey}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${this.merchantSalt}`;
         return crypto.createHash('sha512').update(hashString).digest('hex');
     }
 

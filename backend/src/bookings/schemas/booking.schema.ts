@@ -58,6 +58,15 @@ export class Booking {
     specialRequests: string;
 
     @Prop()
+    email: string;
+
+    @Prop()
+    phone: string;
+
+    @Prop({ default: false })
+    isGuest: boolean;
+
+    @Prop()
     bookingReference: string;
 
     @Prop()

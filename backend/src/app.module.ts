@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
@@ -46,6 +48,19 @@ import { CartModule } from './cart/cart.module';
         InstagramModule,
         BlogsModule,
         CartModule,
+
+        // Rate Limiting
+        ThrottlerModule.forRoot([{
+            ttl: 60000,
+            limit: 100,
+        }]),
+
+        // Caching
+        CacheModule.register({
+            ttl: 600, // 10 minutes
+            max: 100, // maximum number of items in cache
+            isGlobal: true,
+        }),
     ],
 })
 export class AppModule { }

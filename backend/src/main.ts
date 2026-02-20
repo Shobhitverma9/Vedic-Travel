@@ -2,16 +2,34 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
+import helmet from 'helmet';
+import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
 
 // Trigger rebuild
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
+    // Global interceptors
+    app.useGlobalInterceptors(new LoggerInterceptor());
+
+    // Security Headers
+    app.use(helmet());
+
+    // Compression
+    app.use(compression());
+
+    // Cookies
+    app.use(cookieParser());
+
     // Enable CORS
     app.enableCors({
         origin: process.env.FRONTEND_URL || 'http://localhost:3000',
         credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: 'Content-Type, Accept, Authorization',
     });
 
     // Global prefix
@@ -23,6 +41,7 @@ async function bootstrap() {
             whitelist: true,
             forbidNonWhitelisted: true,
             transform: true,
+            disableErrorMessages: process.env.NODE_ENV === 'production',
         }),
     );
 

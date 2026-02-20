@@ -43,6 +43,25 @@ export class EmailService {
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
+    async sendBookingConfirmationEmail(
+        email: string,
+        name: string,
+        details: {
+            bookingReference: string;
+            tourName: string;
+            travelDate: string;
+            numberOfTravelers: number;
+            totalAmount: number;
+            phone?: string;
+        }
+    ): Promise<void> {
+        const subject = `Booking Confirmed 🎉 - ${details.bookingReference} | VedicTravel`;
+        const htmlBody = this.getBookingConfirmationTemplate(name, details);
+        const textBody = `Dear ${name},\n\nYour booking is confirmed!\n\nBooking Reference: ${details.bookingReference}\nTour: ${details.tourName}\nTravel Date: ${details.travelDate}\nTravellers: ${details.numberOfTravelers}\nTotal Amount: ₹${details.totalAmount.toLocaleString('en-IN')}\n\nThank you for booking with VedicTravel. We look forward to being a part of your spiritual journey.\n\nBest regards,\nVedicTravel Team`;
+
+        await this.sendEmail(email, subject, htmlBody, textBody);
+    }
+
     private async sendEmail(to: string, subject: string, htmlBody: string, textBody: string): Promise<void> {
         try {
             if (!this.client) {
@@ -454,7 +473,75 @@ export class EmailService {
         <div class="footer">
             <p><strong>VedicTravel</strong></p>
             <p>Connecting souls to sacred destinations</p>
-            <p style="margin-top: 20px;">© 2026 VedicTravel. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+        `;
+    }
+
+    private getBookingConfirmationTemplate(name: string, details: {
+        bookingReference: string;
+        tourName: string;
+        travelDate: string;
+        numberOfTravelers: number;
+        totalAmount: number;
+    }): string {
+        return `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #FFF8F3; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #FF5722 0%, #7B2CBF 100%); padding: 40px 20px; text-align: center; }
+        .header h1 { color: #fff; margin: 0; font-size: 28px; }
+        .header p { color: #FFE8E0; margin: 8px 0 0; font-size: 16px; }
+        .content { padding: 40px 30px; }
+        .greeting { font-size: 20px; color: #1A2332; margin-bottom: 10px; font-weight: bold; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .ref-box { background: linear-gradient(135deg,#FFF8F3 0%,#FFE8E0 100%); border: 2px solid #FF5722; border-radius: 12px; padding: 20px 30px; text-align: center; margin-bottom: 30px; }
+        .ref-label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .ref-value { font-size: 24px; font-weight: bold; color: #FF5722; letter-spacing: 3px; font-family: monospace; }
+        .details-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .details-table td { padding: 14px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #444; }
+        .details-table td:first-child { color: #999; width: 40%; }
+        .details-table td:last-child { font-weight: 600; color: #1A2332; }
+        .total-row td { border-bottom: none !important; font-size: 18px; padding-top: 20px; }
+        .total-row td:last-child { color: #FF5722; font-size: 20px; }
+        .cta { display: inline-block; background: linear-gradient(135deg,#FF5722 0%,#E64A19 100%); color: #fff; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px 0 20px; }
+        .note { background: #f8f9fa; border-left: 4px solid #7B2CBF; padding: 15px 20px; border-radius: 4px; color: #555; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
+        .footer { background-color: #1A2332; color: #fff; padding: 24px 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🕉️ Booking Confirmed!</h1>
+            <p>Your sacred journey is officially booked</p>
+        </div>
+        <div class="content">
+            <div class="greeting">Namaste, ${name}! 🙏</div>
+            <p class="subtitle">We're thrilled to confirm your booking with VedicTravel. Here are your details:</p>
+            <div class="ref-box">
+                <div class="ref-label">Booking Reference</div>
+                <div class="ref-value">${details.bookingReference}</div>
+            </div>
+            <table class="details-table">
+                <tr><td>Tour / Yatra</td><td>${details.tourName}</td></tr>
+                <tr><td>Travel Date</td><td>${details.travelDate}</td></tr>
+                <tr><td>Travellers</td><td>${details.numberOfTravelers} Person(s)</td></tr>
+                <tr class="total-row"><td>Total Paid</td><td>₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
+            </table>
+            <div class="note">
+                <strong>What's next?</strong><br/>
+                Our team will contact you within 24 hours with your travel itinerary and further details. Please keep your booking reference handy for any inquiries.
+            </div>
+            <center><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta">View My Booking</a></center>
+        </div>
+        <div class="footer">
+            <p><strong>VedicTravel</strong> — Connecting souls to sacred destinations</p>
+            <p style="margin-top:10px">© ${new Date().getFullYear()} VedicTravel. All rights reserved.</p>
         </div>
     </div>
 </body>

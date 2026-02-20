@@ -96,13 +96,19 @@ export class AuthService {
     async verifyAndRegister(verifyOTPDto: VerifyOTPDto) {
         const { email, emailOtp, phone, phoneOtp, name, password } = verifyOTPDto;
 
-        // Verify email OTP (required)
-        await this.otpService.verifyOTP(
-            email,
-            OTPType.EMAIL,
-            OTPPurpose.REGISTRATION,
-            emailOtp,
-        );
+        let isEmailVerified = false;
+        let isPhoneVerified = false;
+
+        // Verify email OTP if provided
+        if (emailOtp) {
+            await this.otpService.verifyOTP(
+                email,
+                OTPType.EMAIL,
+                OTPPurpose.REGISTRATION,
+                emailOtp,
+            );
+            isEmailVerified = true;
+        }
 
         // Verify phone OTP if provided
         if (phone && phoneOtp) {
@@ -112,6 +118,12 @@ export class AuthService {
                 OTPPurpose.REGISTRATION,
                 phoneOtp,
             );
+            isPhoneVerified = true;
+        }
+
+        // Ensure at least one verification method succeeded
+        if (!isEmailVerified && !isPhoneVerified) {
+            throw new BadRequestException('Please verify either email or phone number');
         }
 
         // Check if user already exists (double-check)
@@ -126,8 +138,8 @@ export class AuthService {
             password,
             name,
             phone,
-            emailVerified: true,
-            phoneVerified: phone && phoneOtp ? true : false,
+            emailVerified: isEmailVerified,
+            phoneVerified: isPhoneVerified,
             verifiedAt: new Date(),
         });
 

@@ -30,6 +30,9 @@ export class Yatra {
     @Prop({ default: false })
     isVedicImprint: boolean;
 
+    @Prop({ default: false })
+    showOnHome: boolean;
+
     @Prop({ default: 0 })
     rank: number;
 
@@ -40,6 +43,7 @@ export class Yatra {
 export const YatraSchema = SchemaFactory.createForClass(Yatra);
 
 // Indexes
+YatraSchema.index({ title: 'text', description: 'text' });
 YatraSchema.index({ slug: 1 }, { unique: true });
 YatraSchema.index({ isActive: 1 });
 YatraSchema.index({ rank: 1 });

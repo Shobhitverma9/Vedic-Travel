@@ -34,11 +34,21 @@ export class ToursService {
         const filter: any = { isActive: true };
 
         if (search) {
-            filter.$text = { $search: search };
+            const searchRegex = new RegExp(search, 'i');
+            filter.$or = [
+                { title: { $regex: searchRegex } },
+                { description: { $regex: searchRegex } },
+                { locations: { $regex: searchRegex } },
+                { 'highlights.temples': { $regex: searchRegex } },
+            ];
         }
 
         if (category) {
             filter.category = category;
+        }
+
+        if (query.destination) {
+            filter.destination = query.destination;
         }
 
         if (minPrice || maxPrice) {
@@ -62,6 +72,7 @@ export class ToursService {
         const [tours, total] = await Promise.all([
             this.tourModel
                 .find(filter)
+                .select('title slug price priceOriginal images duration locations highlights.temples isTrending rating reviewsCount favoriteSize')
                 .sort({ [sortBy]: sortOrder })
                 .skip(skip)
                 .limit(Number(limit)),

@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsDate, IsArray, IsOptional, Min } from 'class-validator';
+import { IsString, IsNumber, IsDate, IsArray, IsOptional, Min, IsEmail } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -44,4 +44,14 @@ export class CreateBookingDto {
     @IsOptional()
     @IsString()
     specialRequests?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsEmail()
+    email?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    phone?: string;
 }

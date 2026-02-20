@@ -6,10 +6,11 @@ export class VerifyOTPDto {
     @IsEmail()
     email: string;
 
-    @ApiProperty({ example: '123456' })
+    @ApiProperty({ example: '123456', required: false })
+    @IsOptional()
     @IsString()
     @MinLength(6)
-    emailOtp: string;
+    emailOtp?: string;
 
     @ApiProperty({ example: '+919876543210', required: false })
     @IsOptional()
