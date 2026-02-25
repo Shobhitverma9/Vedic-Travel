@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 
@@ -40,11 +41,11 @@ export class UsersService {
         const user = await this.userModel.findById(userId);
         if (!user) return null;
 
-        const index = user.wishlist.indexOf(tourId);
+        const index = user.wishlist.findIndex((id) => id.toString() === tourId.toString());
         if (index > -1) {
             user.wishlist.splice(index, 1);
         } else {
-            user.wishlist.push(tourId);
+            user.wishlist.push(new mongoose.Types.ObjectId(tourId));
         }
 
         await user.save();
@@ -57,8 +58,9 @@ export class UsersService {
             throw new NotFoundException('User not found');
         }
 
-        if (!user.wishlist.includes(tourId)) {
-            user.wishlist.push(tourId);
+        const index = user.wishlist.findIndex((id) => id.toString() === tourId.toString());
+        if (index === -1) {
+            user.wishlist.push(new mongoose.Types.ObjectId(tourId));
             await user.save();
         }
 
@@ -71,7 +73,7 @@ export class UsersService {
             throw new NotFoundException('User not found');
         }
 
-        const index = user.wishlist.indexOf(tourId);
+        const index = user.wishlist.findIndex((id) => id.toString() === tourId.toString());
         if (index > -1) {
             user.wishlist.splice(index, 1);
             await user.save();
@@ -98,7 +100,7 @@ export class UsersService {
         if (!user) {
             return false;
         }
-        return user.wishlist.includes(tourId);
+        return user.wishlist.some((id) => id.toString() === tourId.toString());
     }
 }
 

@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
@@ -47,8 +48,8 @@ export class User {
     @Prop()
     verifiedAt: Date;
 
-    @Prop({ type: [String], default: [] })
-    wishlist: string[];
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tour' }], default: [] })
+    wishlist: mongoose.Types.ObjectId[];
 
     @Prop({ enum: ['Male', 'Female', 'Other'] })
     gender: string;

@@ -247,6 +247,9 @@ export class AuthService {
             otp,
         );
 
+        // Determine if it's the first login
+        const isFirstLogin = !user.lastLogin;
+
         // Update last login
         user.lastLogin = new Date();
         await user.save();
@@ -257,6 +260,7 @@ export class AuthService {
         return {
             user: this.sanitizeUser(user),
             token,
+            isFirstLogin,
         };
     }
 
@@ -275,6 +279,9 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
+        // Determine if it's the first login
+        const isFirstLogin = !user.lastLogin;
+
         // Update last login
         user.lastLogin = new Date();
         await user.save();
@@ -285,6 +292,7 @@ export class AuthService {
         return {
             user: this.sanitizeUser(user),
             token,
+            isFirstLogin,
         };
     }
 
@@ -328,6 +336,9 @@ export class AuthService {
             }
         }
 
+        // Determine if it's the first login
+        const isFirstLogin = !user.lastLogin;
+
         // Update last login
         user.lastLogin = new Date();
         await user.save();
@@ -338,6 +349,7 @@ export class AuthService {
         return {
             user: this.sanitizeUser(user),
             token,
+            isFirstLogin,
         };
     }
 
