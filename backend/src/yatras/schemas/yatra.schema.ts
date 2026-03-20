@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Types, Schema as MongooseSchema } from 'mongoose';
 import { Tour } from '../../tours/schemas/tour.schema';
 
 export type YatraDocument = Yatra & Document;
@@ -21,8 +21,14 @@ export class Yatra {
     @Prop()
     longDescription: string;
 
+    @Prop({ type: [String], default: [] })
+    thumbnailImages: string[];
+
     @Prop({ type: [{ question: String, answer: String }], default: [] })
     faqs: { question: string; answer: string }[];
+
+    @Prop({ required: true, default: 'Pilgrimage Yatra Packages' })
+    category: string;
 
     @Prop({ default: true })
     isActive: boolean;
@@ -36,7 +42,7 @@ export class Yatra {
     @Prop({ default: 0 })
     rank: number;
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Tour' }], default: [] })
+    @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Tour' }], default: [] })
     packages: Tour[];
 }
 

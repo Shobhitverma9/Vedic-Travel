@@ -10,8 +10,22 @@ export class YatrasService {
     ) { }
 
     async create(createYatraDto: any): Promise<Yatra> {
+        console.log('[YatraCreate] packages received:', createYatraDto.packages);
+
+        // Ensure packages are cast to ObjectIds
+        if (createYatraDto.packages && Array.isArray(createYatraDto.packages)) {
+            const Types = require('mongoose').Types;
+            createYatraDto.packages = createYatraDto.packages.map((id: string) => {
+                return typeof id === 'string' && Types.ObjectId.isValid(id)
+                    ? new Types.ObjectId(id)
+                    : id;
+            });
+        }
+
         const createdYatra = new this.yatraModel(createYatraDto);
-        return createdYatra.save();
+        const saved = await createdYatra.save();
+        console.log('[YatraCreate] packages saved:', saved.packages);
+        return saved;
     }
 
     async findAll(query: any = {}): Promise<Yatra[]> {
@@ -80,6 +94,16 @@ export class YatrasService {
     }
 
     async update(id: string, updateYatraDto: any): Promise<Yatra> {
+        // Ensure packages are cast to ObjectIds
+        if (updateYatraDto.packages && Array.isArray(updateYatraDto.packages)) {
+            const Types = require('mongoose').Types;
+            updateYatraDto.packages = updateYatraDto.packages.map((pkgId: string) => {
+                return typeof pkgId === 'string' && Types.ObjectId.isValid(pkgId)
+                    ? new Types.ObjectId(pkgId)
+                    : pkgId;
+            });
+        }
+
         const updatedYatra = await this.yatraModel
             .findByIdAndUpdate(id, updateYatraDto, { new: true })
             .populate('packages')

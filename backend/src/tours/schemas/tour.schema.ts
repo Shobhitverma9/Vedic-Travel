@@ -144,9 +144,10 @@ export class Tour {
             city: { type: String, required: true },
             surcharge: { type: Number, default: 0 },
             isDefault: { type: Boolean, default: false },
-            availabilityType: { type: String, enum: ['specific_dates', 'weekly', 'daily'], default: 'specific_dates' },
+            availabilityType: { type: String, enum: ['specific_dates', 'weekly', 'daily', 'monthly_dates'], default: 'specific_dates' },
             availableDates: { type: [Date], default: [] },
             weeklyDays: { type: [Number], default: [] }, // 0=Sun, 1=Mon...
+            monthlyDays: { type: [Number], default: [] }, // 1-31, day of month
             blackoutDates: { type: [Date], default: [] }
         }],
         default: []
@@ -158,6 +159,7 @@ export class Tour {
         availabilityType: string;
         availableDates: Date[];
         weeklyDays: number[];
+        monthlyDays: number[];
         blackoutDates: Date[];
     }[];
 

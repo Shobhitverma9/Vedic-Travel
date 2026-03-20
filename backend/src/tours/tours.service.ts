@@ -2,12 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Tour, TourDocument } from './schemas/tour.schema';
+import { Yatra, YatraDocument } from '../yatras/schemas/yatra.schema';
 import { CreateTourDto } from './dto/create-tour.dto';
 import { UpdateTourDto } from './dto/update-tour.dto';
 
 @Injectable()
 export class ToursService {
-    constructor(@InjectModel(Tour.name) private tourModel: Model<TourDocument>) { }
+    constructor(
+        @InjectModel(Tour.name) private tourModel: Model<TourDocument>,
+        @InjectModel(Yatra.name) private yatraModel: Model<YatraDocument>
+    ) { }
 
     async create(createTourDto: CreateTourDto) {
         const slug = createTourDto.slug || this.generateSlug(createTourDto.title);
@@ -15,6 +19,17 @@ export class ToursService {
             ...createTourDto,
             slug,
         });
+
+        if (createTourDto.category) {
+            // Check if category is a valid ObjectId (Yatra ID)
+            if (createTourDto.category.match(/^[0-9a-fA-F]{24}$/)) {
+                await this.yatraModel.findByIdAndUpdate(
+                    createTourDto.category,
+                    { $addToSet: { packages: tour._id } }
+                );
+            }
+        }
+
         return tour;
     }
 
@@ -29,9 +44,20 @@ export class ToursService {
             sortBy = 'createdAt',
             order = 'desc',
             isTrending,
+            isActive,
         } = query;
 
-        const filter: any = { isActive: true };
+        const filter: any = {};
+
+        // isActive filter: 'true'/'false' = explicit filter, 'all' = no filter, undefined = default to active only
+        if (isActive === 'all') {
+            // No isActive filter — return all tours regardless of active status
+        } else if (isActive !== undefined) {
+            filter.isActive = isActive === 'true';
+        } else {
+            // Default (public-facing): only show active tours
+            filter.isActive = true;
+        }
 
         if (search) {
             const searchRegex = new RegExp(search, 'i');
@@ -110,6 +136,24 @@ export class ToursService {
         if (!tour) {
             throw new NotFoundException('Tour not found');
         }
+
+        // Manage Yatra association if category was updated
+        if ('category' in updateTourDto) {
+            // Remove from all yatras first
+            await this.yatraModel.updateMany(
+                { packages: tour._id },
+                { $pull: { packages: tour._id as any } }
+            );
+
+            // Add to new yatra if valid
+            if (updateTourDto.category && updateTourDto.category.match(/^[0-9a-fA-F]{24}$/)) {
+                await this.yatraModel.findByIdAndUpdate(
+                    updateTourDto.category,
+                    { $addToSet: { packages: tour._id as any } }
+                );
+            }
+        }
+
         return tour;
     }
 
@@ -122,6 +166,13 @@ export class ToursService {
         if (!tour) {
             throw new NotFoundException('Tour not found');
         }
+
+        // Remove from associated yatra upon soft delete
+        await this.yatraModel.updateMany(
+            { packages: tour._id },
+            { $pull: { packages: tour._id as any } }
+        );
+
         return { message: 'Tour deleted successfully' };
     }
 

@@ -1,5 +1,49 @@
-import { IsString, IsNumber, IsArray, IsOptional, Min } from 'class-validator';
+import { IsString, IsNumber, IsArray, IsOptional, Min, ValidateNested, IsBoolean, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+
+export class DepartureCityDto {
+    @ApiProperty()
+    @IsString()
+    city: string;
+
+    @ApiProperty({ required: false })
+    @IsNumber()
+    @IsOptional()
+    surcharge?: number;
+
+    @ApiProperty({ required: false })
+    @IsBoolean()
+    @IsOptional()
+    isDefault?: boolean;
+
+    @ApiProperty({ required: false, enum: ['specific_dates', 'weekly', 'daily', 'monthly_dates'] })
+    @IsEnum(['specific_dates', 'weekly', 'daily', 'monthly_dates'])
+    @IsOptional()
+    availabilityType?: string;
+
+    @ApiProperty({ type: [Date], required: false })
+    @IsArray()
+    @IsOptional()
+    @Type(() => Date)
+    availableDates?: Date[];
+
+    @ApiProperty({ type: [Number], required: false })
+    @IsArray()
+    @IsOptional()
+    weeklyDays?: number[];
+
+    @ApiProperty({ type: [Number], required: false })
+    @IsArray()
+    @IsOptional()
+    monthlyDays?: number[];
+
+    @ApiProperty({ type: [Date], required: false })
+    @IsArray()
+    @IsOptional()
+    @Type(() => Date)
+    blackoutDates?: Date[];
+}
 
 export class CreateTourDto {
     @ApiProperty()
@@ -143,4 +187,21 @@ export class CreateTourDto {
     @ApiProperty({ required: false, default: 0 })
     @IsOptional()
     trendingRank?: number;
+
+    @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    badge?: string;
+
+    @ApiProperty({ required: false })
+    @IsNumber()
+    @IsOptional()
+    emiStartingFrom?: number;
+
+    @ApiProperty({ type: [DepartureCityDto], required: false })
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => DepartureCityDto)
+    @IsOptional()
+    departureCities?: DepartureCityDto[];
 }
