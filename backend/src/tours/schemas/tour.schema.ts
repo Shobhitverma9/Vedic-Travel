@@ -90,6 +90,12 @@ export class Tour {
     @Prop({ type: [String], default: [] })
     thingsToCarry: string[];
 
+    @Prop()
+    cancellationPolicy: string;
+
+    @Prop()
+    termsAndConditions: string;
+
     @Prop({ required: true })
     maxGroupSize: number;
 

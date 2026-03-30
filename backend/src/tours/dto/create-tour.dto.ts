@@ -115,6 +115,16 @@ export class CreateTourDto {
     packageIncludes?: string[];
 
     @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    cancellationPolicy?: string;
+
+    @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    termsAndConditions?: string;
+
+    @ApiProperty({ required: false })
     @IsArray()
     @IsOptional()
     hotels?: any[];

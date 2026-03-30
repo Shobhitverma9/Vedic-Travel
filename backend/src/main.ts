@@ -6,6 +6,7 @@ import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 
 // Trigger rebuild
 
@@ -23,6 +24,10 @@ async function bootstrap() {
 
     // Cookies
     app.use(cookieParser());
+
+    // Increase body size limit
+    app.use(json({ limit: '50mb' }));
+    app.use(urlencoded({ extended: true, limit: '50mb' }));
 
     // Enable CORS
     app.enableCors({
