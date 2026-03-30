@@ -26,18 +26,25 @@ const seedAdmin = async () => {
 
         const User = mongoose.model('User', userSchema);
 
-        const adminEmail = 'admin@vedictravel.com';
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@vedictravel.com';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
         const existingAdmin = await User.findOne({ email: adminEmail });
 
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(adminPassword, salt);
+
         if (existingAdmin) {
-            console.log('Admin user already exists.');
-            console.log('Email:', adminEmail);
-            console.log('If you forgot the password, please delete the user from DB and run this script again.');
+            console.log('Admin user already exists. Updating credentials...');
+            existingAdmin.password = hashedPassword;
+            existingAdmin.name = 'Admin User';
+            existingAdmin.role = 'admin';
+            existingAdmin.isActive = true;
+            existingAdmin.emailVerified = true;
+            existingAdmin.phoneVerified = true;
+            await existingAdmin.save();
+            console.log('Admin User Updated Successfully!');
         } else {
             console.log('Creating admin user...');
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash('admin123', salt);
-
             await User.create({
                 name: 'Admin User',
                 email: adminEmail,
@@ -47,11 +54,10 @@ const seedAdmin = async () => {
                 emailVerified: true,
                 phoneVerified: true,
             });
-
             console.log('Admin User Created Successfully!');
-            console.log('Email: admin@vedictravel.com');
-            console.log('Password: admin123');
         }
+        console.log('Email:', adminEmail);
+        console.log('Password:', adminPassword);
 
         process.exit(0);
     } catch (err) {
