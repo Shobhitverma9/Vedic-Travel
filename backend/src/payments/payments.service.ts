@@ -31,7 +31,120 @@ export class PaymentsService {
 
 
     async getEmiOptions(amount: number) {
-        // Mock EMI options from major banks
+        if (!this.merchantKey || !this.merchantSalt) {
+            console.warn('PayU credentials missing, using fallback EMI calculation');
+            return this.getFallbackEmiOptions(amount);
+        }
+
+        const command = 'getEmiAmountAccordingToInterest';
+        const hash = crypto.createHash('sha512')
+            .update(`${this.merchantKey}|${command}|${amount}|${this.merchantSalt}`)
+            .digest('hex');
+
+        const formData = new URLSearchParams();
+        formData.append('key', this.merchantKey);
+        formData.append('command', command);
+        formData.append('var1', Math.round(amount).toString());
+        formData.append('hash', hash);
+
+        try {
+            // PayU Post Service URL
+            const postServiceUrl = this.payuBaseUrl?.includes('test')
+                ? 'https://test.payu.in/merchant/postservice.php?form=2'
+                : 'https://info.payu.in/merchant/postservice.php?form=2';
+
+            const response = await fetch(postServiceUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
+            });
+
+            if (!response.ok) {
+                throw new Error(`PayU PostService responded with ${response.status}`);
+            }
+
+            const data = await response.json() as any;
+
+            if (data.status !== 1 || !data.result) {
+                console.warn('PayU EMI API returned non-success status:', data.msg || 'Unknown error');
+                return this.getFallbackEmiOptions(amount);
+            }
+
+            return this.mapPayUResponseToEMIInfo(data.result, amount);
+        } catch (error) {
+            console.error('Error fetching EMI options from PayU:', error);
+            return this.getFallbackEmiOptions(amount);
+        }
+    }
+
+    private mapPayUResponseToEMIInfo(result: any, amount: number) {
+        const bankWisePlans: any[] = [];
+        
+        // PayU response can be in different formats depending on account setup
+        const emiData = result.emi_details || result;
+
+        if (Array.isArray(emiData)) {
+            // Group by bank
+            const grouped = emiData.reduce((acc: any, item: any) => {
+                const bankName = item.bank_name || 'Bank';
+                if (!acc[bankName]) acc[bankName] = [];
+                acc[bankName].push({
+                    tenure: parseInt(item.tenure),
+                    interestRate: parseFloat(item.interest_rate),
+                    emi: Math.round(parseFloat(item.emi_amount)),
+                    totalAmount: Math.round(parseFloat(item.total_amount))
+                });
+                return acc;
+            }, {});
+
+            Object.keys(grouped).forEach(bank => {
+                bankWisePlans.push({
+                    bank,
+                    plans: grouped[bank].sort((a: any, b: any) => a.tenure - b.tenure)
+                });
+            });
+        } else if (typeof emiData === 'object' && emiData !== null) {
+            Object.keys(emiData).forEach(bank => {
+                const rawPlans = emiData[bank];
+                if (Array.isArray(rawPlans)) {
+                    const plans = rawPlans.map((p: any) => ({
+                        tenure: parseInt(p.tenure),
+                        interestRate: parseFloat(p.interest_rate),
+                        emi: Math.round(parseFloat(p.emi_amount)),
+                        totalAmount: Math.round(parseFloat(p.total_amount))
+                    }));
+                    
+                    if (plans.length > 0) {
+                        bankWisePlans.push({
+                            bank,
+                            plans: plans.sort((a: any, b: any) => a.tenure - b.tenure)
+                        });
+                    }
+                }
+            });
+        }
+
+        if (bankWisePlans.length === 0) {
+            return this.getFallbackEmiOptions(amount);
+        }
+
+        // Sort banks alphabetically
+        bankWisePlans.sort((a, b) => a.bank.localeCompare(b.bank));
+
+        const allPlans = bankWisePlans.flatMap(bp => bp.plans.map((p: any) => ({ ...p, bank: bp.bank })));
+        const lowestEmi = Math.min(...allPlans.map((p: any) => p.emi));
+
+        return {
+            lowestEmi,
+            bankWisePlans,
+            allPlans: allPlans.sort((a: any, b: any) => a.tenure - b.tenure)
+        };
+    }
+
+    private getFallbackEmiOptions(amount: number) {
+        // Mock EMI options from major banks as fallback
         const banks = [
             { name: 'HDFC Bank', interestRate: 13.5 },
             { name: 'ICICI Bank', interestRate: 14 },
@@ -58,15 +171,12 @@ export class PaymentsService {
             };
         });
 
-        // Flatten plans for "all plans" view or just return structure
         const allPlans = bankPlans.flatMap(bp => bp.plans.map(p => ({ ...p, bank: bp.bank })));
-
-        // Find absolute lowest emi across all banks and tenures
         const lowestEmi = Math.min(...allPlans.map(p => p.emi));
 
         return {
             lowestEmi,
-            bankWisePlans: bankPlans,
+            bankWisePlans,
             allPlans: allPlans.sort((a, b) => a.tenure - b.tenure)
         };
     }
@@ -200,18 +310,56 @@ export class PaymentsService {
                             totalAmount: (updatedBooking as any).totalAmount,
                         },
                     );
+
+                    // 2. Send admin notification
+                    const adminEmail = this.configService.get<string>('ADMIN_EMAIL') || 'admin@vedictravel.com';
+                    await this.emailService.sendAdminNewBookingNotificationEmail(
+                        adminEmail,
+                        {
+                            bookingReference: (updatedBooking as any).bookingReference,
+                            customerName: (updatedBooking as any).user?.name || (updatedBooking as any).travelerDetails?.[0]?.name || 'Guest',
+                            customerEmail: recipientEmail,
+                            customerPhone: (updatedBooking as any).user?.phone || (updatedBooking as any).phone,
+                            tourName: tour?.title || 'Your Yatra',
+                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                            numberOfTravelers: (updatedBooking as any).numberOfTravelers,
+                            totalAmount: (updatedBooking as any).totalAmount,
+                            paymentId: mihpayid,
+                        },
+                    );
                 }
             } catch (emailErr) {
-                console.error('Failed to send booking confirmation email:', emailErr);
-                // Do not fail the payment response if email fails
+                console.error('Failed to send booking notification emails:', emailErr);
             }
         } else {
-            await this.bookingsService.updatePaymentStatus(
+            const updatedBooking = await this.bookingsService.updatePaymentStatus(
                 bookingId,
                 PaymentStatus.FAILED,
                 mihpayid,
                 txnid,
             );
+
+            // Send payment failure email
+            try {
+                const tour = (updatedBooking as any).tour;
+                const recipientEmail = email || (updatedBooking as any).email || '';
+                const recipientName = firstname || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+
+                if (recipientEmail) {
+                    await this.emailService.sendPaymentFailureEmail(
+                        recipientEmail,
+                        recipientName,
+                        {
+                            bookingReference: (updatedBooking as any).bookingReference,
+                            tourName: tour?.title || 'Your Yatra',
+                            totalAmount: (updatedBooking as any).totalAmount,
+                            transactionId: txnid,
+                        }
+                    );
+                }
+            } catch (emailErr) {
+                console.error('Failed to send payment failure email:', emailErr);
+            }
         }
 
         return {

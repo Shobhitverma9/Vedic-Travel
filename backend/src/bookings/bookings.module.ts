@@ -6,6 +6,8 @@ import { Booking, BookingSchema } from './schemas/booking.schema';
 import { Tour, TourSchema } from '../tours/schemas/tour.schema';
 import { Cart, CartSchema } from '../cart/schemas/cart.schema';
 
+import { EmailModule } from '../email/email.module';
+
 @Module({
     imports: [
         MongooseModule.forFeature([
@@ -13,6 +15,7 @@ import { Cart, CartSchema } from '../cart/schemas/cart.schema';
             { name: Tour.name, schema: TourSchema },
             { name: Cart.name, schema: CartSchema },
         ]),
+        EmailModule,
     ],
     controllers: [BookingsController],
     providers: [BookingsService],

@@ -6,6 +6,7 @@ import { Tour, TourDocument } from '../tours/schemas/tour.schema';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 import { Cart, CartDocument } from '../cart/schemas/cart.schema';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class BookingsService {
@@ -13,6 +14,7 @@ export class BookingsService {
         @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
         @InjectModel(Tour.name) private tourModel: Model<TourDocument>,
         @InjectModel(Cart.name) private cartModel: Model<CartDocument>,
+        private emailService: EmailService,
     ) { }
 
     async create(userId: string, createBookingDto: CreateBookingDto) {
@@ -138,6 +140,31 @@ export class BookingsService {
         booking.cancellationReason = reason;
 
         await booking.save();
+
+        // Send cancellation email
+        try {
+            const populatedBooking = await booking.populate(['user', 'tour']);
+            const recipientEmail = populatedBooking.email || (populatedBooking.user as any)?.email;
+            const recipientName = (populatedBooking.user as any)?.name || populatedBooking.travelerDetails?.[0]?.name || 'Valued Guest';
+
+            if (recipientEmail) {
+                await this.emailService.sendBookingCancellationEmail(
+                    recipientEmail,
+                    recipientName,
+                    {
+                        bookingReference: populatedBooking.bookingReference,
+                        tourName: (populatedBooking.tour as any)?.title || 'Your Yatra',
+                        travelDate: new Date(populatedBooking.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                        numberOfTravelers: populatedBooking.numberOfTravelers,
+                        totalAmount: populatedBooking.totalAmount,
+                        cancellationReason: reason,
+                    }
+                );
+            }
+        } catch (error) {
+            console.error('Failed to send cancellation email:', error);
+        }
+
         return booking;
     }
 

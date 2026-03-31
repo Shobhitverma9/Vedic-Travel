@@ -119,6 +119,11 @@ export class CreateTourDto {
     @IsOptional()
     cancellationPolicy?: string;
 
+    @ApiProperty({ required: false, default: true })
+    @IsBoolean()
+    @IsOptional()
+    useDefaultCancellationPolicy?: boolean;
+
     @ApiProperty({ required: false })
     @IsString()
     @IsOptional()

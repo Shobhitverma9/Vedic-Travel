@@ -93,6 +93,9 @@ export class Tour {
     @Prop()
     cancellationPolicy: string;
 
+    @Prop({ default: true })
+    useDefaultCancellationPolicy: boolean;
+
     @Prop()
     termsAndConditions: string;
 
