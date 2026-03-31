@@ -199,13 +199,48 @@ export class EmailService {
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
-    private async sendEmail(to: string, subject: string, htmlBody: string, textBody: string): Promise<void> {
+    async sendInvoiceEmail(
+        email: string,
+        name: string,
+        details: {
+            bookingReference: string;
+            tourName: string;
+            totalAmount: number;
+            invoiceUrl?: string;
+        },
+        pdfBuffer: Buffer
+    ): Promise<void> {
+        const subject = `Invoice for Your Sacred Journey 📄 - ${details.bookingReference}`;
+        const htmlBody = this.getInvoiceEmailTemplate(name, details);
+        const textBody = `Namaste ${name},\n\nPlease find attached the official receipt for your booking ${details.bookingReference} (${details.tourName}) of ₹${details.totalAmount.toLocaleString('en-IN')}.\n\nYou can also view it online here: ${details.invoiceUrl}\n\nBest regards,\nVedicTravel Team`;
+
+        const attachments = [
+            {
+                Name: `Invoice-${details.bookingReference}.pdf`,
+                Content: pdfBuffer.toString('base64'),
+                ContentType: 'application/pdf',
+            },
+        ];
+
+        await this.sendEmail(email, subject, htmlBody, textBody, attachments);
+    }
+
+    private async sendEmail(
+        to: string,
+        subject: string,
+        htmlBody: string,
+        textBody: string,
+        attachments?: any[]
+    ): Promise<void> {
         try {
             if (!this.client) {
                 // Mock mode - log to console
                 this.logger.log(`[MOCK EMAIL] To: ${to}`);
                 this.logger.log(`[MOCK EMAIL] Subject: ${subject}`);
                 this.logger.log(`[MOCK EMAIL] Body: ${textBody}`);
+                if (attachments) {
+                    this.logger.log(`[MOCK EMAIL] Attachments: ${attachments.map(a => a.Name).join(', ')}`);
+                }
                 return;
             }
 
@@ -216,6 +251,7 @@ export class EmailService {
                 HtmlBody: htmlBody,
                 TextBody: textBody,
                 MessageStream: 'outbound',
+                Attachments: attachments,
             });
 
             this.logger.log(`Email sent successfully to ${to}`);
@@ -1592,5 +1628,63 @@ export class EmailService {
 </table>
 </body>
 </html>`;
+    }
+
+    private getInvoiceEmailTemplate(name: string, details: {
+        bookingReference: string;
+        tourName: string;
+        totalAmount: number;
+        invoiceUrl?: string;
+    }): string {
+        return `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #FFF8F3; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #7B2CBF 0%, #FF5722 100%); padding: 40px 20px; text-align: center; }
+        .header h1 { color: #fff; margin: 0; font-size: 28px; }
+        .content { padding: 40px 30px; }
+        .greeting { font-size: 20px; color: #1A2332; margin-bottom: 20px; font-weight: bold; }
+        .info-card { background: #F8F9FA; border-left: 4px solid #7B2CBF; padding: 20px; border-radius: 4px; margin-bottom: 30px; }
+        .info-card p { margin: 8px 0; color: #444; font-size: 15px; }
+        .cta-box { text-align: center; margin: 30px 0; }
+        .cta-button { display: inline-block; background: #FF5722; color: #fff; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .footer { background-color: #1A2332; color: #fff; padding: 24px 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🕉️ Your Invoice is Ready</h1>
+        </div>
+        <div class="content">
+            <div class="greeting">Namaste ${name},</div>
+            <p>Thank you for choosing VedicTravel. We have successfully processed your payment for your upcoming journey.</p>
+            
+            <div class="info-card">
+                <p><strong>Booking Reference:</strong> ${details.bookingReference}</p>
+                <p><strong>Tour/Yatra:</strong> ${details.tourName}</p>
+                <p><strong>Amount Paid:</strong> ₹${details.totalAmount.toLocaleString('en-IN')}</p>
+            </div>
+            
+            <p>We've attached the official PDF receipt to this email for your records.</p>
+            
+            ${details.invoiceUrl ? `
+            <div class="cta-box">
+                <a href="${details.invoiceUrl}" class="cta-button">View Receipt Online</a>
+            </div>` : ''}
+            
+            <p>If you have any questions regarding this invoice, please reach out to our support team.</p>
+        </div>
+        <div class="footer">
+            <p>© 2026 VedicTravel. All rights reserved.</p>
+            <p>Connecting souls to sacred destinations.</p>
+        </div>
+    </div>
+</body>
+</html>
+        `;
     }
 }

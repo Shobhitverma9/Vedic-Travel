@@ -6,6 +6,8 @@ import * as crypto from 'crypto';
 import { Booking, BookingDocument, PaymentStatus } from '../bookings/schemas/booking.schema';
 import { BookingsService } from '../bookings/bookings.service';
 import { EmailService } from '../email/email.service';
+import { InvoiceService } from '../email/invoice.service';
+import { WhatsappService } from '../notifications/whatsapp.service';
 
 @Injectable()
 export class PaymentsService {
@@ -20,6 +22,8 @@ export class PaymentsService {
         @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
         private bookingsService: BookingsService,
         private emailService: EmailService,
+        private invoiceService: InvoiceService,
+        private whatsappService: WhatsappService,
     ) {
         this.merchantKey = this.configService.get<string>('PAYU_MERCHANT_KEY');
         this.merchantSalt = this.configService.get<string>('PAYU_MERCHANT_SALT');
@@ -176,7 +180,7 @@ export class PaymentsService {
 
         return {
             lowestEmi,
-            bankWisePlans,
+            bankWisePlans: bankPlans,
             allPlans: allPlans.sort((a, b) => a.tenure - b.tenure)
         };
     }
@@ -310,6 +314,42 @@ export class PaymentsService {
                             totalAmount: (updatedBooking as any).totalAmount,
                         },
                     );
+
+                    // 1.5 Generate Invoice and Send Multi-Channel Notifications
+                    try {
+                        const pdfBuffer = await this.invoiceService.generateInvoicePdf(updatedBooking);
+                        const fileName = `invoice-${(updatedBooking as any).bookingReference}`;
+                        const invoiceUrl = await this.invoiceService.uploadToCloudinary(pdfBuffer, fileName);
+
+                        // Send Invoice Email with attachment
+                        await this.emailService.sendInvoiceEmail(
+                            recipientEmail,
+                            recipientName,
+                            {
+                                bookingReference: (updatedBooking as any).bookingReference,
+                                tourName: tour?.title || 'Your Yatra',
+                                totalAmount: (updatedBooking as any).totalAmount,
+                                invoiceUrl: invoiceUrl,
+                            },
+                            pdfBuffer
+                        );
+
+                        // Send WhatsApp Notification with Receipt Doc
+                        const recipientPhone = (updatedBooking as any).user?.phone || (updatedBooking as any).phone || '';
+                        if (recipientPhone) {
+                            await this.whatsappService.sendBookingInvoiceDoc(
+                                recipientPhone,
+                                invoiceUrl,
+                                `${fileName}.pdf`,
+                                {
+                                    customerName: recipientName,
+                                    bookingReference: (updatedBooking as any).bookingReference,
+                                }
+                            );
+                        }
+                    } catch (invoiceErr) {
+                        console.error('Invoice generation/notification failed:', invoiceErr);
+                    }
 
                     // 2. Send admin notification
                     const adminEmail = this.configService.get<string>('ADMIN_EMAIL') || 'admin@vedictravel.com';

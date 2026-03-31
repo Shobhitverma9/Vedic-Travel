@@ -13,6 +13,10 @@ import { json, urlencoded } from 'express';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
+    // Trust proxy for Cloud Run/Load Balancer
+    const expressApp = app.getHttpAdapter().getInstance();
+    expressApp.set('trust proxy', 1);
+
     // Global interceptors
     app.useGlobalInterceptors(new LoggerInterceptor());
 
