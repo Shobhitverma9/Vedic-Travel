@@ -1,0 +1,32 @@
+# Dependency directories
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Firebase build/cache
+.firebase/
+firebase-debug.log*
+.firebaserc
+
+# Production build
+build/
+dist/
+
+# Environment variables (Never commit these!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

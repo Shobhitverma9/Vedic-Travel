@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@theme {
+  /* VedicTravel Brand Colors (from logo) */
+  --color-saffron: #FF5722;
+  --color-saffron-light: #FF7043;
+  --color-saffron-dark: #E64A19;
+
+  --color-purple: #7B2CBF;
+  --color-purple-light: #9D4EDD;
+  --color-purple-dark: #5A189A;
+
+  --color-cream: #FFF8F3;
+  --color-cream-light: #FFFCFA;
+
+  --color-deepBlue: #1A2332;
+  --color-deepBlue-light: #2C3E50;
+
+  --color-skyBlue: #4A6FA5;
+  --color-skyBlue-light: #6B8FC7;
+
+  --color-gold: #D4AF37;
+  --color-gold-light: #E5C558;
+
+  --color-highlightBlue: #00aeef;
+
+  /* Font Families */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-serif, Georgia, serif;
+  --font-script: var(--font-script), "Dancing Script", cursive;
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.6s ease-in-out;
+  --animate-slide-up: slideUp 0.6s ease-out;
+  --animate-glow: glow 2s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 20s linear infinite;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+    }
+
+    50% {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-white text-deepBlue font-sans;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-saffron hover:bg-saffron-dark text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply bg-deepBlue hover:bg-deepBlue-light text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300;
+  }
+
+  .btn-outline {
+    @apply border-2 border-saffron text-saffron hover:bg-saffron hover:text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300;
+  }
+
+  .btn-accent {
+    @apply bg-purple hover:bg-purple-dark text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg;
+  }
+
+  .section-title {
+    @apply font-display text-4xl md:text-5xl font-bold text-deepBlue mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-gray-600 mb-8;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-saffron focus:border-transparent transition-all;
+  }
+
+  .gradient-overlay {
+    @apply absolute inset-0 bg-gradient-to-b from-transparent via-deepBlue/50 to-deepBlue/90;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-saffron to-gold bg-clip-text text-transparent;
+  }
+
+  .text-gradient-purple {
+    @apply bg-gradient-to-r from-purple to-saffron bg-clip-text text-transparent;
+  }
+
+  .bg-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF5722' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #FF5722;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #E64A19;
+  }
+
+  /* Firefox support */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #FF5722 transparent;
+  }
+}
