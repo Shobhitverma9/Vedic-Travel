@@ -44,8 +44,8 @@ export class Tour {
     @Prop({ type: [String], default: [] })
     slideshowImages: string[];
 
-    @Prop({ type: [Object], default: [] })
-    placesHighlights: { image: string; title: string }[];
+    @Prop({ type: [String], default: [] })
+    placesHighlights: string[];
 
     @Prop({ required: false })
     placesToVisit: string;

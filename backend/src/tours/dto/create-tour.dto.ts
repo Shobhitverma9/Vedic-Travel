@@ -184,22 +184,27 @@ export class CreateTourDto {
     highlights?: any;
 
     @ApiProperty({ required: false, default: false })
+    @IsBoolean()
     @IsOptional()
     isFavorite?: boolean;
 
     @ApiProperty({ required: false, default: 'standard' })
+    @IsString()
     @IsOptional()
     favoriteSize?: string;
 
     @ApiProperty({ required: false, default: true })
+    @IsBoolean()
     @IsOptional()
     isActive?: boolean;
 
     @ApiProperty({ required: false, default: false })
+    @IsBoolean()
     @IsOptional()
     isTrending?: boolean;
 
     @ApiProperty({ required: false, default: 0 })
+    @IsNumber()
     @IsOptional()
     trendingRank?: number;
 
