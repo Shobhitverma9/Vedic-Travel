@@ -1,0 +1,17 @@
+# Firebase App Hosting Configuration
+kind: "AppHostingBackend"
+version: "v1alpha"
+
+# Specify the subdirectory where the Next.js app is located
+appRoot: "frontend"
+
+# Environmental settings
+env:
+  - variable: NEXT_PUBLIC_API_URL
+    value: "https://vedictravel-backend-230370960197.us-central1.run.app/api/v1"
+  - variable: NEXT_PUBLIC_GOOGLE_CLIENT_ID
+    value: "230370960197-ht4vgl93ef9fraj9bs41g00vnu8isue7.apps.googleusercontent.com"
+  - variable: NEXT_PUBLIC_PAYU_KEY
+    value: "M78vR3"
+  - variable: NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+    value: "duuedlbxa"
