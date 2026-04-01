@@ -1,3 +1,4 @@
+// Production Build: 2024-04-01-V1
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
