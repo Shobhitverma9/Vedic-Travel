@@ -10,6 +10,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const pathname = usePathname();
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const isLoginPage = pathname === '/admin/login';
 
@@ -66,69 +67,96 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* Sidebar */}
-            <aside className="w-64 bg-deepBlue text-white hidden md:flex flex-col">
-                <div className="p-6 border-b border-gray-700">
-                    <img
-                        src="/vt-logo-retina.png"
-                        alt="Vedic Travel"
-                        className="h-10 w-auto mb-2"
-                    />
-                    <p className="text-xs text-gray-400 mt-1">Admin Panel</p>
+            <aside className={`${isCollapsed ? 'w-20' : 'w-64'} bg-deepBlue text-white hidden md:flex flex-col transition-all duration-300 border-r border-gray-800 shadow-xl z-20`}>
+                <div className="p-4 border-b border-gray-700 flex items-center justify-between overflow-hidden whitespace-nowrap">
+                    {!isCollapsed && (
+                        <div className="flex flex-col">
+                            <img
+                                src="/vt-logo-retina.png"
+                                alt="Vedic Travel"
+                                className="h-8 w-auto mb-1"
+                            />
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Admin Panel</p>
+                        </div>
+                    )}
+                    {isCollapsed && (
+                        <div className="w-10 h-10 flex items-center justify-center">
+                            <img
+                                src="/vt-logo-retina.png"
+                                alt="VT"
+                                className="h-6 w-auto"
+                            />
+                        </div>
+                    )}
+                    <button
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                        title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+                    >
+                        <svg className={`h-5 w-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                        </svg>
+                    </button>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
+                <nav className={`flex-1 p-3 space-y-2 overflow-y-auto ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
                     {navItems.map((item) => {
                         const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
                         return (
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${isActive
-                                    ? 'bg-saffron text-white shadow-md'
-                                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                                title={isCollapsed ? item.name : ""}
+                                className={`flex items-center rounded-xl transition-all duration-200 group ${isCollapsed ? 'justify-center p-3' : 'px-4 py-3 text-sm font-medium'} ${isActive
+                                    ? 'bg-saffron text-white shadow-lg shadow-saffron/20'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                     }`}
                             >
                                 <svg
-                                    className="mr-3 h-5 w-5 flex-shrink-0"
+                                    className={`${isCollapsed ? '' : 'mr-3'} h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110`}
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
                                 </svg>
-                                {item.name}
+                                {!isCollapsed && <span>{item.name}</span>}
                             </Link>
                         );
                     })}
                 </nav>
 
-                <div className="p-4 border-t border-gray-700">
+                <div className={`p-4 border-t border-gray-700 ${isCollapsed ? 'flex justify-center' : ''}`}>
                     <div className="flex items-center">
                         <div className="flex-shrink-0">
-                            <div className="h-8 w-8 rounded-full bg-saffron flex items-center justify-center text-white font-bold">
+                            <div className="h-10 w-10 rounded-full bg-saffron flex items-center justify-center text-white font-bold shadow-md">
                                 {user.name.charAt(0)}
                             </div>
                         </div>
-                        <div className="ml-3">
-                            <p className="text-sm font-medium text-white">{user.name}</p>
-                            <button
-                                onClick={() => {
-                                    authService.logout();
-                                    router.push('/admin/login');
-                                }}
-                                className="text-xs font-medium text-gray-400 hover:text-white"
-                            >
-                                Logout
-                            </button>
-                        </div>
+                        {!isCollapsed && (
+                            <div className="ml-3 overflow-hidden">
+                                <p className="text-sm font-bold text-white truncate">{user.name}</p>
+                                <button
+                                    onClick={() => {
+                                        authService.logout();
+                                        router.push('/admin/login');
+                                    }}
+                                    className="text-[10px] font-bold text-gray-500 hover:text-saffron transition-colors uppercase tracking-wider"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 overflow-y-auto">
-                <div className="p-8">
-                    {children}
+            {/* Main Content Area */}
+            <main className="flex-1 flex flex-col min-w-0 bg-gray-50 overflow-x-hidden">
+                <div className="flex-1 overflow-y-auto overflow-x-auto custom-scrollbar">
+                    <div className="p-4 sm:p-6 lg:p-8 transition-all duration-300">
+                        {children}
+                    </div>
                 </div>
             </main>
             {/* comment to push

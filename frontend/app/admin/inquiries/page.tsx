@@ -29,7 +29,7 @@ export default function AdminInquiriesPage() {
             <h1 className="text-2xl font-bold mb-6">User Inquiries</h1>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto custom-scrollbar">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>

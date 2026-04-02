@@ -66,6 +66,8 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         customBlocks: [] as any[],
         hasEasyCancellation: true,
         hasEasyVisa: false,
+        hasHighSeason: false,
+        hasTravelValidity: false,
         departureCities: [] as {
             city: string;
             surcharge: number;
@@ -428,7 +430,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
     const commonIncludes = ['Hotel', 'Sightseeing', 'Transfer', 'Meals', 'Flight', 'Visa'];
 
     return (
-        <div className="max-w-5xl mx-auto pb-20">
+        <div className="w-full max-w-5xl mx-auto pb-20">
             <h1 className="text-2xl font-bold mb-6">
                 {isEditMode ? 'Edit Package' : 'Create New Package'}
             </h1>
@@ -598,7 +600,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                         {formData.hotels.map((hotel, index) => (
                             <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative">
                                 <button type="button" onClick={() => removeHotel(index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><Trash className="w-4 h-4" /></button>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     <div className="md:col-span-1">
                                         <label className="text-xs text-gray-500 block mb-1">Hotel Image</label>
                                         <ImageUpload
@@ -654,7 +656,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                             <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative">
                                 <button type="button" onClick={() => removeDepartureCity(index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><Trash className="w-4 h-4" /></button>
 
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                                     <div className="md:col-span-2">
                                         <label className="text-xs text-gray-500 block mb-1">City Name (e.g. Joining Direct, Delhi, Mumbai)</label>
                                         <input

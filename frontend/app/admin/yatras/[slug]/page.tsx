@@ -220,12 +220,12 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
     if (initialLoading) return <div className="p-8">Loading...</div>;
 
     return (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full max-w-4xl mx-auto pb-16 px-4 sm:px-0">
             <h1 className="text-2xl font-bold mb-6">
                 {isEditMode ? 'Edit Yatra' : 'Create New Yatra'}
             </h1>
 
-            <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+            <form onSubmit={handleSubmit} className="space-y-8 bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-gray-200 mt-6">
                 {/* Basic Info */}
                 <section className="space-y-4">
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Basic Information</h2>

@@ -42,7 +42,7 @@ export default function AdminBookingsPage() {
             <h1 className="text-3xl font-display font-bold text-deepBlue">Manage Bookings</h1>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-100">
                             <tr>
