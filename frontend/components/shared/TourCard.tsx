@@ -40,7 +40,7 @@ export default function TourCard({ tour, isTrending = false, isInternational = f
         <>
             <div className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full relative border border-gray-100">
                 {/* Image Area - Reduced Height */}
-                <div className="relative h-40 overflow-hidden">
+                <Link href={`/package/${tour.slug}`} className="relative h-40 overflow-hidden block">
                     <img
                         src={tour.images?.[0] || '/placeholder-tour.jpg'}
                         alt={tour.title}
@@ -56,10 +56,14 @@ export default function TourCard({ tour, isTrending = false, isInternational = f
                         )}
                     </div>
 
-                    {/* Wishlist Button */}
+                    {/* Wishlist Button - Absolute to handle clicks separately */}
                     <button
-                        onClick={handleWishlistToggle}
-                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white transition-all group-hover:scale-110"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleWishlistToggle();
+                        }}
+                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white transition-all group-hover:scale-110 z-10"
                     >
                         <svg
                             className={`w-5 h-5 ${isInWishlist ? 'text-red-500 fill-current' : 'text-white'}`}
@@ -76,13 +80,15 @@ export default function TourCard({ tour, isTrending = false, isInternational = f
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         {tour.duration - 1}N / {tour.duration}D
                     </div>
-                </div>
+                </Link>
 
                 {/* Content */}
                 <div className="p-4 flex flex-col flex-grow relative text-left">
-                    <h3 className="text-lg font-bold text-deepBlue mb-2 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-purple-700 transition-colors">
-                        {tour.title}
-                    </h3>
+                    <Link href={`/package/${tour.slug}`}>
+                        <h3 className="text-lg font-bold text-deepBlue mb-2 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-purple-700 transition-colors">
+                            {tour.title}
+                        </h3>
+                    </Link>
 
                     {/* Route - Restored */}
                     {tour.locations && (

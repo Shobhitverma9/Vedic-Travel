@@ -6,6 +6,7 @@ import { toursService } from '@/services/tours.service';
 import { yatrasService } from '@/services/yatras.service';
 import ImageUpload from '@/components/common/ImageUpload';
 import { Plus, Trash, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import RichTextToolbar from '@/components/admin/RichTextToolbar';
 
 export default function TourEditorPage({ params }: { params: Promise<{ slug: string }> }) {
     const router = useRouter();
@@ -54,6 +55,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         cancellationPolicy: '',
         useDefaultCancellationPolicy: true,
         termsAndConditions: '',
+        paymentTerms: '',
         isActive: true,
         isFavorite: false,
         favoriteSize: 'standard',
@@ -61,6 +63,9 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         trendingRank: '',
         badge: '',
         emiStartingFrom: '',
+        customBlocks: [] as any[],
+        hasEasyCancellation: true,
+        hasEasyVisa: false,
         departureCities: [] as {
             city: string;
             surcharge: number;
@@ -124,6 +129,12 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 cancellationPolicy: tour.cancellationPolicy || '',
                 useDefaultCancellationPolicy: tour.useDefaultCancellationPolicy !== undefined ? tour.useDefaultCancellationPolicy : true,
                 termsAndConditions: tour.termsAndConditions || '',
+                paymentTerms: tour.paymentTerms || '',
+                hasEasyCancellation: (tour as any).hasEasyCancellation !== undefined ? (tour as any).hasEasyCancellation : true,
+                hasEasyVisa: (tour as any).hasEasyVisa || false,
+                hasHighSeason: (tour as any).hasHighSeason || false,
+                hasTravelValidity: (tour as any).hasTravelValidity || false,
+                customBlocks: (tour as any).customBlocks || [],
                 isActive: tour.isActive,
                 isFavorite: tour.isFavorite || false,
                 favoriteSize: tour.favoriteSize || 'standard',
@@ -245,6 +256,28 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         }
     };
 
+    // Helper for Custom Blocks
+    const addCustomBlock = () => {
+        setFormData({
+            ...formData,
+            customBlocks: [...(formData.customBlocks || []), { title: '', content: '', isLink: false }]
+        });
+    };
+
+    const updateCustomBlock = (index: number, field: string, value: any) => {
+        const newBlocks = [...(formData.customBlocks || [])];
+        // @ts-ignore
+        newBlocks[index][field] = value;
+        setFormData({ ...formData, customBlocks: newBlocks });
+    };
+
+    const removeCustomBlock = (index: number) => {
+        setFormData({
+            ...formData,
+            customBlocks: (formData.customBlocks || []).filter((_, i) => i !== index)
+        });
+    };
+
     // Helper for Departure Cities
     const addDepartureCity = () => {
         setFormData({
@@ -349,6 +382,47 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         }
     };
 
+    const handleDuplicateThisPackage = async () => {
+        if (!confirm('Are you sure you want to duplicate this package?')) return;
+        setLoading(true);
+
+        try {
+            const payload = {
+                ...formData,
+                title: `${formData.title} (Copy)`,
+                slug: `${formData.slug}-copy`,
+                price: Number(formData.price) || 0,
+                priceOriginal: Number(formData.priceOriginal) || 0,
+                duration: Number(formData.duration) || 0,
+                maxGroupSize: formData.maxGroupSize ? Number(formData.maxGroupSize) : 1,
+                trendingRank: Number(formData.trendingRank) || 0,
+                emiStartingFrom: Number(formData.emiStartingFrom) || 0,
+                packageType: formData.packageType,
+                locations: formData.locations.filter(l => l.trim()),
+                inclusions: formData.inclusions.filter(i => i.trim()),
+                exclusions: formData.exclusions.filter(e => e.trim()),
+                dos: formData.dos.filter(d => d.trim()),
+                donts: formData.donts.filter(d => d.trim()),
+                thingsToCarry: formData.thingsToCarry.filter(t => t.trim()),
+                departureCities: formData.departureCities
+                    .filter(dc => dc.city.trim())
+                    .map(({ _id, ...rest }: any) => rest),
+                hotels: formData.hotels.map(({ _id, ...rest }: any) => rest),
+                itinerary: formData.itinerary.map(({ _id, ...rest }: any) => ({
+                    ...rest,
+                    items: rest.items?.map(({ _id, ...item }: any) => item) || []
+                })),
+            };
+
+            await toursService.createTour(payload);
+            router.push('/admin/tours');
+        } catch (error) {
+            console.error('Duplicate failed:', error);
+            alert('Failed to duplicate tour. Please check the data.');
+            setLoading(false);
+        }
+    };
+
     if (initialLoading) return <div className="p-8">Loading...</div>;
 
     const commonIncludes = ['Hotel', 'Sightseeing', 'Transfer', 'Meals', 'Flight', 'Visa'];
@@ -410,12 +484,12 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                             </select>
                         </div>
                         <div>
-                            <label className="label">Selling Price (₹)</label>
-                            <input type="number" name="price" required value={formData.price} onChange={handleChange} className="input-field" />
+                            <label className="label">Original Price (will be strikethrough) (₹)</label>
+                            <input type="number" name="priceOriginal" value={formData.priceOriginal} onChange={handleChange} className="input-field" placeholder="e.g. 29999" />
                         </div>
                         <div>
-                            <label className="label">Original/Strikethrough Price (₹)</label>
-                            <input type="number" name="priceOriginal" value={formData.priceOriginal} onChange={handleChange} className="input-field" />
+                            <label className="label">Selling Price (Actual Price) (₹)</label>
+                            <input type="number" name="price" required value={formData.price} onChange={handleChange} className="input-field" placeholder="e.g. 19999" />
                         </div>
                         <div>
                             <label className="label">EMI Starting From (₹/mo)</label>
@@ -889,6 +963,17 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                         </div>
 
                         <div className="md:col-span-2">
+                            <label className="label mb-2 block text-gray-700">Payment Terms</label>
+                            <textarea
+                                name="paymentTerms"
+                                value={formData.paymentTerms}
+                                onChange={handleChange}
+                                className="input-field min-h-[100px]"
+                                placeholder="Enter specific payment terms..."
+                            />
+                        </div>
+
+                        <div className="md:col-span-2">
                             <label className="label mb-2 block text-gray-700">Terms & Conditions</label>
                             <textarea
                                 name="termsAndConditions"
@@ -897,6 +982,87 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                                 className="input-field min-h-[100px]"
                                 placeholder="Enter terms and conditions..."
                             />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 6.5. Feature Blocks */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 className="text-xl font-bold text-gray-800 border-b pb-4 mb-4">Feature Blocks & Badges</h2>
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-wrap gap-8">
+                            <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" name="hasEasyCancellation" checked={formData.hasEasyCancellation} onChange={handleChange} className="w-5 h-5 text-saffron rounded" />
+                                <span className="font-bold text-gray-700">Has "Easy Cancellation" Badge</span>
+                            </label>
+                            
+                            <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" name="hasEasyVisa" checked={formData.hasEasyVisa} onChange={handleChange} className="w-5 h-5 text-saffron rounded" />
+                                <span className="font-bold text-gray-700">Has "Easy Visa" Badge</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" name="hasHighSeason" checked={formData.hasHighSeason} onChange={handleChange} className="w-5 h-5 text-saffron rounded" />
+                                <span className="font-bold text-gray-700">Has "High Season" Badge</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" name="hasTravelValidity" checked={formData.hasTravelValidity} onChange={handleChange} className="w-5 h-5 text-saffron rounded" />
+                                <span className="font-bold text-gray-700">Has "Travel Validity" Badge</span>
+                            </label>
+                        </div>
+                        
+                        <div className="border-t pt-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-bold text-gray-800">Custom Dynamic Blocks</h3>
+                                <button type="button" onClick={addCustomBlock} className="text-xs text-saffron font-bold hover:underline flex items-center gap-1">
+                                    <Plus className="w-4 h-4" /> Add Custom Block
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                {(formData.customBlocks || []).map((block: any, i: number) => (
+                                    <div key={i} className="flex flex-col md:flex-row gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200 relative group">
+                                        <button type="button" onClick={() => removeCustomBlock(i)} className="absolute -top-2 -right-2 bg-red-100 text-red-600 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 w-6 h-6 flex items-center justify-center border border-red-200">
+                                            ×
+                                        </button>
+                                        
+                                        <div className="flex-1 space-y-3">
+                                            <div className="flex items-center justify-between gap-4">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Block Title (e.g., Registration Link)"
+                                                    value={block.title}
+                                                    onChange={(e) => updateCustomBlock(i, 'title', e.target.value)}
+                                                    className="input-field flex-1 font-bold"
+                                                />
+                                                <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={block.isLink} 
+                                                        onChange={(e) => updateCustomBlock(i, 'isLink', e.target.checked)} 
+                                                        className="w-4 h-4 text-blue-600 rounded" 
+                                                    />
+                                                    <span className="text-sm font-medium">Is this a link?</span>
+                                                </label>
+                                            </div>
+                                            
+                                            <input
+                                                type={block.isLink ? 'url' : 'text'}
+                                                placeholder={block.isLink ? 'URL (e.g., https://forms.gle/...)' : 'Block Content'}
+                                                value={block.content}
+                                                onChange={(e) => updateCustomBlock(i, 'content', e.target.value)}
+                                                className="input-field w-full"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                                {(!formData.customBlocks || formData.customBlocks.length === 0) && (
+                                    <div className="text-center p-6 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 text-sm">
+                                        No custom blocks added. Add one to show special links or notices on the package page.
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -920,12 +1086,18 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 </div>
 
                 <div className="flex justify-end pt-6">
+                    {isEditMode && (
+                        <button type="button" onClick={handleDuplicateThisPackage} disabled={loading} className="px-6 py-3 mr-4 text-green-700 bg-green-50 font-bold hover:bg-green-100 rounded-lg">
+                            Duplicate Package
+                        </button>
+                    )}
                     <button type="button" onClick={() => router.back()} className="px-6 py-3 mr-4 text-gray-600 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
                     <button type="submit" disabled={loading} className="btn-primary px-8 py-3 text-lg">
                         {loading ? 'Saving Package...' : 'Save Complete Package'}
                     </button>
                 </div>
             </form>
+            <RichTextToolbar />
         </div>
     );
 }

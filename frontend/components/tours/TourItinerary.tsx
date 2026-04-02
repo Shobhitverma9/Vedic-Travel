@@ -221,9 +221,10 @@ export default function TourItinerary({ itinerary }: TourItineraryProps) {
                                         {/* Description */}
                                         <div className="relative">
                                             <div className="absolute -left-[25px] md:-left-[33px] top-0 w-4 h-4 bg-gray-200 rounded-full border-4 border-white"></div>
-                                            <p className="text-gray-600 leading-relaxed mb-6">
-                                                {day.description}
-                                            </p>
+                                            <p 
+                                                className="text-gray-600 leading-relaxed mb-6"
+                                                dangerouslySetInnerHTML={{ __html: day.description }}
+                                            />
                                         </div>
 
                                         {day.items && day.items.length > 0 ? (
@@ -257,7 +258,12 @@ export default function TourItinerary({ itinerary }: TourItineraryProps) {
                                                                 )}
                                                                 <div className="flex-1">
                                                                     {item.title && <h5 className="font-bold text-lg text-deepBlue mb-1">{item.title}</h5>}
-                                                                    {item.description && <p className="text-sm text-gray-600 leading-relaxed mb-2">{item.description}</p>}
+                                                                    {item.description && (
+                                                                        <p 
+                                                                            className="text-sm text-gray-600 leading-relaxed mb-2"
+                                                                            dangerouslySetInnerHTML={{ __html: item.description }}
+                                                                        />
+                                                                    )}
                                                                     {item.meta && (
                                                                         <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
                                                                             <Info className="w-3 h-3" />

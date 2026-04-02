@@ -65,27 +65,8 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
     };
 
     const isDateAvailable = (date: Date) => {
-        // Basic check: prevent past dates
-        if (isBefore(date, startOfDay(new Date()))) return false;
-
-        if (!departureCity) return true;
-
-        if (departureCity.availabilityType === 'specific_dates') {
-            // Check if date is in availableDates array
-            return departureCity.availableDates?.some((d: any) => isSameDay(new Date(d), date));
-        } else if (departureCity.availabilityType === 'monthly_dates') {
-            // Check if day-of-month matches any of the configured monthly day numbers
-            const dom = date.getDate();
-            return departureCity.monthlyDays?.includes(dom) ?? false;
-        } else if (departureCity.availabilityType === 'weekly') {
-            // Check if day of week is allowed
-            const dayOfWeek = getDay(date); // 0 = Sunday
-            return departureCity.weeklyDays?.includes(dayOfWeek);
-        } else if (departureCity.availabilityType === 'daily') {
-            return true;
-        }
-
-        return true; // Default
+        // Only prevent past dates, as requested to make all dates choosable
+        return !isBefore(date, startOfDay(new Date()));
     };
 
 
@@ -126,10 +107,6 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                         <div className="flex items-center gap-2">
                             <span className="w-3 h-3 rounded-full bg-deepBlue"></span>
                             <span>Available</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="w-3 h-3 rounded-full bg-saffron"></span>
-                            <span>On Request</span>
                         </div>
                     </div>
                 </div>

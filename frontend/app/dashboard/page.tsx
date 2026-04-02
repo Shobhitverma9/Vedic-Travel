@@ -11,6 +11,7 @@ import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import Sidebar from '@/components/dashboard/Sidebar';
 import ProfileSection from '@/components/dashboard/ProfileSection';
 import TravellersSection from '@/components/dashboard/TravellersSection';
+import OverviewSection from '@/components/dashboard/OverviewSection';
 
 interface Booking {
     _id: string;
@@ -42,7 +43,7 @@ export default function DashboardPage() {
     const [user, setUser] = useState<any>(null);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-    const [activeTab, setActiveTab] = useState('profile');
+    const [activeTab, setActiveTab] = useState('overview');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -116,6 +117,15 @@ export default function DashboardPage() {
             {/* Main Content Area */}
             <div className="flex-1">
                 <div className="min-h-[500px]">
+                    {activeTab === 'overview' && (
+                        <OverviewSection 
+                            user={user} 
+                            bookings={bookings} 
+                            wishlist={wishlist} 
+                            setActiveTab={setActiveTab} 
+                        />
+                    )}
+
                     {activeTab === 'profile' && (
                         <ProfileSection user={user} onUpdate={handleUserUpdate} />
                     )}

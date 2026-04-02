@@ -130,6 +130,36 @@ export class CreateTourDto {
     termsAndConditions?: string;
 
     @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    paymentTerms?: string;
+
+    @ApiProperty({ required: false })
+    @IsBoolean()
+    @IsOptional()
+    hasEasyCancellation?: boolean;
+
+    @ApiProperty({ required: false })
+    @IsBoolean()
+    @IsOptional()
+    hasEasyVisa?: boolean;
+
+    @ApiProperty({ required: false })
+    @IsBoolean()
+    @IsOptional()
+    hasHighSeason?: boolean;
+
+    @ApiProperty({ required: false })
+    @IsBoolean()
+    @IsOptional()
+    hasTravelValidity?: boolean;
+
+    @ApiProperty({ required: false })
+    @IsArray()
+    @IsOptional()
+    customBlocks?: any[];
+
+    @ApiProperty({ required: false })
     @IsArray()
     @IsOptional()
     hotels?: any[];

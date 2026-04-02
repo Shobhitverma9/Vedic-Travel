@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { User, Calendar, Heart, LogOut, Users, MapPin } from 'lucide-react';
+import { User, Calendar, Heart, LogOut, Users, MapPin, LayoutDashboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 interface SidebarProps {
@@ -13,6 +13,7 @@ interface SidebarProps {
 
 export default function Sidebar({ activeTab, setActiveTab, user, handleLogout }: SidebarProps) {
     const menuItems = [
+        { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'profile', label: 'Profile', icon: User },
         { id: 'bookings', label: 'My Bookings', icon: Calendar },
         { id: 'travellers', label: 'Travellers', icon: Users },

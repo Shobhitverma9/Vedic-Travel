@@ -28,6 +28,7 @@ export interface Tour {
     cancellationPolicy?: string;
     useDefaultCancellationPolicy?: boolean;
     termsAndConditions?: string;
+    paymentTerms?: string;
     isActive: boolean;
     isFavorite?: boolean;
     favoriteSize?: string;

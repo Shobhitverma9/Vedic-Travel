@@ -263,15 +263,19 @@ export default function TravellersSection({ user, onUpdate }: TravellersSectionP
                             </div>
                         ))
                     ) : (
-                        <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
-                            <User className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                            <h3 className="text-lg font-medium text-gray-900">No travellers added</h3>
-                            <p className="text-gray-500 mb-6">Add family and friends to speed up your booking process.</p>
+                        <div className="col-span-full py-16 px-4 text-center border border-dashed border-gray-200 rounded-[2rem] bg-gradient-to-b from-gray-50/50 to-white">
+                            <div className="w-20 h-20 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mx-auto mb-6 transform -rotate-6">
+                                <User className="w-10 h-10 text-orange-500" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">No travellers added yet</h3>
+                            <p className="text-gray-500 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
+                                Save your family and friends' details once to make your future bookings faster and more convenient.
+                            </p>
                             <button
                                 onClick={() => setIsAdding(true)}
-                                className="inline-flex items-center px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 transition-colors"
+                                className="inline-flex items-center px-8 py-3 rounded-xl shadow-lg shadow-orange-100 text-sm font-bold text-white bg-orange-600 hover:bg-orange-700 hover:scale-105 active:scale-95 transition-all"
                             >
-                                <Plus className="w-4 h-4 mr-2" />
+                                <Plus className="w-5 h-5 mr-2" />
                                 Add Your First Traveller
                             </button>
                         </div>

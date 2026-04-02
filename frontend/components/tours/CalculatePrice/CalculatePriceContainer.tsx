@@ -25,6 +25,7 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
     const [mobile, setMobile] = useState('');
     const [email, setEmail] = useState('');
     const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [requestGroupDiscount, setRequestGroupDiscount] = useState(false);
 
     // Pricing
     const [pricePerPerson, setPricePerPerson] = useState(tour.price);
@@ -41,6 +42,13 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
             { city: 'Joining Direct', surcharge: 0, availabilityType: 'daily' };
         setSelectedCity(defaultCity);
     }, [tour]);
+
+    // Reset group discount if travelers <= 6
+    useEffect(() => {
+        if (totalTravelers <= 6) {
+            setRequestGroupDiscount(false);
+        }
+    }, [totalTravelers]);
 
     const handleCalculatePrice = () => {
         if (!selectedCity || !travelDate || !mobile || !email || !acceptedTerms) {
@@ -139,6 +147,27 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                         </div>
 
                         <div className="pt-2">
+                            {totalTravelers > 6 && (
+                                <div className="mb-4 p-3 bg-saffron/5 rounded-lg border border-saffron/20">
+                                    <label className="flex items-start gap-2 cursor-pointer group">
+                                        <input
+                                            type="checkbox"
+                                            className="mt-1 w-4 h-4 text-deepBlue border-gray-300 rounded focus:ring-deepBlue"
+                                            checked={requestGroupDiscount}
+                                            onChange={(e) => setRequestGroupDiscount(e.target.checked)}
+                                        />
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-deepBlue group-hover:text-saffron transition-colors">
+                                                Request for Group Discount
+                                            </span>
+                                            <span className="text-[11px] text-gray-500 leading-tight">
+                                                Applicable for more than 6 persons. Our team will contact you with special pricing.
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
+                            )}
+
                             <label className="flex items-start gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -258,7 +287,7 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                         {/* Continue Button */}
                         <div className="flex items-center justify-end mt-8 pt-6 border-t border-dashed border-gray-200">
                             <Link
-                                href={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}`}
+                                href={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}`}
                                 className="bg-deepBlue text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-blue-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block"
                             >
                                 Continue

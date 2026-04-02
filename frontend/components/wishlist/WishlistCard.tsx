@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Heart, MapPin, Calendar, ShoppingCart } from 'lucide-react';
 import { WishlistItem } from '@/services/wishlist.service';
 import { cartService } from '@/services/cart.service';
@@ -46,7 +47,7 @@ export default function WishlistCard({ tour, onRemove }: WishlistCardProps) {
     return (
         <>
             <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group">
-                <div className="relative h-48 overflow-hidden">
+                <Link href={`/package/${tour.slug}`} className="relative h-48 overflow-hidden block">
                     <Image
                         src={tour.images?.[0] || '/placeholder-tour.jpg'}
                         alt={tour.title}
@@ -54,16 +55,24 @@ export default function WishlistCard({ tour, onRemove }: WishlistCardProps) {
                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <button
-                        onClick={() => onRemove(tour._id)}
-                        className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-red-50 transition-colors"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onRemove(tour._id);
+                        }}
+                        className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-red-50 transition-colors z-10"
                         aria-label="Remove from wishlist"
                     >
                         <Heart size={20} className="fill-red-500 text-red-500" />
                     </button>
-                </div>
+                </Link>
 
                 <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">{tour.title}</h3>
+                    <Link href={`/package/${tour.slug}`}>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 hover:text-saffron transition-colors">
+                            {tour.title}
+                        </h3>
+                    </Link>
 
                     <div className="space-y-2 mb-4 text-sm text-gray-600">
                         <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { toursService } from '@/services/tours.service';
 import { notFound } from 'next/navigation';
 import TourPageHero from '@/components/tours/TourPageHero';
@@ -9,8 +9,6 @@ import TourPricingCard from '@/components/tours/TourPricingCard';
 import TourItinerary from '@/components/tours/TourItinerary';
 import { Luggage, BedDouble, Utensils, Binoculars, Plane, FileCheck, Car, CheckCircle, Hotel, Camera } from 'lucide-react';
 import CalculatePriceContainer from '@/components/tours/CalculatePrice/CalculatePriceContainer';
-import TourPolicies from '@/components/tours/TourPolicies';
-import TourCard from '@/components/shared/TourCard';
 
 const getIconForInclude = (include: string) => {
     const lower = include.toLowerCase();
@@ -76,58 +74,7 @@ const getIconForInclude = (include: string) => {
 
 export default function TourDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const [tour, setTour] = useState<any>(null);
-    const [otherTours, setOtherTours] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
-    const [hasAutoTriggered, setHasAutoTriggered] = useState(false);
-    const inclusionsRef = useRef<HTMLDivElement>(null);
-
-    // Auto-open modal after 10 seconds
-    useEffect(() => {
-        if (loading || !tour || hasAutoTriggered) return;
-
-        const timer = setTimeout(() => {
-            if (!hasAutoTriggered) {
-                setIsEnquiryModalOpen(true);
-                setHasAutoTriggered(true);
-            }
-        }, 10000); // 10 seconds
-
-        return () => clearTimeout(timer);
-    }, [loading, tour, hasAutoTriggered]);
-
-    // Ensure auto-trigger is disabled if modal is opened (manually or automatically)
-    useEffect(() => {
-        if (isEnquiryModalOpen && !hasAutoTriggered) {
-            setHasAutoTriggered(true);
-        }
-    }, [isEnquiryModalOpen, hasAutoTriggered]);
-
-    // Intersection Observer for Inclusions section
-    useEffect(() => {
-        if (loading || !tour || hasAutoTriggered) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const [entry] = entries;
-                if (entry.isIntersecting && !hasAutoTriggered) {
-                    setIsEnquiryModalOpen(true);
-                    setHasAutoTriggered(true);
-                }
-            },
-            { threshold: 0.2 } // Trigger when 20% of section is visible
-        );
-
-        if (inclusionsRef.current) {
-            observer.observe(inclusionsRef.current);
-        }
-
-        return () => {
-            if (inclusionsRef.current) {
-                observer.unobserve(inclusionsRef.current);
-            }
-        };
-    }, [loading, tour, hasAutoTriggered]);
 
     useEffect(() => {
         const fetchTour = async () => {
@@ -143,11 +90,6 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                     data = await toursService.getTourBySlug(resolvedParams.slug);
                 }
                 setTour(data);
-
-                // Fetch other tours for "Others are also choosing"
-                const allTours = await toursService.getAllTours({ limit: 5 });
-                const filteredOtherTours = allTours.filter((t: any) => t._id !== data._id).slice(0, 4);
-                setOtherTours(filteredOtherTours);
             } catch (error) {
                 console.error('Error fetching tour:', error);
             } finally {
@@ -283,17 +225,6 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                     <p className="text-white/70 text-sm font-medium">Connect with our Yatra specialists for a customized experience.</p>
                                 </div>
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
-                                    <button
-                                        onClick={() => setIsEnquiryModalOpen(true)}
-                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-saffron text-white rounded-xl font-bold hover:bg-white hover:text-saffron transition-all transform hover:-translate-y-1 shadow-lg whitespace-nowrap border-2 border-transparent hover:border-saffron"
-                                    >
-                                        <div className="bg-white/20 p-1 rounded-lg">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </div>
-                                        Plan Your Own Trip
-                                    </button>
                                     <a
                                         href="tel:+918447470062"
                                         className="flex-1 flex items-center justify-center gap-3 px-6 py-3 bg-white text-deepBlue rounded-xl font-bold hover:bg-saffron hover:text-white transition-all transform hover:-translate-y-1 shadow-lg whitespace-nowrap"
@@ -340,7 +271,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                         <div>
                                             <h4 className="font-bold text-deepBlue">{hotel.name}</h4>
                                             <div className="flex text-yellow-400 text-sm mb-1">
-                                                {'★'.repeat(hotel.rating || 4)}{'☆'.repeat(5 - (hotel.rating || 4))}
+                                                {'Γÿà'.repeat(hotel.rating || 4)}{'Γÿå'.repeat(5 - (hotel.rating || 4))}
                                             </div>
                                             <p className="text-xs text-gray-600 line-clamp-2">{hotel.description}</p>
                                         </div>
@@ -362,13 +293,13 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                         <CalculatePriceContainer tour={tour} />
 
                         {/* 6. Inclusions & Exclusions */}
-                        <div ref={inclusionsRef} id="inclusions-section" className="grid md:grid-cols-2 gap-6 mb-8">
+                        <div className="grid md:grid-cols-2 gap-6 mb-8">
                             <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 relative mt-4">
                                 <h3 className="absolute -top-4 left-6 bg-white px-2 font-handwriting text-xl text-green-600 font-bold">Inclusions:</h3>
                                 <ul className="space-y-3 mt-2">
                                     {(tour.inclusions || []).map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                            <span className="text-gray-400">•</span> {item}
+                                            <span className="text-gray-400">ΓÇó</span> {item}
                                         </li>
                                     ))}
                                 </ul>
@@ -378,7 +309,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                 <ul className="space-y-3 mt-2">
                                     {(tour.exclusions || []).map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                            <span className="text-gray-400">•</span> {item}
+                                            <span className="text-gray-400">ΓÇó</span> {item}
                                         </li>
                                     ))}
                                 </ul>
@@ -392,7 +323,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                 <ul className="space-y-2 mt-2">
                                     {(tour.dos || []).map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                            <span className="text-gray-400">○</span> {item}
+                                            <span className="text-gray-400">Γùï</span> {item}
                                         </li>
                                     ))}
                                 </ul>
@@ -402,7 +333,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                 <ul className="space-y-2 mt-2">
                                     {(tour.donts || []).map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                            <span className="text-gray-400">○</span> {item}
+                                            <span className="text-gray-400">Γùï</span> {item}
                                         </li>
                                     ))}
                                 </ul>
@@ -421,84 +352,119 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                             </ul>
                         </div>
 
-                            {/* 9. Policies & Terms Section */}
-                            <div id="policies-section" className="scroll-mt-24">
-                                <TourPolicies
-                                    paymentTerms={tour.paymentTerms}
-                                    cancellationPolicy={tour.useDefaultCancellationPolicy !== false ? undefined : tour.cancellationPolicy}
-                                    termsAndConditions={tour.termsAndConditions}
-                                />
-                                
-                                {tour.useDefaultCancellationPolicy !== false && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Standard Cancellation Policy</h4>
-                                        <div className="prose prose-sm max-w-none text-gray-700 space-y-4 leading-relaxed italic">
-                                            <p>
-                                                It is our most important aim that you enjoy your holiday and that we earn your trust. However, we are not responsible for any cancellation due to any industrial disputes, Technical failure of any type of transport we use, loss of earnings, late arrivals or force majeure, or any items beyond our control. After booking, if you wish to cancel your trip, you must notify Vedic Travel in writing. Once a Vedic Travel notice is received, cancellation will take effect subject to the following:
-                                            </p>
-                                            <ul className="list-disc pl-5 space-y-3 font-medium">
-                                                <li>Between 90 – 150 days before departure: Full refund (minus USD 300 deposit).</li>
-                                                <li>Between 30-90 days before departure: 75% refund (minus USD 300 deposit).</li>
-                                                <li>Less than 30 days prior: Non-Refundable.</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                )}
+                        {/* 9. Terms & Conditions */}
+                        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 relative mb-8">
+                            <h3 className="font-bold text-lg text-deepBlue mb-6 border-b pb-2 uppercase tracking-widest text-center">Terms & Conditions</h3>
 
-                                {tour.hasEasyCancellation && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Easy Cancellation</h4>
-                                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                            <li>Cancellation before 45 days from travel date - <span className="font-bold text-green-600">NO Cancellation Charges.</span></li>
-                                            <li>Cancelled between 45-30 days - <span className="font-bold text-orange-500">25% Cancellation charges</span></li>
-                                            <li>Cancelled between 30-15 days - <span className="font-bold text-orange-600">50% Cancellation charges</span></li>
-                                            <li>Cancelled within 15 days - <span className="font-bold text-red-600">Non-Refundable</span></li>
-                                        </ul>
-                                    </div>
-                                )}
+                            <div className="space-y-6">
+                                {/* --- DEFAULT STATIC POLICIES --- */}
+                                {/* Easy Cancellation */}
+                                <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                                    <h4 className="font-bold text-deepBlue mb-2">Easy Cancellation</h4>
+                                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                        <li>Cancellation before 45 days from travel date - <span className="font-bold text-green-600">NO Cancellation Charges.</span></li>
+                                        <li>Cancelled between 45-30 days - <span className="font-bold text-orange-500">25% Cancellation charges</span></li>
+                                        <li>Cancelled between 30-15 days - <span className="font-bold text-orange-600">50% Cancellation charges</span></li>
+                                        <li>Cancelled within 15 days - <span className="font-bold text-red-600">Non-Refundable</span></li>
+                                    </ul>
+                                </div>
 
-                                {tour.hasEasyVisa && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Visa Easy</h4>
-                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                            Just mention the reference code & drop the passport to the nearest VFS Center. You do not require to do the biometrics again or submit any financial documents.
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {/* Guaranteed Dates */}
+                                    <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                                        <h4 className="font-bold text-deepBlue mb-2">Guaranteed Dates</h4>
+                                        <p className="text-sm text-gray-700">
+                                            Your selected travel dates are guaranteed. In the unlikely event of seats sold out, we guarantee +/- 1/2 days from your preferred dates.
                                         </p>
                                     </div>
-                                )}
 
-                                {tour.hasHighSeason && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">High Season</h4>
-                                        <p className="text-sm text-gray-700 leading-relaxed">
+                                    {/* High Season */}
+                                    <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                                        <h4 className="font-bold text-deepBlue mb-2">High Season</h4>
+                                        <p className="text-sm text-gray-700">
                                             Prices can fluctuate during peak season dates.
                                         </p>
                                     </div>
-                                )}
+                                </div>
 
-                                {tour.hasTravelValidity && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Travel Validity</h4>
-                                        <p className="text-sm text-gray-700 leading-relaxed">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {/* Travel Validity */}
+                                    <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                                        <h4 className="font-bold text-deepBlue mb-2">Travel Validity</h4>
+                                        <p className="text-sm text-gray-700">
                                             The deal is valid for travel till Wednesday, 31 December 2025.
                                         </p>
                                     </div>
-                                )}
 
-                                {tour.customBlocks && tour.customBlocks.map((block: any, idx: number) => (
-                                    <div key={idx} className="bg-gradient-to-r from-blue-50 to-white rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">{block.title}</h4>
-                                        {block.isLink ? (
-                                            <a href={block.content} target="_blank" rel="noopener noreferrer" className="inline-block bg-deepBlue text-white px-6 py-3 rounded-xl font-bold hover:bg-saffron transition-colors shadow-lg transform hover:-translate-y-0.5">
-                                                Go to {block.title}
-                                            </a>
-                                        ) : (
-                                            <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                                {block.content}
-                                            </p>
-                                        )}
+                                    {/* Visa Easy */}
+                                    <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                                        <h4 className="font-bold text-deepBlue mb-2">Visa Easy</h4>
+                                        <p className="text-sm text-gray-700">
+                                            Visa can be availed on arrival.
+                                        </p>
                                     </div>
-                                ))}
+                                </div>
+
+                                {/* Booking Policy */}
+                                <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                                    <h4 className="font-bold text-deepBlue mb-2">Booking Policy</h4>
+                                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                        <li>If booking is 30 days in advance: 25% package cost as advance</li>
+                                        <li>If booking is 30 days to 15 days in advance: 50% package cost as advance</li>
+                                        <li>Balance 50% before 15 days of travel date.</li>
+                                        <li>If travel within 15 days, 100% payment required for booking confirmation.</li>
+                                    </ul>
+                                </div>
+
+                                {/* Remarks */}
+                                <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                                    <h4 className="font-bold text-deepBlue mb-2">Remarks</h4>
+                                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                        <li>Limited Period Offer</li>
+                                        <li>Early check-in and late checkout are subject to availability and charges.</li>
+                                        <li>Need to Book at least 15 Days in Advance</li>
+                                    </ul>
+                                </div>
+
+                                {/* --- DYNAMIC CANCELLATION POLICY --- */}
+                                {tour.useDefaultCancellationPolicy !== false ? (
+                                    <div className="bg-blue-50/50 rounded-lg p-6 border border-blue-100 mt-6 shadow-sm">
+                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg">Standard Cancellation Policy</h4>
+                                        <div className="prose prose-sm max-w-none text-gray-700 space-y-4 leading-relaxed">
+                                            <p>
+                                                It is our most important aim that you enjoy your holiday and that we earn your trust. However, we are not responsible for any cancellation due to any industrial disputes, Technical failure of any type of transport we use, loss of earnings, late arrivals or force majeure, or any items beyond our control. After booking, if you wish to cancel your trip, you must notify Vedic Travel in writing. Once a Vedic Travel notice is received, cancellation will take effect subject to the following:
+                                            </p>
+
+                                            <ul className="list-disc pl-5 space-y-3">
+                                                <li>
+                                                    If cancellation takes place between 90 ΓÇô 150 days before your departure date, your full payment will be refunded, except the non-refundable deposit of USD 300 | INR 15000 for Kailash Mansarovar Yatra & USD 300 | INR 10000 or 20% of the package cost, whichever is higher for other destinations.
+                                                </li>
+                                                <li>
+                                                    If cancellation takes place between 30-90 days before departure 75% of your payment will be refunded, except the non-refundable deposit.
+                                                </li>
+                                                <li>
+                                                    If cancellation takes place less than 30 days prior to departure due to client's personal problems, all previously paid amount(s) will be forfeited.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    tour.cancellationPolicy && (
+                                        <div className="bg-red-50/50 rounded-lg p-6 border border-red-200 mt-6 shadow-sm">
+                                            <h4 className="font-bold text-red-800 mb-4 border-b border-red-200 pb-2 text-lg">Trip-Specific Cancellation Policy</h4>
+                                            <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{tour.cancellationPolicy}</p>
+                                        </div>
+                                    )
+                                )}
+                                
+                                {tour.termsAndConditions && (
+                                    <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100 mt-6">
+                                        <h4 className="font-bold text-deepBlue mb-2 border-b border-blue-200 pb-2">Additional Terms & Conditions</h4>
+                                        <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{tour.termsAndConditions}</p>
+                                    </div>
+                                )}
                             </div>
+                        </div>
 
                         {/* 10. Footer / Need Help - Updated to matches redesigned style */}
                         <div className="relative group overflow-hidden rounded-2xl bg-gradient-to-r from-deepBlue to-purple p-8 mb-8 shadow-2xl">
@@ -540,39 +506,11 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
 
                     {/* RIGHT COLUMN: Sidebar */}
                     <div className="lg:col-span-1">
-                        <TourPricingCard 
-                            tour={tour} 
-                            originalPrice={originalPrice} 
-                            isEnquiryModalOpen={isEnquiryModalOpen}
-                            setIsEnquiryModalOpen={setIsEnquiryModalOpen}
-                        />
+                        <TourPricingCard tour={tour} originalPrice={originalPrice} />
                     </div>
 
                 </div>
             </div>
-
-            {/* 11. "Others are also choosing" Section */}
-            {otherTours.length > 0 && (
-                <div className="bg-gray-50/50 py-16 border-t border-gray-100">
-                    <div className="container mx-auto px-4">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-                            <div>
-                                <h2 className="text-3xl md:text-4xl font-display font-bold text-deepBlue mb-2">Others are also choosing..</h2>
-                                <p className="text-gray-600 font-medium italic">Handpicked experiences from our most popular spiritual journeys.</p>
-                            </div>
-                            <div className="h-0.5 flex-grow bg-gradient-to-r from-gray-200 to-transparent hidden md:block ml-8 mb-4"></div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {otherTours.map((otherTour: any) => (
-                                <div key={otherTour._id} className="h-full">
-                                    <TourCard tour={otherTour} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { yatrasService } from '@/services/yatras.service';
 import { toursService } from '@/services/tours.service';
 import { filesService } from '@/services/files.service';
+import RichTextToolbar from '@/components/admin/RichTextToolbar';
 
 export default function YatraEditorPage({ params }: { params: Promise<{ slug: string }> }) {
     const router = useRouter();
@@ -502,6 +503,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                     </button>
                 </div>
             </form>
+            <RichTextToolbar />
         </div>
     );
 }

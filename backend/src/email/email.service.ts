@@ -10,7 +10,8 @@ export class EmailService {
 
     constructor(private configService: ConfigService) {
         const apiKey = this.configService.get<string>('POSTMARK_API_KEY');
-        this.fromEmail = this.configService.get<string>('POSTMARK_FROM_EMAIL') || 'noreply@vedictravel.com';
+        const fromEmailAddress = this.configService.get<string>('POSTMARK_FROM_EMAIL') || 'noreply@vedictravel.com';
+        this.fromEmail = `Vedic Travel <${fromEmailAddress}>`;
 
         if (!apiKey) {
             this.logger.warn('POSTMARK_API_KEY not configured. Email sending will be logged to console only.');
@@ -507,150 +508,68 @@ export class EmailService {
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #FFF8F3;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #FF5722 0%, #7B2CBF 100%);
-            padding: 50px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            color: #ffffff;
-            margin: 0 0 10px 0;
-            font-size: 32px;
-            font-weight: bold;
-        }
-        .header p {
-            color: #FFE8E0;
-            margin: 0;
-            font-size: 16px;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .greeting {
-            font-size: 20px;
-            color: #1A2332;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        .message {
-            color: #666;
-            font-size: 16px;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #FF5722 0%, #E64A19 100%);
-            color: #ffffff;
-            padding: 15px 40px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        .features {
-            background-color: #FFF8F3;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
-        }
-        .feature {
-            margin: 15px 0;
-            display: flex;
-            align-items: start;
-        }
-        .feature-icon {
-            font-size: 24px;
-            margin-right: 15px;
-        }
-        .feature-text {
-            color: #1A2332;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .footer {
-            background-color: #1A2332;
-            color: #ffffff;
-            padding: 30px 20px;
-            text-align: center;
-            font-size: 12px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🕉️ Welcome to VedicTravel!</h1>
-            <p>Your spiritual journey begins here</p>
-        </div>
+        ${this.getEmailHeader('Welcome to VedicTravel!', 'Your Spiritual Journey Begins Here')}
         <div class="content">
-            <div class="greeting">
-                Namaste ${name},
-            </div>
+            <div class="greeting">Namaste ${name},</div>
             <p class="message">
-                We're thrilled to have you join the VedicTravel community! Your account has been successfully created, and you're now ready to explore sacred destinations and embark on meaningful spiritual journeys.
+                We're thrilled to have you join the VedicTravel family! Your account has been successfully created. You're now part of a community dedicated to exploring the profound spiritual heritage of India through authentic, guided pilgrimage experiences.
             </p>
             
-            <div class="features">
-                <div class="feature">
-                    <div class="feature-icon">🛕</div>
-                    <div class="feature-text">
-                        <strong>Sacred Yatras:</strong> Discover authentic pilgrimage experiences to India's most revered temples and spiritual sites.
+            <div class="why-us">
+                <h3 style="color: #1A2332; margin-bottom: 15px;">Why Pilgrims Choose VedicTravel?</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🛕</div>
+                        <div class="feature-text"><strong>Sacred Authenticity</strong><br>Every yatra is designed by spiritual experts to ensure deep cultural and religious significance.</div>
                     </div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🌄</div>
-                    <div class="feature-text">
-                        <strong>Curated Packages:</strong> Explore our handpicked tour packages designed for spiritual seekers and cultural enthusiasts.
+                    <div class="feature-item">
+                        <div class="feature-icon">🛡️</div>
+                        <div class="feature-text"><strong>Safety & Comfort</strong><br>We prioritize your wellbeing with verified accommodations and experienced local support.</div>
                     </div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🧘</div>
-                    <div class="feature-text">
-                        <strong>Expert Guidance:</strong> Travel with experienced guides who understand the spiritual significance of each destination.
-                    </div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">💫</div>
-                    <div class="feature-text">
-                        <strong>Personalized Support:</strong> Our team is here to help you plan your perfect spiritual journey.
+                    <div class="feature-item">
+                        <div class="feature-icon">🧘</div>
+                        <div class="feature-text"><strong>Expert Guidance</strong><br>Our guides don't just show the way; they share the stories and wisdom behind every stone.</div>
                     </div>
                 </div>
             </div>
+
+            <div class="trending">
+                <h3 style="color: #FF5722; margin-bottom: 20px; text-align: center;">Trending Sacred Journeys</h3>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td width="48%" style="background: #FDF2F2; border-radius: 12px; padding: 15px; border: 1px solid #FFEBEB;">
+                            <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">Jagannatha Puri Yatra</div>
+                            <div style="font-size: 12px; color: #666; margin-bottom: 10px;">Experience the eternal grace of Lord Jagannath on the holy shores of Odisha.</div>
+                            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/tours" style="color: #FF5722; font-size: 12px; font-weight: bold; text-decoration: none;">View Package →</a>
+                        </td>
+                        <td width="4%">&nbsp;</td>
+                        <td width="48%" style="background: #F2FDF2; border-radius: 12px; padding: 15px; border: 1px solid #EBFFEB;">
+                            <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">Kashi Vishwanath</div>
+                            <div style="font-size: 12px; color: #666; margin-bottom: 10px;">Discover the light of liberation in the world's oldest living city, Varanasi.</div>
+                            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/tours" style="color: #2E7D32; font-size: 12px; font-weight: bold; text-decoration: none;">View Package →</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             
-            <center>
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}" class="cta-button">
-                    Start Your Journey
-                </a>
+            <center style="margin-top: 40px;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}" class="cta-button">Start Exploring Now</a>
             </center>
             
-            <p class="message">
-                If you have any questions or need assistance, our support team is always here to help.
+            <p class="message" style="margin-top: 30px; text-align: center; font-style: italic;">
+                "Travel is more than the seeing of sights; it is a change that goes on, deep and permanent, in the ideas of living."
             </p>
         </div>
-        <div class="footer">
-            <p><strong>VedicTravel</strong></p>
-            <p>Connecting souls to sacred destinations</p>
-        </div>
+        ${this.getEmailFooter()}
     </div>
 </body>
-</html>
-        `;
+</html>`;
     }
 
     private getBookingConfirmationTemplate(name: string, details: {
@@ -664,62 +583,54 @@ export class EmailService {
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #FFF8F3; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #FF5722 0%, #7B2CBF 100%); padding: 40px 20px; text-align: center; }
-        .header h1 { color: #fff; margin: 0; font-size: 28px; }
-        .header p { color: #FFE8E0; margin: 8px 0 0; font-size: 16px; }
-        .content { padding: 40px 30px; }
-        .greeting { font-size: 20px; color: #1A2332; margin-bottom: 10px; font-weight: bold; }
-        .subtitle { color: #666; margin-bottom: 30px; }
-        .ref-box { background: linear-gradient(135deg,#FFF8F3 0%,#FFE8E0 100%); border: 2px solid #FF5722; border-radius: 12px; padding: 20px 30px; text-align: center; margin-bottom: 30px; }
-        .ref-label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .ref-value { font-size: 24px; font-weight: bold; color: #FF5722; letter-spacing: 3px; font-family: monospace; }
-        .details-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .details-table td { padding: 14px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #444; }
-        .details-table td:first-child { color: #999; width: 40%; }
-        .details-table td:last-child { font-weight: 600; color: #1A2332; }
-        .total-row td { border-bottom: none !important; font-size: 18px; padding-top: 20px; }
-        .total-row td:last-child { color: #FF5722; font-size: 20px; }
-        .cta { display: inline-block; background: linear-gradient(135deg,#FF5722 0%,#E64A19 100%); color: #fff; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px 0 20px; }
-        .note { background: #f8f9fa; border-left: 4px solid #7B2CBF; padding: 15px 20px; border-radius: 4px; color: #555; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
-        .footer { background-color: #1A2332; color: #fff; padding: 24px 20px; text-align: center; font-size: 12px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🕉️ Booking Confirmed!</h1>
-            <p>Your sacred journey is officially booked</p>
-        </div>
+        ${this.getEmailHeader('Booking Confirmed!', 'Your Sacred Journey is Officially Booked')}
         <div class="content">
-            <div class="greeting">Namaste, ${name}! 🙏</div>
-            <p class="subtitle">We're thrilled to confirm your booking with VedicTravel. Here are your details:</p>
-            <div class="ref-box">
-                <div class="ref-label">Booking Reference</div>
-                <div class="ref-value">${details.bookingReference}</div>
-            </div>
+            <div class="greeting">Namaste ${name},</div>
+            <p class="message">
+                We are delighted to confirm your upcoming spiritual journey with VedicTravel. Your spot has been secured, and our team is already preparing to make this a truly transformative experience for you.
+            </p>
+
             <table class="details-table">
-                <tr><td>Tour / Yatra</td><td>${details.tourName}</td></tr>
-                <tr><td>Travel Date</td><td>${details.travelDate}</td></tr>
-                <tr><td>Travellers</td><td>${details.numberOfTravelers} Person(s)</td></tr>
-                <tr class="total-row"><td>Total Paid</td><td>₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
+                <tr><td class="label">Booking Ref</td><td class="value">${details.bookingReference}</td></tr>
+                <tr><td class="label">Tour / Yatra</td><td class="value">${details.tourName}</td></tr>
+                <tr><td class="label">Travel Date</td><td class="value">${details.travelDate}</td></tr>
+                <tr><td class="label">Travellers</td><td class="value">${details.numberOfTravelers} Person(s)</td></tr>
+                <tr><td class="label">Total Paid</td><td class="value" style="color: #2E7D32;">₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
             </table>
-            <div class="note">
-                <strong>What's next?</strong><br/>
-                Our team will contact you within 24 hours with your travel itinerary and further details. Please keep your booking reference handy for any inquiries.
+
+            <div style="background: #F8FAFC; border-radius: 12px; padding: 25px; margin: 30px 0; border: 1px solid #EDF2F7;">
+                <h4 style="margin-top:0; color: #1A2332;">🙏 Spiritual Preparation</h4>
+                <ul style="padding-left: 20px; font-size: 14px; color: #4A5568; line-height: 1.6;">
+                    <li><strong>Dress Code:</strong> For temple visits, please carry modest traditional attire.</li>
+                    <li><strong>Documents:</strong> Please carry a valid Govt. ID proof in original.</li>
+                    <li><strong>Essentials:</strong> Consider carrying light woolens for evening aartis or higher altitudes.</li>
+                    <li><strong>Receipt:</strong> We have attached your official payment receipt/invoice to this email.</li>
+                </ul>
             </div>
-            <center><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta">View My Booking</a></center>
+
+            <div class="message" style="background: #FFF8F3; padding: 20px; border-radius: 12px; border-left: 4px solid #FF5722; font-size: 14px;">
+                <strong>What's Next?</strong><br>
+                Our lead travel expert will contact you via WhatsApp/Phone within 24 hours to share the final detailed itinerary and introduce your spiritual guide.
+            </div>
+
+            <center style="margin: 35px 0;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button">View Full Booking Details</a>
+            </center>
+
+            <p style="text-align: center; color: #718096; font-size: 13px;">
+                Have questions? Reply to this email or call our 24/7 dedicated helpline at <strong>+91 98765 43210</strong>.
+            </p>
         </div>
-        <div class="footer">
-            <p><strong>VedicTravel</strong> — Connecting souls to sacred destinations</p>
-            <p style="margin-top:10px">© ${new Date().getFullYear()} VedicTravel. All rights reserved.</p>
-        </div>
+        ${this.getEmailFooter()}
     </div>
 </body>
-</html>
-        `;
+</html>`;
     }
 
     // ─── Booking Cancellation Template ──────────────────────────────────────────
@@ -866,120 +777,49 @@ export class EmailService {
         const totalTravelers = (details.adults || 0) + (details.children || 0) + (details.infants || 0);
         return `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inquiry Received</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
-  <tr><td align="center" style="padding:40px 20px;">
-    <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-      <!-- Header -->
-      <tr>
-        <td style="background:linear-gradient(135deg,#FF5722 0%,#FF8C00 50%,#7B2CBF 100%);padding:48px 40px 40px;text-align:center;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr><td align="center" style="padding-bottom:16px;">
-              <div style="width:72px;height:72px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-block;line-height:72px;font-size:36px;">🙏</div>
-            </td></tr>
-            <tr><td align="center">
-              <h1 style="color:#ffffff;margin:0;font-size:26px;font-weight:700;letter-spacing:-0.5px;">We Got Your Inquiry!</h1>
-            </td></tr>
-            <tr><td align="center" style="padding-top:10px;">
-              <p style="color:rgba(255,255,255,0.85);margin:0;font-size:15px;">Our travel experts are on it 🚀</p>
-            </td></tr>
-          </table>
-        </td>
-      </tr>
-      <!-- Content -->
-      <tr>
-        <td style="padding:40px;">
-          <p style="font-size:17px;color:#1A2332;margin:0 0 8px;font-weight:600;">Namaste ${name},</p>
-          <p style="font-size:15px;color:#666;line-height:1.7;margin:0 0 32px;">Thank you for reaching out to VedicTravel! We have received your inquiry and our spiritual journey experts will connect with you within <strong style="color:#FF5722;">24 hours</strong> to craft your perfect pilgrimage experience.</p>
-          <!-- Summary Card -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(135deg,#FFF8F3 0%,#FFF3E8 100%);border-radius:12px;border:1px solid #FFE0CC;margin-bottom:32px;">
-            <tr><td style="padding:20px 24px;border-bottom:1px solid #FFE0CC;">
-              <span style="font-size:13px;font-weight:700;color:#FF5722;text-transform:uppercase;letter-spacing:1px;">Your Inquiry Summary</span>
-            </td></tr>
-            <tr><td style="padding:20px 24px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="padding:8px 0;border-bottom:1px solid rgba(255,93,0,0.1);"><span style="font-size:13px;color:#999;">🛕 Interested In</span></td>
-                  <td align="right" style="padding:8px 0;border-bottom:1px solid rgba(255,93,0,0.1);"><span style="font-size:14px;font-weight:600;color:#1A2332;">${tripName}</span></td>
-                </tr>
-                <tr>
-                  <td style="padding:8px 0;border-bottom:1px solid rgba(255,93,0,0.1);"><span style="font-size:13px;color:#999;">👥 Travellers</span></td>
-                  <td align="right" style="padding:8px 0;border-bottom:1px solid rgba(255,93,0,0.1);"><span style="font-size:14px;font-weight:600;color:#1A2332;">${totalTravelers} (Adults: ${details.adults}, Children: ${details.children}, Infants: ${details.infants})</span></td>
-                </tr>
-                ${details.message ? `<tr>
-                  <td colspan="2" style="padding:10px 0 0;"><span style="font-size:13px;color:#999;">✉️ Your Message</span><br><span style="font-size:14px;color:#444;line-height:1.6;display:block;margin-top:4px;font-style:italic;">"${details.message}"</span></td>
-                </tr>` : ''}
-              </table>
-            </td></tr>
-          </table>
-          <!-- Steps -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
-            <tr><td style="padding-bottom:16px;"><span style="font-size:14px;font-weight:700;color:#1A2332;">What happens next?</span></td></tr>
-            <tr><td>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td valign="top" width="36"><div style="width:28px;height:28px;background:linear-gradient(135deg,#FF5722,#FF8C00);border-radius:50%;text-align:center;line-height:28px;font-size:12px;font-weight:700;color:#fff;">1</div></td>
-                  <td style="padding-left:12px;padding-bottom:16px;"><p style="margin:0;font-size:14px;color:#333;line-height:1.6;"><strong>Expert Review</strong> — Our travel specialists review your requirements and suggest the best itinerary.</p></td>
-                </tr>
-                <tr>
-                  <td valign="top" width="36"><div style="width:28px;height:28px;background:linear-gradient(135deg,#FF8C00,#7B2CBF);border-radius:50%;text-align:center;line-height:28px;font-size:12px;font-weight:700;color:#fff;">2</div></td>
-                  <td style="padding-left:12px;padding-bottom:16px;"><p style="margin:0;font-size:14px;color:#333;line-height:1.6;"><strong>Personal Call</strong> — We'll reach out to discuss your spiritual journey preferences, dates, and budget.</p></td>
-                </tr>
-                <tr>
-                  <td valign="top" width="36"><div style="width:28px;height:28px;background:linear-gradient(135deg,#7B2CBF,#FF5722);border-radius:50%;text-align:center;line-height:28px;font-size:12px;font-weight:700;color:#fff;">3</div></td>
-                  <td style="padding-left:12px;"><p style="margin:0;font-size:14px;color:#333;line-height:1.6;"><strong>Custom Package</strong> — Receive a personalised itinerary and seamlessly book your sacred journey.</p></td>
-                </tr>
-              </table>
-            </td></tr>
-          </table>
-          <!-- CTA -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/tours" style="display:inline-block;background:linear-gradient(135deg,#FF5722 0%,#E64A19 100%);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:0.5px;">Browse Our Tours</a>
-          </td></tr></table>
-        </td>
-      </tr>
-      <!-- Assurance Strip -->
-      <tr>
-        <td style="background:#F8F9FA;border-top:1px solid #EBEBEB;padding:24px 40px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td align="center" style="padding:0 12px;border-right:1px solid #DDD;">
-                <div style="font-size:22px;margin-bottom:4px;">🛡️</div>
-                <div style="font-size:11px;color:#666;font-weight:600;">100% Safe Travel</div>
-              </td>
-              <td align="center" style="padding:0 12px;border-right:1px solid #DDD;">
-                <div style="font-size:22px;margin-bottom:4px;">📞</div>
-                <div style="font-size:11px;color:#666;font-weight:600;">24/7 Support</div>
-              </td>
-              <td align="center" style="padding:0 12px;border-right:1px solid #DDD;">
-                <div style="font-size:22px;margin-bottom:4px;">✈️</div>
-                <div style="font-size:11px;color:#666;font-weight:600;">Expert Guidance</div>
-              </td>
-              <td align="center" style="padding:0 12px;">
-                <div style="font-size:22px;margin-bottom:4px;">💎</div>
-                <div style="font-size:11px;color:#666;font-weight:600;">Premium Experience</div>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <!-- Footer -->
-      <tr>
-        <td style="background:#1A2332;padding:28px 40px;text-align:center;">
-          <p style="margin:0 0 4px;color:#ffffff;font-size:16px;font-weight:700;">🕉️ VedicTravel</p>
-          <p style="margin:0 0 12px;color:rgba(255,255,255,0.5);font-size:12px;">Connecting souls to sacred destinations</p>
-          <p style="margin:0;color:rgba(255,255,255,0.35);font-size:11px;">© ${new Date().getFullYear()} VedicTravel. All rights reserved.</p>
-        </td>
-      </tr>
-    </table>
-  </td></tr>
-</table>
+<body>
+    <div class="container">
+        ${this.getEmailHeader('Inquiry Received', 'Your Pilgrimage Planning Starts Here')}
+        <div class="content">
+            <div class="greeting">Namaste ${name},</div>
+            <p class="message">
+                Thank you for reaching out to VedicTravel! We've received your inquiry and our spiritual journey experts are already reviewing your requirements. We understand that a pilgrimage is a deeply personal journey, and we're committed to making it perfect for you.
+            </p>
+
+            <table class="details-table">
+                <tr><td class="label">Interested In</td><td class="value">${tripName}</td></tr>
+                <tr><td class="label">Travellers</td><td class="value">${totalTravelers} (A: ${details.adults}, C: ${details.children}, I: ${details.infants})</td></tr>
+                ${details.message ? `<tr><td class="label">Your Note</td><td class="value">"${details.message}"</td></tr>` : ''}
+            </table>
+
+            <div style="margin: 30px 0;">
+                <h4 style="color: #1A2332; margin-bottom: 20px;">What to Expect Next?</h4>
+                <div class="feature-item" style="background: #F0FDF4; border-color: #DCFCE7;">
+                    <div class="feature-icon">📞</div>
+                    <div class="feature-text"><strong>Review & Call:</strong> A travel specialist will review your request and call you within 24 hours to discuss your preferences and budget.</div>
+                </div>
+                <div class="feature-item" style="background: #EFF6FF; border-color: #DBEAFE;">
+                    <div class="feature-icon">📜</div>
+                    <div class="feature-text"><strong>Custom Itinerary:</strong> We'll design a personalized itinerary that aligns with your spiritual goals and comfort requirements.</div>
+                </div>
+            </div>
+
+            <center style="margin: 35px 0;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/blogs" class="cta-button">Read Our Spiritual Blog</a>
+            </center>
+
+            <p class="message" style="font-size: 14px; text-align: center;">
+                While you wait, feel free to explore our collection of sacred stories and travel tips on our blog.
+            </p>
+        </div>
+        ${this.getEmailFooter()}
+    </div>
 </body>
 </html>`;
     }
@@ -1140,105 +980,46 @@ export class EmailService {
     }): string {
         return `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Payment Failed</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
-  <tr><td align="center" style="padding:40px 20px;">
-    <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-      <!-- Header -->
-      <tr>
-        <td style="background:linear-gradient(135deg,#37474F 0%,#546E7A 100%);padding:48px 40px 40px;text-align:center;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr><td align="center" style="padding-bottom:16px;">
-              <div style="width:72px;height:72px;background:rgba(255,255,255,0.15);border-radius:50%;display:inline-block;line-height:72px;font-size:36px;">⚠️</div>
-            </td></tr>
-            <tr><td align="center">
-              <h1 style="color:#ffffff;margin:0;font-size:26px;font-weight:700;letter-spacing:-0.5px;">Payment Unsuccessful</h1>
-            </td></tr>
-            <tr><td align="center" style="padding-top:8px;">
-              <p style="color:rgba(255,255,255,0.75);margin:0;font-size:15px;">But don't worry — your booking is saved!</p>
-            </td></tr>
-          </table>
-        </td>
-      </tr>
-      <!-- Alert Banner -->
-      <tr>
-        <td style="background:#FFF3E0;padding:16px 40px;border-bottom:2px solid #FFB74D;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td valign="middle" width="24"><span style="font-size:18px;">🔔</span></td>
-              <td style="padding-left:10px;"><span style="font-size:13px;color:#E65100;font-weight:600;">Action Required: Please retry your payment to secure your booking before the hold expires.</span></td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <!-- Content -->
-      <tr>
-        <td style="padding:40px;">
-          <p style="font-size:17px;color:#1A2332;margin:0 0 8px;font-weight:600;">Namaste ${name},</p>
-          <p style="font-size:15px;color:#666;line-height:1.7;margin:0 0 32px;">We were unable to process your payment for the booking below. This can happen due to network issues, incorrect card details, or bank restrictions. Your booking is still on hold — simply retry the payment to confirm your spiritual journey.</p>
-          <!-- Booking Card -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FAFAFA;border-radius:12px;border:1px solid #EBEBEB;margin-bottom:32px;">
-            <tr><td style="background:#F0F0F0;padding:14px 20px;border-bottom:1px solid #EBEBEB;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td><span style="font-size:13px;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:1px;">Attempt Details</span></td>
-                  <td align="right"><span style="font-size:12px;color:#999;">Ref: ${details.bookingReference}</span></td>
-                </tr>
-              </table>
-            </td></tr>
-            <tr><td style="padding:20px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="padding:10px 0;border-bottom:1px solid #F0F0F0;"><span style="font-size:13px;color:#999;">Tour / Yatra</span></td>
-                  <td align="right" style="padding:10px 0;border-bottom:1px solid #F0F0F0;"><span style="font-size:14px;font-weight:600;color:#1A2332;">${details.tourName}</span></td>
-                </tr>
-                ${details.transactionId ? `<tr>
-                  <td style="padding:10px 0;border-bottom:1px solid #F0F0F0;"><span style="font-size:13px;color:#999;">Transaction ID</span></td>
-                  <td align="right" style="padding:10px 0;border-bottom:1px solid #F0F0F0;"><span style="font-size:12px;font-weight:600;color:#888;font-family:monospace;">${details.transactionId}</span></td>
-                </tr>` : ''}
-                <tr>
-                  <td style="padding:10px 0;"><span style="font-size:13px;color:#999;">Amount to Pay</span></td>
-                  <td align="right" style="padding:10px 0;"><span style="font-size:20px;font-weight:700;color:#FF5722;">₹${details.totalAmount.toLocaleString('en-IN')}</span></td>
-                </tr>
-              </table>
-            </td></tr>
-          </table>
-          <!-- Common Reasons -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F8F9FA;border-radius:12px;padding:0;margin-bottom:32px;">
-            <tr><td style="padding:20px 24px;">
-              <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#444;">Common reasons for payment failure:</p>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr><td style="padding:5px 0;"><span style="font-size:13px;color:#666;">• Insufficient account balance</span></td></tr>
-                <tr><td style="padding:5px 0;"><span style="font-size:13px;color:#666;">• Incorrect card details or OTP timeout</span></td></tr>
-                <tr><td style="padding:5px 0;"><span style="font-size:13px;color:#666;">• Bank blocked the international/online transaction</span></td></tr>
-                <tr><td style="padding:5px 0;"><span style="font-size:13px;color:#666;">• Network connectivity issue during payment</span></td></tr>
-              </table>
-            </td></tr>
-          </table>
-          <!-- CTA -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;"><tr><td align="center">
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" style="display:inline-block;background:linear-gradient(135deg,#FF5722 0%,#E64A19 100%);color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:8px;font-size:16px;font-weight:700;letter-spacing:0.5px;">🔄 Retry Payment</a>
-          </td></tr></table>
-          <p style="text-align:center;font-size:13px;color:#999;margin:0;">Need help? <a href="mailto:support@vedictravel.in" style="color:#FF5722;text-decoration:none;font-weight:600;">Contact our support team</a></p>
-        </td>
-      </tr>
-      <!-- Footer -->
-      <tr>
-        <td style="background:#1A2332;padding:28px 40px;text-align:center;">
-          <p style="margin:0 0 4px;color:#ffffff;font-size:16px;font-weight:700;">🕉️ VedicTravel</p>
-          <p style="margin:0 0 12px;color:rgba(255,255,255,0.5);font-size:12px;">Connecting souls to sacred destinations</p>
-          <p style="margin:0;color:rgba(255,255,255,0.35);font-size:11px;">© ${new Date().getFullYear()} VedicTravel. All rights reserved.</p>
-        </td>
-      </tr>
-    </table>
-  </td></tr>
-</table>
+<body>
+    <div class="container">
+        ${this.getEmailHeader('Payment Unsuccessful', 'Don\'t Worry, Your Spot is Still on Hold')}
+        <div class="content">
+            <div class="greeting">Namaste ${name},</div>
+            <p class="message">
+                We encountered an issue while processing your payment for the <strong>${details.tourName}</strong>. This can happen for several reasons (bank limits, network timeout, etc.), but your booking isn't lost yet!
+            </p>
+
+            <table class="details-table">
+                <tr><td class="label">Tour / Yatra</td><td class="value">${details.tourName}</td></tr>
+                <tr><td class="label">Amount Due</td><td class="value" style="color: #E53E3E;">₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
+                ${details.transactionId ? `<tr><td class="label">Attempt ID</td><td class="value">${details.transactionId}</td></tr>` : ''}
+            </table>
+
+            <div style="background: #FFF5F5; border-radius: 12px; padding: 25px; margin: 30px 0; border: 1px solid #FED7D7;">
+                <h4 style="margin-top:0; color: #C53030;">💡 Quick Troubleshooting</h4>
+                <ul style="padding-left: 20px; font-size: 14px; color: #9B2C2C; line-height: 1.6; margin-bottom: 0;">
+                    <li>Ensure your card is enabled for online/international transactions.</li>
+                    <li>Check if the OTP was correctly entered before it expired.</li>
+                    <li>Try an alternative payment method (UPI, different card, etc.).</li>
+                </ul>
+            </div>
+
+            <center style="margin: 35px 0;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button" style="background: #E53E3E; box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);">Retry Payment Now</a>
+            </center>
+
+            <p class="message" style="font-size: 14px; text-align: center; color: #718096;">
+                Your spot is temporarily held. Please retry to avoid cancellation.
+            </p>
+        </div>
+        ${this.getEmailFooter()}
+    </div>
 </body>
 </html>`;
     }
@@ -1422,85 +1203,47 @@ export class EmailService {
     }): string {
         return `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Trip Starts Soon</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
-  <tr><td align="center" style="padding:40px 20px;">
-    <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.12);">
-      <!-- Header -->
-      <tr>
-        <td style="background:linear-gradient(135deg,#FF5722 0%,#FF8A65 100%);padding:60px 40px;text-align:center;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr><td align="center" style="padding-bottom:16px;">
-              <div style="width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-block;line-height:80px;font-size:40px;">🌅</div>
-            </td></tr>
-            <tr><td align="center">
-              <h1 style="color:#ffffff;margin:0;font-size:32px;font-weight:700;letter-spacing:-1px;">Almost There!</h1>
-            </td></tr>
-            <tr><td align="center" style="padding-top:10px;">
-              <p style="color:rgba(255,255,255,0.9);margin:0;font-size:18px;">Your spiritual journey starts in <strong>3 Days</strong></p>
-            </td></tr>
-          </table>
-        </td>
-      </tr>
-      <!-- Content -->
-      <tr>
-        <td style="padding:40px;">
-          <p style="font-size:18px;color:#1A2332;margin:0 0 12px;font-weight:600;">Namaste ${name},</p>
-          <p style="font-size:16px;color:#666;line-height:1.8;margin:0 0 32px;">The wait is almost over! We're thrilled to host you on your upcoming Yatra to <strong>${details.tourName}</strong>. Our guides are ready and the sacred sites await your presence.</p>
-          <!-- Details Card -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(135deg,#FFF8F3 0%,#FFFBF9 100%);border-radius:12px;border:1px solid #FFEBE0;margin-bottom:32px;">
-            <tr><td style="padding:24px 28px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td width="32" valign="middle"><span style="font-size:24px;">📅</span></td>
-                  <td style="padding-left:14px;"><p style="margin:0;font-size:14px;color:#8E4B33;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Travel Date</p><p style="margin:2px 0 0;font-size:16px;color:#1A2332;font-weight:600;">${details.travelDate}</p></td>
-                  <td align="right" style="border-left:1px solid #FFE0D0;padding-left:24px;">
-                    <p style="margin:0;font-size:14px;color:#8E4B33;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ref #</p><p style="margin:2px 0 0;font-size:16px;color:#FF5722;font-family:monospace;">${details.bookingReference}</p>
-                  </td>
-                </tr>
-              </table>
-            </td></tr>
-          </table>
-          <!-- Checklist -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
-            <tr><td style="padding-bottom:16px;"><span style="font-size:15px;font-weight:700;color:#1A2332;text-transform:uppercase;letter-spacing:1px;">Travel Essentials Checklist</span></td></tr>
-            <tr><td>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr><td width="28" height="34" style="font-size:18px;color:#4CAF50;">✅</td><td style="font-size:15px;color:#555;">Valid ID Proof (Original)</td></tr>
-                <tr><td width="28" height="34" style="font-size:18px;color:#4CAF50;">✅</td><td style="font-size:15px;color:#555;">Printed Booking Confirmation</td></tr>
-                <tr><td width="28" height="34" style="font-size:18px;color:#4CAF50;">✅</td><td style="font-size:15px;color:#555;">Modest Clothing for Temple Visits</td></tr>
-                <tr><td width="28" height="34" style="font-size:18px;color:#4CAF50;">✅</td><td style="font-size:15px;color:#555;">Personal Medications & Comfort Kit</td></tr>
-              </table>
-            </td></tr>
-          </table>
-          <!-- CTA -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" style="display:inline-block;background:linear-gradient(135deg,#FF5722 0%,#E64A19 100%);color:#ffffff;text-decoration:none;padding:16px 40px;border-radius:8px;font-size:16px;font-weight:700;box-shadow:0 4px 15px rgba(230,74,25,0.3);">View Detailed Itinerary</a>
-          </td></tr></table>
-        </td>
-      </tr>
-      <!-- Help -->
-      <tr>
-        <td style="background:#f8f9fa;padding:24px 40px;text-align:center;">
-          <p style="margin:0;font-size:14px;color:#666;">Last minute questions? Reply to this mail or call <a href="tel:+919876543210" style="color:#FF5722;font-weight:700;text-decoration:none;">+91 98765 43210</a></p>
-        </td>
-      </tr>
-      <!-- Footer -->
-      <tr>
-        <td style="background:#1A2332;padding:40px;text-align:center;">
-          <p style="margin:0 0 10px;color:#ffffff;font-size:18px;font-weight:700;">🕉️ VedicTravel</p>
-          <p style="margin:0;color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:1px;text-transform:uppercase;">Connecting souls to sacred destinations since 2018</p>
-        </td>
-      </tr>
-    </table>
-  </td></tr>
-</table>
+<body>
+    <div class="container">
+        ${this.getEmailHeader('Your Journey Begins Soon!', 'Get Ready for Your Sacred Experience')}
+        <div class="content">
+            <div class="greeting">Namaste ${name},</div>
+            <p class="message">
+                The wait is almost over! Your spiritual journey to <strong>${details.tourName}</strong> is just 3 days away. We're honored to host you and are putting the final touches on your pilgrimage.
+            </p>
+
+            <table class="details-table">
+                <tr><td class="label">Booking Ref</td><td class="value">${details.bookingReference}</td></tr>
+                <tr><td class="label">Travel Date</td><td class="value">${details.travelDate}</td></tr>
+                <tr><td class="label">Travellers</td><td class="value">${details.numberOfTravelers} Person(s)</td></tr>
+            </table>
+
+            <div style="background: #FFFBEB; border-radius: 12px; padding: 25px; margin: 30px 0; border: 1px solid #FEF3C7;">
+                <h4 style="margin-top:0; color: #92400E;">🧭 Final Checklist</h4>
+                <ul style="padding-left: 20px; font-size: 14px; color: #78350F; line-height: 1.6; margin-bottom: 0;">
+                    <li><strong>ID Proof:</strong> Ensure you have your original Photo ID (Aadhar/Voter ID/Passport).</li>
+                    <li><strong>E-Ticket:</strong> Keep a digital or printed copy of your booking confirmation.</li>
+                    <li><strong>Luggage:</strong> Pack light but don't forget essentials like sanitizers and personal meds.</li>
+                    <li><strong>Weather:</strong> Check the local weather of <strong>${details.tourName}</strong> before packing.</li>
+                </ul>
+            </div>
+
+            <center style="margin: 35px 0;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button">View Full Itinerary</a>
+            </center>
+
+            <p class="message" style="font-size: 14px; text-align: center; border-top: 1px solid #EDF2F7; padding-top: 20px;">
+                Our ground team will be in touch shortly with the final coordinates for your pick-up.
+            </p>
+        </div>
+        ${this.getEmailFooter()}
+    </div>
 </body>
 </html>`;
     }
@@ -1513,57 +1256,52 @@ export class EmailService {
     }): string {
         return `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finish Your Booking</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
-  <tr><td align="center" style="padding:40px 20px;">
-    <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1);">
-      <!-- Header -->
-      <tr>
-        <td style="background:linear-gradient(135deg,#7B2CBF 0%,#9D50BB 100%);padding:50px 40px;text-align:center;">
-          <div style="font-size:48px;margin-bottom:16px;">⏳</div>
-          <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:700;">Still Thinking?</h1>
-          <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:16px;">Your spot is being held, but not for long</p>
-        </td>
-      </tr>
-      <!-- Content -->
-      <tr>
-        <td style="padding:40px;">
-          <p style="font-size:17px;color:#1A2332;margin:0 0 12px;font-weight:600;">Namaste ${name},</p>
-          <p style="font-size:15px;color:#666;line-height:1.7;margin:0 0 32px;">We noticed you started booking your journey to <strong>${details.tourName}</strong> but didn't quite finish. This tour is very popular and seats are filling up fast. Don't let someone else take your place!</p>
-          <!-- Summary Box -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8f9fa;border-radius:12px;margin-bottom:32px;">
-            <tr><td style="padding:24px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr><td><span style="font-size:13px;color:#999;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Tour</span></td><td align="right"><span style="font-size:15px;color:#1A2332;font-weight:600;">${details.tourName}</span></td></tr>
-                <tr><td style="padding-top:12px;"><span style="font-size:13px;color:#999;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Total Amount</span></td><td align="right" style="padding-top:12px;"><span style="font-size:18px;color:#7B2CBF;font-weight:700;">₹${details.totalAmount.toLocaleString('en-IN')}</span></td></tr>
-              </table>
-            </td></tr>
-          </table>
-          <!-- CTA -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" style="display:inline-block;background:linear-gradient(135deg,#7B2CBF 0%,#6A1B9A 100%);color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:8px;font-size:16px;font-weight:700;box-shadow:0 4px 15px rgba(123,44,191,0.2);">Complete My Booking Now</a>
-          </td></tr></table>
-        </td>
-      </tr>
-      <!-- Info -->
-      <tr>
-        <td style="padding:0 40px 40px;text-align:center;">
-          <p style="margin:0;font-size:13px;color:#999;">If you're having trouble with the payment, please reply to this email and our support team will help you out manually.</p>
-        </td>
-      </tr>
-      <!-- Footer -->
-      <tr>
-        <td style="background:#1A2332;padding:30px 40px;text-align:center;"><p style="margin:0;color:#ffffff;font-size:16px;font-weight:700;">VedicTravel Team</p></td>
-      </tr>
-    </table>
-  </td></tr>
-</table>
+<body>
+    <div class="container">
+        <div class="header" style="background: linear-gradient(135deg, #7B2CBF 0%, #9D50BB 100%);">
+            <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+            <h1>Don't Miss Your Spot!</h1>
+            <p>Your pilgrimage to ${details.tourName} is waiting</p>
+        </div>
+        <div class="content">
+            <div class="greeting">Namaste ${name},</div>
+            <p class="message">
+                We noticed you were planning a sacred journey to <strong>${details.tourName}</strong> but didn't quite finish. We understand that a pilgrimage is a big decision, but we wanted to remind you that spots on this particular yatra are filling up exceptionally fast.
+            </p>
+
+            <table class="details-table">
+                <tr><td class="label">Tour / Yatra</td><td class="value">${details.tourName}</td></tr>
+                <tr><td class="label">Total Amount</td><td class="value" style="color: #7B2CBF;">₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
+            </table>
+
+            <div style="background: #F8F4FF; border-radius: 12px; padding: 25px; margin: 30px 0; border: 1px solid #E9D5FF;">
+                <h4 style="margin-top:0; color: #7B2CBF;">🔥 Why finish your booking now?</h4>
+                <ul style="padding-left: 20px; font-size: 14px; color: #5B21B6; line-height: 1.6; margin-bottom: 0;">
+                    <li><strong>Guaranteed Price:</strong> Locking in your booking now protects you from any seasonal price increases.</li>
+                    <li><strong>Best Accommodations:</strong> Early bookings get priority for rooms with the best views of sacred sites.</li>
+                    <li><strong>Peace of Mind:</strong> Check one major item off your spiritual "to-do" list today.</li>
+                </ul>
+            </div>
+
+            <center style="margin: 35px 0;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button" style="background: linear-gradient(135deg, #7B2CBF 0%, #6D28D9 100%); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">Complete My Booking Now</a>
+            </center>
+
+            <div style="text-align: center; background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                <p style="margin: 0; font-size: 14px; color: #4A5568;">
+                    <strong>Need Help?</strong> Having trouble with payment or have more questions? 
+                    <br>Just reply to this email or WhatsApp us at <strong>+91 98765 43210</strong>.
+                </p>
+            </div>
+        </div>
+        ${this.getEmailFooter()}
+    </div>
 </body>
 </html>`;
     }
@@ -1575,57 +1313,45 @@ export class EmailService {
     }): string {
         return `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Share Your Feedback</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
-  <tr><td align="center" style="padding:40px 20px;">
-    <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1);">
-      <!-- Header -->
-      <tr>
-        <td style="background:linear-gradient(135deg,#FFD54F 0%,#FFA000 100%);padding:50px 40px;text-align:center;">
-          <div style="font-size:48px;margin-bottom:16px;">🙏</div>
-          <h1 style="color:#1A2332;margin:0;font-size:28px;font-weight:700;">Namaste & Welcome Back!</h1>
-          <p style="color:rgba(26,35,50,0.7);margin:8px 0 0;font-size:16px;">How was your journey to ${details.tourName}?</p>
-        </td>
-      </tr>
-      <!-- Content -->
-      <tr>
-        <td style="padding:40px;text-align:center;">
-          <p style="font-size:17px;color:#1A2332;margin:0 0 16px;font-weight:600;">Hi ${name},</p>
-          <p style="font-size:15px;color:#666;line-height:1.7;margin:0 0 32px;">We hope you had a spiritually enriching and peaceful experience on your recent Yatra. At VedicTravel, we strive to make every journey sacred and seamless, and your feedback is incredibly valuable to us.</p>
-          <!-- Rating Simulation -->
-          <p style="font-size:14px;color:#999;font-weight:700;text-transform:uppercase;margin-bottom:16px;">Rate your experience</p>
-          <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:40px;">
-            <tr>
-              <td style="padding:0 8px;"><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=5" style="display:inline-block;width:36px;height:36px;background:#FFD54F;border-radius:50%;line-height:36px;text-decoration:none;color:#1A2332;font-weight:700;">5</a></td>
-              <td style="padding:0 8px;"><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=4" style="display:inline-block;width:36px;height:36px;background:#EEEEEE;border-radius:50%;line-height:36px;text-decoration:none;color:#1A2332;font-weight:700;">4</a></td>
-              <td style="padding:0 8px;"><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=3" style="display:inline-block;width:36px;height:36px;background:#EEEEEE;border-radius:50%;line-height:36px;text-decoration:none;color:#1A2332;font-weight:700;">3</a></td>
-              <td style="padding:0 8px;"><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=2" style="display:inline-block;width:36px;height:36px;background:#EEEEEE;border-radius:50%;line-height:36px;text-decoration:none;color:#1A2332;font-weight:700;">2</a></td>
-              <td style="padding:0 8px;"><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=1" style="display:inline-block;width:36px;height:36px;background:#EEEEEE;border-radius:50%;line-height:36px;text-decoration:none;color:#1A2332;font-weight:700;">1</a></td>
-            </tr>
-          </table>
-          <!-- CTA -->
-          <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}" style="display:inline-block;background:linear-gradient(135deg,#1A2332 0%,#263238 100%);color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:8px;font-size:16px;font-weight:700;box-shadow:0 4px 15px rgba(0,0,0,0.1);">Leave Full Review</a>
-        </td>
-      </tr>
-      <!-- Thank You -->
-      <tr>
-        <td style="padding:0 40px 40px;text-align:center;">
-          <p style="margin:0;font-size:13px;color:#999;">Thank you for being part of the VedicTravel family. Your feedback helps us connect more souls to sacred destinations.</p>
-        </td>
-      </tr>
-      <!-- Footer -->
-      <tr>
-        <td style="background:#1A2332;padding:30px 40px;text-align:center;"><p style="margin:0;color:#ffffff;font-size:16px;font-weight:700;">VedicTravel Support</p></td>
-      </tr>
-    </table>
-  </td></tr>
-</table>
+<body>
+    <div class="container">
+        ${this.getEmailHeader('Namaste & Welcome Back!', 'How Was Your Spiritual Journey?')}
+        <div class="content">
+            <div class="greeting">Hi ${name},</div>
+            <p class="message">
+                We hope your recent Yatra to <strong>${details.tourName}</strong> was spiritually enriching and peaceful. At VedicTravel, we strive to make every pilgrimage sacred and seamless, and your feedback is incredibly valuable to help us serve future pilgrims better.
+            </p>
+
+            <div style="background: #F8FAFC; border-radius: 12px; padding: 30px; text-align: center; border: 1px solid #EDF2F7; margin: 30px 0;">
+                <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #718096; font-weight: 700; margin-bottom: 20px;">Rate Your Experience</p>
+                <table align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        ${[1, 2, 3, 4, 5].map(star => `
+                            <td style="padding: 0 10px;">
+                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=${star}" style="display: block; width: 45px; height: 45px; line-height: 45px; background: #FF5722; color: #ffffff; border-radius: 50%; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.2);">${star}</a>
+                            </td>
+                        `).join('')}
+                    </tr>
+                </table>
+                <p style="margin-top: 20px; font-size: 12px; color: #A0AEC0;">(1: Poor, 5: Exceptional)</p>
+            </div>
+
+            <center>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}" class="cta-button">Write a Detailed Review</a>
+            </center>
+
+            <p class="message" style="margin-top: 35px; text-align: center; border-top: 1px solid #EDF2F7; padding-top: 25px; font-style: italic;">
+                "Sharing your journey helps others light their own path."
+            </p>
+        </div>
+        ${this.getEmailFooter()}
+    </div>
 </body>
 </html>`;
     }
@@ -1640,51 +1366,115 @@ export class EmailService {
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #FFF8F3; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #7B2CBF 0%, #FF5722 100%); padding: 40px 20px; text-align: center; }
-        .header h1 { color: #fff; margin: 0; font-size: 28px; }
-        .content { padding: 40px 30px; }
-        .greeting { font-size: 20px; color: #1A2332; margin-bottom: 20px; font-weight: bold; }
-        .info-card { background: #F8F9FA; border-left: 4px solid #7B2CBF; padding: 20px; border-radius: 4px; margin-bottom: 30px; }
-        .info-card p { margin: 8px 0; color: #444; font-size: 15px; }
-        .cta-box { text-align: center; margin: 30px 0; }
-        .cta-button { display: inline-block; background: #FF5722; color: #fff; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; }
-        .footer { background-color: #1A2332; color: #fff; padding: 24px 20px; text-align: center; font-size: 12px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🕉️ Your Invoice is Ready</h1>
-        </div>
+        ${this.getEmailHeader('Invoice Ready', 'Official Receipt for Your Sacred Journey')}
         <div class="content">
             <div class="greeting">Namaste ${name},</div>
-            <p>Thank you for choosing VedicTravel. We have successfully processed your payment for your upcoming journey.</p>
+            <p class="message">
+                Thank you for your trust in VedicTravel. We have successfully processed your payment for your upcoming pilgrimage. Please find your booking summary and invoice details below.
+            </p>
             
-            <div class="info-card">
-                <p><strong>Booking Reference:</strong> ${details.bookingReference}</p>
-                <p><strong>Tour/Yatra:</strong> ${details.tourName}</p>
-                <p><strong>Amount Paid:</strong> ₹${details.totalAmount.toLocaleString('en-IN')}</p>
+            <table class="details-table">
+                <tr><td class="label">Booking Ref</td><td class="value">${details.bookingReference}</td></tr>
+                <tr><td class="label">Tour / Yatra</td><td class="value">${details.tourName}</td></tr>
+                <tr><td class="label">Total Amount</td><td class="value" style="color: #2D3748;">₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
+            </table>
+            
+            <div style="background: #F0FDF4; border-radius: 12px; padding: 25px; margin: 30px 0; border: 1px solid #DCFCE7; text-align: center;">
+                <p style="margin: 0; font-size: 14px; color: #166534;">
+                    <strong>Payment Confirmed!</strong> Your official PDF receipt is attached to this email for your records.
+                </p>
             </div>
             
-            <p>We've attached the official PDF receipt to this email for your records.</p>
-            
             ${details.invoiceUrl ? `
-            <div class="cta-box">
-                <a href="${details.invoiceUrl}" class="cta-button">View Receipt Online</a>
-            </div>` : ''}
+            <center>
+                <a href="${details.invoiceUrl}" class="cta-button" style="background: #1A2332;">Download Invoice Copy</a>
+            </center>` : ''}
             
-            <p>If you have any questions regarding this invoice, please reach out to our support team.</p>
+            <p class="message" style="margin-top: 30px; font-size: 14px; text-align: center; color: #718096;">
+                Need a GST invoice or have specific billing requests? 
+                <br>Contact our accounts team at <strong>accounts@vedictravel.com</strong>.
+            </p>
         </div>
-        <div class="footer">
-            <p>© 2026 VedicTravel. All rights reserved.</p>
-            <p>Connecting souls to sacred destinations.</p>
-        </div>
+        ${this.getEmailFooter()}
     </div>
 </body>
-</html>
+</html>`;
+    }
+
+    private getEmailStyles(): string {
+        return `
+            body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #FFF8F3; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+            .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+            .header { background: linear-gradient(135deg, #FF5722 0%, #7B2CBF 100%); padding: 50px 20px; text-align: center; }
+            .header h1 { color: #ffffff; margin: 15px 0 10px 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; }
+            .logo-img { max-width: 150px; height: auto; margin-bottom: 5px; }
+            .header p { color: rgba(255, 255, 255, 0.85); margin: 0; font-size: 16px; font-weight: 500; }
+            .content { padding: 40px 30px; }
+            .greeting { font-size: 20px; color: #1A2332; margin-bottom: 12px; font-weight: 800; border-bottom: 2px solid #FF5722; display: inline-block; padding-bottom: 4px; }
+            .message { color: #4A5568; font-size: 16px; line-height: 1.8; margin-bottom: 24px; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #FF5722 0%, #E64A19 100%); color: #ffffff !important; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3); transition: all 0.3s ease; }
+            .feature-grid { margin: 30px 0; }
+            .feature-item { margin-bottom: 20px; padding: 15px; background: #fff8f3; border-radius: 12px; border: 1px solid #ffe8e0; display: table; width: 100%; box-sizing: border-box; }
+            .feature-icon { font-size: 24px; display: table-cell; width: 40px; vertical-align: top; padding-right: 15px; }
+            .feature-text { font-size: 14px; color: #4A5568; line-height: 1.6; display: table-cell; vertical-align: top; }
+            .details-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 25px 0; border: 1px solid #EDF2F7; border-radius: 12px; overflow: hidden; }
+            .details-table td { padding: 16px; border-bottom: 1px solid #EDF2F7; font-size: 14px; color: #4A5568; }
+            .details-table tr:last-child td { border-bottom: none; }
+            .details-table td.label { width: 40%; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; background: #F8FAFC; }
+            .details-table td.value { color: #1A202C; font-weight: 700; }
+            .footer { background-color: #1A2332; color: #ffffff; padding: 40px 30px; text-align: center; }
+            .footer-links a { color: #A0AEC0; text-decoration: none; margin: 0 10px; font-size: 13px; font-weight: 600; }
+            .footer-social { margin-top: 25px; }
+            .footer-social a { display: inline-block; margin: 0 8px; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; line-height: 32px; font-size: 14px; text-decoration: none; color: white; }
+            .footer-address { margin-top: 25px; font-size: 12px; color: #718096; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; }
+        `;
+    }
+
+    private getEmailHeader(title: string, subtitle?: string): string {
+        const logoUrl = 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775119508/branding/vt-logo-email.png';
+        return `
+            <div class="header">
+                <img src="${logoUrl}" alt="VedicTravel Logo" class="logo-img">
+                <h1>${title}</h1>
+                ${subtitle ? `<p>${subtitle}</p>` : ''}
+            </div>
+        `;
+    }
+
+    private getEmailFooter(): string {
+        return `
+            <div class="footer">
+                <div style="font-size: 20px; font-weight: 800; color: #FF5722; margin-bottom: 10px;">VedicTravel</div>
+                <div style="font-size: 13px; color: #A0AEC0; margin-bottom: 25px;">Connecting souls to sacred destinations</div>
+                
+                <div class="footer-links">
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/tours">Explore Tours</a>
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/blogs">Spiritual Blog</a>
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/about">Our Mission</a>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="#" title="Facebook">f</a>
+                    <a href="#" title="Instagram">ig</a>
+                    <a href="#" title="YouTube">yt</a>
+                    <a href="#" title="WhatsApp">wa</a>
+                </div>
+                
+                <div class="footer-address">
+                    <p><strong>VedicTravel PVT LTD</strong><br>
+                    Haridwar, Uttarakhand - 249401, India</p>
+                    <p style="margin-top: 10px; font-size: 10px; color: #4A5568;">
+                        You are receiving this email because you registered on vedictravel.in.<br>
+                        © ${new Date().getFullYear()} VedicTravel. All rights reserved.
+                    </p>
+                </div>
+            </div>
         `;
     }
 }

@@ -8,9 +8,9 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return (
-        <div className="min-h-screen bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-5xl mx-auto">
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+        <div className="min-h-screen bg-[#fafbfc] pt-24 pb-20 px-4 sm:px-6 lg:px-10">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
                     {children}
                 </div>
             </div>

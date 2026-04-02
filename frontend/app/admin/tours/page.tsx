@@ -36,6 +36,65 @@ export default function AdminToursList() {
         }
     };
 
+    const handleDuplicate = async (tour: any) => {
+        if (!confirm(`Are you sure you want to duplicate "${tour.title}"?`)) return;
+
+        try {
+            setLoading(true);
+            const fullTour = await toursService.getTourById(tour._id);
+            
+            const payload = {
+                title: `${fullTour.title} (Copy)`,
+                description: fullTour.description || '',
+                price: Number(fullTour.price) || 0,
+                priceOriginal: Number(fullTour.priceOriginal) || 0,
+                duration: Number(fullTour.duration) || 0,
+                maxGroupSize: fullTour.maxGroupSize ? Number(fullTour.maxGroupSize) : 1,
+                trendingRank: Number(fullTour.trendingRank) || 0,
+                emiStartingFrom: Number(fullTour.emiStartingFrom) || 0,
+                packageType: fullTour.packageType || 'Land Only',
+                category: fullTour.category || '',
+                destination: fullTour.destination || '',
+                images: fullTour.images || [],
+                slideshowImages: fullTour.slideshowImages || [],
+                locations: fullTour.locations || [],
+                placesHighlights: fullTour.placesHighlights || [],
+                placesToVisit: fullTour.placesToVisit || '',
+                packageIncludes: fullTour.packageIncludes || [],
+                inclusions: fullTour.inclusions || [],
+                exclusions: fullTour.exclusions || [],
+                dos: fullTour.dos || [],
+                donts: fullTour.donts || [],
+                thingsToCarry: fullTour.thingsToCarry || [],
+                useDefaultCancellationPolicy: (fullTour as any).useDefaultCancellationPolicy ?? true,
+                cancellationPolicy: (fullTour as any).cancellationPolicy || '',
+                termsAndConditions: (fullTour as any).termsAndConditions || '',
+                paymentTerms: (fullTour as any).paymentTerms || '',
+                isActive: (fullTour as any).isActive ?? true,
+                isTrending: (fullTour as any).isTrending || false,
+                isFavorite: (fullTour as any).isFavorite || false,
+                favoriteSize: (fullTour as any).favoriteSize || 'standard',
+                badge: (fullTour as any).badge || '',
+                departureCities: ((fullTour as any).departureCities || []).map(({ _id, id, ...rest }: any) => rest),
+                hotels: ((fullTour as any).hotels || []).map(({ _id, id, ...rest }: any) => rest),
+                itinerary: ((fullTour as any).itinerary || []).map(({ _id, id, ...rest }: any) => ({
+                    ...rest,
+                    items: (rest.items || []).map(({ _id, id, ...item }: any) => item)
+                })),
+                customBlocks: ((fullTour as any).customBlocks || []).map(({ _id, id, ...rest }: any) => rest),
+                hasEasyCancellation: (fullTour as any).hasEasyCancellation ?? true,
+                hasEasyVisa: (fullTour as any).hasEasyVisa || false,
+            };
+
+            await toursService.createTour(payload);
+            await fetchTours(); // This will also set loading to false
+        } catch (error) {
+            console.error('Duplicate failed:', error);
+            alert('Failed to duplicate tour');
+            setLoading(false);
+        }
+    };
+
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 
     return (
@@ -101,6 +160,12 @@ export default function AdminToursList() {
                                     <Link href={`/admin/tours/${tour._id}`} className="text-deepBlue hover:text-saffron mr-4">
                                         Edit
                                     </Link>
+                                    <button
+                                        onClick={() => handleDuplicate(tour)}
+                                        className="text-green-600 hover:text-green-900 mr-4"
+                                    >
+                                        Duplicate
+                                    </button>
                                     <button
                                         onClick={() => handleDelete(tour._id)}
                                         className="text-red-600 hover:text-red-900"

@@ -99,6 +99,31 @@ export class Tour {
     @Prop()
     termsAndConditions: string;
 
+    @Prop()
+    paymentTerms: string;
+
+    @Prop({ default: true })
+    hasEasyCancellation: boolean;
+
+    @Prop({ default: false })
+    hasEasyVisa: boolean;
+
+    @Prop({ default: false })
+    hasHighSeason: boolean;
+
+    @Prop({ default: false })
+    hasTravelValidity: boolean;
+
+    @Prop({
+        type: [{
+            title: String,
+            content: String,
+            isLink: { type: Boolean, default: false }
+        }],
+        default: []
+    })
+    customBlocks: { title: string; content: string; isLink: boolean }[];
+
     @Prop({ required: true })
     maxGroupSize: number;
 

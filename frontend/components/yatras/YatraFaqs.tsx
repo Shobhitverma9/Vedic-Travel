@@ -35,9 +35,10 @@ export default function YatraFaqs({ faqs }: YatraFaqsProps) {
                                 )}
                             </button>
                             {activeIndex === index && (
-                                <div className="px-6 pb-6 text-gray-600 leading-relaxed font-medium">
-                                    {faq.answer}
-                                </div>
+                                <div 
+                                    className="px-6 pb-6 text-gray-600 leading-relaxed font-medium"
+                                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                                />
                             )}
                         </div>
                     ))}
