@@ -218,7 +218,7 @@ export class EmailService {
         const attachments = [
             {
                 Name: `Invoice-${details.bookingReference}.pdf`,
-                Content: pdfBuffer.toString('base64'),
+                Content: Buffer.from(pdfBuffer).toString('base64'),
                 ContentType: 'application/pdf',
             },
         ];
@@ -283,7 +283,7 @@ export class EmailService {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #FF5722 0%, #7B2CBF 100%);
+            background: linear-gradient(135deg, #4A148C 0%, #7B2CBF 100%);
             padding: 40px 20px;
             text-align: center;
         }
@@ -302,8 +302,8 @@ export class EmailService {
             margin-bottom: 20px;
         }
         .otp-box {
-            background: linear-gradient(135deg, #FFF8F3 0%, #FFE8E0 100%);
-            border: 2px solid #FF5722;
+            background: #F3E8FF;
+            border: 2px solid #7B2CBF;
             border-radius: 12px;
             padding: 30px;
             text-align: center;
@@ -402,7 +402,7 @@ export class EmailService {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #7B2CBF 0%, #FF5722 100%);
+            background: linear-gradient(135deg, #4A148C 0%, #7B2CBF 100%);
             padding: 40px 20px;
             text-align: center;
         }
@@ -656,7 +656,7 @@ export class EmailService {
     <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
       <!-- Header -->
       <tr>
-        <td style="background:linear-gradient(135deg,#B71C1C 0%,#E53935 60%,#FF7043 100%);padding:48px 40px 40px;text-align:center;">
+        <td style="background:linear-gradient(135deg,#7F0000 0%,#B71C1C 60%,#E53935 100%);padding:48px 40px 40px;text-align:center;">
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr><td align="center" style="padding-bottom:16px;">
               <div style="width:64px;height:64px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-block;line-height:64px;font-size:32px;">❌</div>
@@ -1411,7 +1411,7 @@ export class EmailService {
         return `
             body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #FFF8F3; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
             .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
-            .header { background: linear-gradient(135deg, #FF5722 0%, #7B2CBF 100%); padding: 50px 20px; text-align: center; }
+            .header { background: linear-gradient(135deg, #4A148C 0%, #7B2CBF 100%); padding: 50px 20px; text-align: center; }
             .header h1 { color: #ffffff; margin: 15px 0 10px 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; }
             .logo-img { max-width: 150px; height: auto; margin-bottom: 5px; }
             .header p { color: rgba(255, 255, 255, 0.85); margin: 0; font-size: 16px; font-weight: 500; }

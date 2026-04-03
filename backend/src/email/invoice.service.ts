@@ -31,18 +31,26 @@ export class InvoiceService {
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
                     '--disable-gpu',
+                    '--font-render-hinting=none', // Better font rendering for PDFs
                 ],
-                headless: true,
+                headless: 'shell' as any, // New headless mode is more stable for PDFs
+                defaultViewport: {
+                    width: 1200,
+                    height: 1600,
+                },
             });
 
             const page = await browser.newPage();
             const html = this.getInvoiceHtml(booking);
-            
             await page.setContent(html, { waitUntil: 'networkidle0' });
+            
+            // Critical fix: Ensure all web fonts (Inter) are fully loaded before PDF generation
+            await page.evaluateHandle('document.fonts.ready');
             
             const pdfBuffer = await page.pdf({
                 format: 'A4',
                 printBackground: true,
+                preferCSSPageSize: true, // Respect the HTML/CSS page sizes
                 margin: {
                     top: '20px',
                     right: '20px',
@@ -50,6 +58,8 @@ export class InvoiceService {
                     left: '20px',
                 },
             });
+
+            this.logger.log(`PDF generated successfully. Size: ${pdfBuffer.length} bytes`);
 
             return Buffer.from(pdfBuffer);
         } catch (error) {
