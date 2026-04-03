@@ -1,6 +1,58 @@
-import { IsString, IsNumber, IsDate, IsArray, IsOptional, Min, IsEmail } from 'class-validator';
+import { IsString, IsNumber, IsDate, IsArray, IsOptional, Min, IsEmail, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+
+class AddressDetailDto {
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    title: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    firstName: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    lastName: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    addressLine: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    state: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    city: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    pincode: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    mobile: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    gst?: string;
+}
 
 class TravelerDetailDto {
     @ApiProperty()
@@ -54,4 +106,10 @@ export class CreateBookingDto {
     @IsOptional()
     @IsString()
     phone?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => AddressDetailDto)
+    billingAddress?: AddressDetailDto;
 }

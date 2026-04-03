@@ -8,6 +8,8 @@ export default function AdminBookingsPage() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
+    const [selectedBooking, setSelectedBooking] = useState<any>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fetchBookings = async (page = 1) => {
         setLoading(true);
@@ -71,8 +73,13 @@ export default function AdminBookingsPage() {
                                             <span className="font-medium text-deepBlue">{booking.bookingReference}</span>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
-                                            <div>{booking.user?.name}</div>
-                                            <div className="text-xs text-gray-400">{booking.user?.email}</div>
+                                            <div className="font-medium">
+                                                {booking.billingAddress 
+                                                    ? `${booking.billingAddress.firstName} ${booking.billingAddress.lastName}`
+                                                    : (booking.user?.name || 'Guest')}
+                                            </div>
+                                            <div className="text-xs text-gray-400">{booking.email || booking.user?.email}</div>
+                                            {booking.phone && <div className="text-[10px] text-gray-400">{booking.phone}</div>}
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">{booking.tour?.title}</td>
                                         <td className="px-6 py-4 text-gray-600">
@@ -90,7 +97,13 @@ export default function AdminBookingsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="text-saffron hover:text-saffron-dark font-medium text-sm">
+                                            <button 
+                                                onClick={() => {
+                                                    setSelectedBooking(booking);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="text-saffron hover:text-saffron-dark font-medium text-sm"
+                                            >
                                                 View
                                             </button>
                                         </td>
@@ -124,6 +137,86 @@ export default function AdminBookingsPage() {
                     </div>
                 )}
             </div>
+        {/* Detail Modal */}
+            {isModalOpen && selectedBooking && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+                        <div className="bg-gradient-to-r from-[#1A2332] to-[#2C3E50] px-6 py-4 flex justify-between items-center text-white">
+                            <h2 className="font-bold text-lg">Booking Details: {selectedBooking.bookingReference}</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="text-white/70 hover:text-white">&times; Close</button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Left Section: Traveler & Package Info */}
+                                <div className="space-y-6">
+                                    <section>
+                                        <h3 className="text-sm font-bold text-[#FF5722] uppercase tracking-wider mb-4 pb-2 border-b">Package Info</h3>
+                                        <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                                            <div className="flex justify-between text-sm"><span className="text-gray-500">Package:</span> <span className="font-semibold">{selectedBooking.tour?.title}</span></div>
+                                            <div className="flex justify-between text-sm"><span className="text-gray-500">Travel Date:</span> <span className="font-semibold">{new Date(selectedBooking.travelDate).toLocaleDateString()}</span></div>
+                                            <div className="flex justify-between text-sm"><span className="text-gray-500">Travelers:</span> <span className="font-semibold">{selectedBooking.numberOfTravelers}</span></div>
+                                            <div className="flex justify-between text-sm pt-2 border-t font-bold text-deepBlue"><span>Paid Total:</span> <span>₹{selectedBooking.totalAmount.toLocaleString()}</span></div>
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h3 className="text-sm font-bold text-[#FF5722] uppercase tracking-wider mb-4 pb-2 border-b">Travelers</h3>
+                                        <div className="space-y-3">
+                                            {selectedBooking.travelerDetails?.map((t: any, i: number) => (
+                                                <div key={i} className="bg-white border rounded-xl p-3 text-sm">
+                                                    <p className="font-bold text-deepBlue">{t.name}</p>
+                                                    <p className="text-xs text-gray-400 mt-1">{t.age} years | {t.gender}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+
+                                {/* Right Section: Billing Address */}
+                                <div className="space-y-6">
+                                    <section>
+                                        <h3 className="text-sm font-bold text-[#FF5722] uppercase tracking-wider mb-4 pb-2 border-b">Billing Address (Comm.)</h3>
+                                        {selectedBooking.billingAddress ? (
+                                            <div className="bg-gray-50 rounded-xl p-5 space-y-3 text-sm leading-relaxed">
+                                                <p className="font-bold text-deepBlue text-base">
+                                                    {selectedBooking.billingAddress.title} {selectedBooking.billingAddress.firstName} {selectedBooking.billingAddress.lastName}
+                                                </p>
+                                                <div className="space-y-1">
+                                                    <p>{selectedBooking.billingAddress.addressLine}</p>
+                                                    <p>{selectedBooking.billingAddress.city}, {selectedBooking.billingAddress.state} - {selectedBooking.billingAddress.pincode}</p>
+                                                </div>
+                                                <div className="pt-3 border-t space-y-1">
+                                                    <p><span className="text-gray-500">Email:</span> {selectedBooking.billingAddress.email}</p>
+                                                    <p><span className="text-gray-500">Phone:</span> {selectedBooking.billingAddress.mobile}</p>
+                                                    {selectedBooking.billingAddress.gst && <p><span className="text-green-600 font-bold">GST:</span> {selectedBooking.billingAddress.gst}</p>}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="bg-yellow-50 text-yellow-800 p-4 rounded-xl border border-yellow-100 text-xs italic">
+                                                No specific billing address was provided for this booking. Using registered email/phone if available.
+                                            </div>
+                                        )}
+                                    </section>
+
+                                    {selectedBooking.specialRequests && (
+                                        <section>
+                                            <h3 className="text-sm font-bold text-[#FF5722] uppercase tracking-wider mb-2 pb-2">Special Requests</h3>
+                                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-sm text-gray-700 italic whitespace-pre-wrap leading-relaxed shadow-inner">
+                                                "{selectedBooking.specialRequests}"
+                                            </div>
+                                        </section>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="bg-gray-50 px-6 py-4 border-t flex justify-end">
+                            <button onClick={() => setIsModalOpen(false)} className="px-6 py-2 bg-deepBlue text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all active:scale-95">Close Summary</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

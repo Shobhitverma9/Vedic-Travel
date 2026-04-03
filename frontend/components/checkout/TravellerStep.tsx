@@ -236,8 +236,7 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
                                             >
                                                 <option value="">Select preference</option>
                                                 <option value="Veg">🥦 Vegetarian</option>
-                                                <option value="Non-Veg">🍗 Non-Vegetarian</option>
-                                                <option value="Jain">🌿 Jain</option>
+                                                <option value="Jain">🌿 Jain - Subject to Availability</option>
                                             </select>
                                         </div>
                                         <div className="flex items-center gap-2 mt-4">

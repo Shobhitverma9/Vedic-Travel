@@ -63,6 +63,20 @@ export class Booking {
     @Prop()
     phone: string;
 
+    @Prop({ type: Object })
+    billingAddress: {
+        title: string;
+        firstName: string;
+        lastName: string;
+        addressLine: string;
+        state: string;
+        city: string;
+        pincode: string;
+        email: string;
+        mobile: string;
+        gst?: string;
+    };
+
     @Prop({ default: false })
     isGuest: boolean;
 

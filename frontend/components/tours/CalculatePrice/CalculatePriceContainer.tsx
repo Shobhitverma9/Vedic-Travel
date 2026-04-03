@@ -8,6 +8,7 @@ import DepartureCitySelect from './DepartureCitySelect';
 import RoomConfiguration, { Room } from './RoomConfiguration';
 import BookingCalendar from './BookingCalendar';
 import PriceBreakup from './PriceBreakup';
+import Accordion from '../../ui/Accordion';
 
 interface CalculatePriceContainerProps {
     tour: any; // Type strictly later
@@ -31,6 +32,7 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
     const [pricePerPerson, setPricePerPerson] = useState(tour.price);
     const [showPrice, setShowPrice] = useState(false);
     const [showBreakup, setShowBreakup] = useState(false);
+    const [activePolicy, setActivePolicy] = useState<'payment' | 'cancellation' | 'terms' | 'privacy' | null>(null);
 
     // Derived states
     const totalTravelers = rooms.reduce((acc, room) => acc + room.adults + room.childrenWithBed, 0);
@@ -75,6 +77,132 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
     const gstRate = 0.05;
     const gstAmount = baseCost * gstRate;
     const totalCost = baseCost + gstAmount;
+
+    // Policy content parsing logic
+    const parseSections = (text: string | undefined, defaultTitle: string) => {
+        if (!text) return [];
+        const lines = text.split(/\r?\n/);
+        const sections: { title: string; content: string[] }[] = [];
+        let currentSection: { title: string; content: string[] } | null = null;
+
+        const isHeader = (line: string) => {
+            const trimmed = line.trim();
+            if (!trimmed) return false;
+            return (
+                (trimmed.startsWith('**') && trimmed.endsWith('**')) ||
+                (trimmed.startsWith('<b>') && trimmed.endsWith('</b>')) ||
+                (trimmed.endsWith(':') && trimmed.length < 60) ||
+                (trimmed === trimmed.toUpperCase() && trimmed.length > 3 && !/^\d+$/.test(trimmed)) ||
+                (/^\d+\.\s/.test(trimmed) && trimmed.length < 60)
+            );
+        };
+
+        lines.forEach((line) => {
+            const trimmed = line.trim();
+            if (!trimmed) return;
+            if (isHeader(trimmed)) {
+                const title = trimmed.replace(/\*\*/g, '').replace(/<\/?b>/g, '').replace(/:$/, '');
+                currentSection = { title, content: [] };
+                sections.push(currentSection);
+            } else {
+                if (!currentSection) {
+                    currentSection = { title: defaultTitle, content: [] };
+                    sections.push(currentSection);
+                }
+                currentSection.content.push(line);
+            }
+        });
+        return sections.length > 0 ? sections : [{ title: defaultTitle, content: [text] }];
+    };
+
+    const togglePolicy = (policy: 'payment' | 'cancellation' | 'terms' | 'privacy') => {
+        setActivePolicy(activePolicy === policy ? null : policy);
+    };
+
+    const renderPolicyContent = () => {
+        if (!activePolicy) return null;
+
+        let text = '';
+        let defaultTitle = '';
+        let isExternal = false;
+
+        switch (activePolicy) {
+            case 'payment':
+                text = tour.paymentTerms || 'Payment details coming soon...';
+                defaultTitle = 'PAYMENTS';
+                break;
+            case 'cancellation':
+                let cancellationText = '';
+                if (tour.useDefaultCancellationPolicy !== false) {
+                    cancellationText = '**Standard Cancellation Policy**\n' +
+                                     '• Between 90 – 150 days before departure: Full refund (minus USD 300 deposit).\n' +
+                                     '• Between 30-90 days before departure: 75% refund (minus USD 300 deposit).\n' +
+                                     '• Less than 30 days prior: Non-Refundable.';
+                } else {
+                    cancellationText = tour.cancellationPolicy || 'Cancellation policy details coming soon...';
+                }
+
+                if (tour.hasEasyCancellation) {
+                    cancellationText += '\n\n**Easy Cancellation**\n' +
+                                      '• Cancellation before 45 days from travel date - NO Cancellation Charges.\n' +
+                                      '• Cancelled between 45-30 days - 25% Cancellation charges\n' +
+                                      '• Cancelled between 30-15 days - 50% Cancellation charges\n' +
+                                      '• Cancelled within 15 days - Non-Refundable';
+                }
+                text = cancellationText;
+                defaultTitle = 'CANCELLATION POLICY';
+                break;
+            case 'terms':
+                let termsText = tour.termsAndConditions || 'Terms & Conditions coming soon...';
+                
+                if (tour.hasEasyVisa) {
+                    termsText += '\n\n**Visa Easy**\nJust mention the reference code & drop the passport to the nearest VFS Center. You do not require to do the biometrics again or submit any financial documents.';
+                }
+                
+                if (tour.hasHighSeason) {
+                    termsText += '\n\n**High Season**\nPrices can fluctuate during peak season dates.';
+                }
+
+                if (tour.hasTravelValidity) {
+                    termsText += '\n\n**Travel Validity**\nThe deal is valid for travel till Wednesday, 31 December 2025.';
+                }
+                
+                if (tour.customBlocks && tour.customBlocks.length > 0) {
+                    termsText += '\n\n' + tour.customBlocks.map((block: any) => `**${block.title}**\n${block.content}`).join('\n\n');
+                }
+                
+                text = termsText;
+                defaultTitle = 'TERMS & CONDITIONS';
+                break;
+            case 'privacy':
+                isExternal = true;
+                break;
+        }
+
+        if (isExternal) {
+            return (
+                <div className="p-4 bg-white border-t text-center">
+                    <p className="text-sm text-gray-600 mb-2">Our detailed privacy policy is available on a separate page.</p>
+                    <Link href="/privacy-policy" className="text-deepBlue font-bold hover:underline">View Privacy Policy</Link>
+                </div>
+            );
+        }
+
+        const sections = parseSections(text, defaultTitle);
+
+        return (
+            <div className="p-4 md:p-6 bg-white border-t animate-in fade-in slide-in-from-top-2 duration-300">
+                {sections.map((section, idx) => (
+                    <Accordion key={idx} title={section.title} defaultOpen={true}>
+                        <div 
+                            className="whitespace-pre-wrap text-sm leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: section.content.join('\n') }}
+                        />
+                    </Accordion>
+                ))}
+            </div>
+        );
+    };
 
     return (
         <div id="calculate-price-section" className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8 scroll-mt-24">
@@ -298,12 +426,63 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                 )}
             </div>
 
-            {/* Footer Links */}
-            <div className="bg-gray-50 px-6 py-3 border-t flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-deepBlue/80">
-                <Link href="/terms-and-conditions#payment-terms" className="hover:underline">Payment terms</Link>
-                <Link href="/cancellation-policy" className="hover:underline">Cancellation Policy</Link>
-                <Link href="/terms-and-conditions" className="hover:underline">Terms & Conditions</Link>
-                <Link href="/privacy-policy" className="hover:underline">Privacy Policy</Link>
+            {/* Policy Tabs & Content */}
+            <div className="border-t border-gray-100">
+                <div className="flex border-b border-gray-50 bg-gray-50/30 overflow-x-auto no-scrollbar">
+                    <button 
+                        onClick={() => togglePolicy('payment')}
+                        className={`flex-1 min-w-[120px] py-4 px-2 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all relative ${
+                            activePolicy === 'payment' 
+                                ? 'text-blue-600 bg-white' 
+                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100/50'
+                        }`}
+                    >
+                        Payment terms
+                        {activePolicy === 'payment' && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600" />
+                        )}
+                    </button>
+                    <button 
+                        onClick={() => togglePolicy('cancellation')}
+                        className={`flex-1 min-w-[120px] py-4 px-2 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all relative ${
+                            activePolicy === 'cancellation' 
+                                ? 'text-blue-600 bg-white' 
+                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100/50'
+                        }`}
+                    >
+                        Cancellation Policy
+                        {activePolicy === 'cancellation' && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600" />
+                        )}
+                    </button>
+                    <button 
+                        onClick={() => togglePolicy('terms')}
+                        className={`flex-1 min-w-[140px] py-4 px-2 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all relative ${
+                            activePolicy === 'terms' 
+                                ? 'text-blue-600 bg-white' 
+                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100/50'
+                        }`}
+                    >
+                        Terms & Conditions
+                        {activePolicy === 'terms' && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600" />
+                        )}
+                    </button>
+                    <button 
+                        onClick={() => togglePolicy('privacy')}
+                        className={`flex-1 min-w-[120px] py-4 px-2 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all relative ${
+                            activePolicy === 'privacy' 
+                                ? 'text-blue-600 bg-white' 
+                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100/50'
+                        }`}
+                    >
+                        Privacy Policy
+                        {activePolicy === 'privacy' && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600" />
+                        )}
+                    </button>
+                </div>
+                {renderPolicyContent()}
             </div>
 
             {/* Calendar Modal */}

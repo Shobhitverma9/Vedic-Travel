@@ -32,8 +32,8 @@ function CheckoutContent() {
         travelDate: dateParam ? new Date(dateParam) : new Date(),
         adults: adultsParam ? parseInt(adultsParam) : 2, // Default to 2 for now as per screenshots if missing
         costPerAdult: 0,
-        currency: 'USD',
-        exchangeRate: 84.00, // Fixed for demo, or fetch from API
+        currency: 'INR',
+        exchangeRate: 1.00, // No conversion needed as price is already in INR
     });
 
     // User Data
@@ -55,8 +55,8 @@ function CheckoutContent() {
                 // DEMO MODE: If no tourId, fetch the first available tour or use mock data
                 try {
                     const allTours = await toursService.getAllTours();
-                    if (allTours && allTours.data && allTours.data.length > 0) {
-                        const demoTour = allTours.data[0];
+                    if (allTours && allTours.tours && allTours.tours.length > 0) {
+                        const demoTour = allTours.tours[0];
                         setTour(demoTour);
                         setBookingDetails(prev => ({
                             ...prev,

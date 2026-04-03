@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { bookingsService } from '@/services/bookings.service';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
@@ -54,7 +54,10 @@ interface BookingDetails {
     createdAt: string;
 }
 
-export default function BookingDetailsPage({ params }: { params: { id: string } }) {
+export default function BookingDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const resolvedParams = use(params);
+    const id = resolvedParams.id;
+
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [booking, setBooking] = useState<BookingDetails | null>(null);
@@ -67,7 +70,7 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
                 const userData = await authService.getCurrentUser();
                 setUser(userData);
 
-                const data = await bookingsService.getBookingById(params.id);
+                const data = await bookingsService.getBookingById(id);
                 setBooking(data);
             } catch (err: any) {
                 console.error('Failed to fetch booking:', err);
@@ -81,8 +84,10 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
             }
         };
 
-        fetchDetails();
-    }, [params.id, router]);
+        if (id) {
+            fetchDetails();
+        }
+    }, [id, router]);
 
     const handleLogout = () => {
         authService.logout();

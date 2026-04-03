@@ -61,6 +61,7 @@ export default function PaymentStep({
                     email: addressDetails?.email || userEmail,
                     phone: addressDetails?.mobile || '',
                     specialRequests: '',
+                    billingAddress: addressDetails,
                 };
                 const response = await bookingsService.createGuestBooking(guestPayload);
                 const bookingId = response.bookings?.[0] || response._id;
@@ -74,6 +75,7 @@ export default function PaymentStep({
                     specialRequests: '',
                     email: addressDetails?.email || userEmail,
                     phone: addressDetails?.mobile || '',
+                    billingAddress: addressDetails,
                 };
                 booking = await bookingsService.createBooking(bookingPayload);
             }

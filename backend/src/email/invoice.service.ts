@@ -132,10 +132,9 @@ export class InvoiceService {
             padding-bottom: 30px;
             margin-bottom: 40px;
         }
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: #FF5722;
+        .logo img {
+            max-width: 200px;
+            height: auto;
         }
         .invoice-label {
             text-align: right;
@@ -223,7 +222,9 @@ export class InvoiceService {
 </head>
 <body>
     <div class="header">
-        <div class="logo">🕉️ VedicTravel</div>
+        <div class="logo">
+            <img src="https://res.cloudinary.com/duuedlbxa/image/upload/v1775119508/branding/vt-logo-email.png" alt="VedicTravel Logo">
+        </div>
         <div class="invoice-label">
             <h1>RECEIPT</h1>
             <p style="color: #666; margin: 4px 0;">#${booking.bookingReference}</p>

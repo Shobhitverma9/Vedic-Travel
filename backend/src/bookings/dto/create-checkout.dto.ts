@@ -1,5 +1,47 @@
-import { IsNotEmpty, IsArray, ValidateNested, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsArray, ValidateNested, IsOptional, IsString, IsEmail, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
+
+class AddressDetailDto {
+    @IsNotEmpty()
+    @IsString()
+    title: string;
+
+    @IsNotEmpty()
+    @IsString()
+    firstName: string;
+
+    @IsNotEmpty()
+    @IsString()
+    lastName: string;
+
+    @IsNotEmpty()
+    @IsString()
+    addressLine: string;
+
+    @IsNotEmpty()
+    @IsString()
+    state: string;
+
+    @IsNotEmpty()
+    @IsString()
+    city: string;
+
+    @IsNotEmpty()
+    @IsString()
+    pincode: string;
+
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+
+    @IsNotEmpty()
+    @IsString()
+    mobile: string;
+
+    @IsOptional()
+    @IsString()
+    gst?: string;
+}
 
 class TravelerDetailDto {
     @IsNotEmpty()
@@ -7,6 +49,7 @@ class TravelerDetailDto {
     name: string;
 
     @IsNotEmpty()
+    @IsNumber()
     age: number;
 
     @IsNotEmpty()
@@ -33,6 +76,11 @@ export class CreateCheckoutDto {
     phone: string;
 
     @IsNotEmpty()
-    @IsString()
+    @IsEmail()
     email: string;
+
+    @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => AddressDetailDto)
+    billingAddress: AddressDetailDto;
 }

@@ -211,19 +211,20 @@ export class PaymentsService {
         const amount = booking.totalAmount.toFixed(2);
         const productinfo = `Tour Booking - ${booking.bookingReference}`;
 
-        // Handle guest vs logged-in user
+        // Handle guest vs logged-in user — Prioritize communication email given at checkout
         let firstname = '';
-        let email = '';
-        let phone = '';
+        let email = booking.email || '';
+        let phone = booking.phone || '';
+
+        if (booking.user && !email) {
+            email = (booking.user as any).email;
+            phone = phone || (booking.user as any).phone || '';
+        }
 
         if (booking.user) {
             firstname = (booking.user as any).name;
-            email = (booking.user as any).email;
-            phone = (booking.user as any).phone || '';
         } else {
-            firstname = (booking as any).travelerDetails?.[0]?.name || 'Guest';
-            email = (booking as any).email || '';
-            phone = (booking as any).phone || '';
+            firstname = (booking as any).billingAddress?.firstName || (booking as any).travelerDetails?.[0]?.name || 'Guest';
         }
 
         // Generate hash — must match: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||SALT
@@ -299,8 +300,10 @@ export class PaymentsService {
             // Send booking confirmation email
             try {
                 const tour = (updatedBooking as any).tour;
-                const recipientEmail = email || (updatedBooking as any).email || '';
-                const recipientName = firstname || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+                const recipientEmail = email || (updatedBooking as any).email || (updatedBooking as any).user?.email || '';
+                const billingName = (updatedBooking as any).billingAddress ? `${(updatedBooking as any).billingAddress.firstName} ${(updatedBooking as any).billingAddress.lastName}` : '';
+                const recipientName = billingName || firstname || (updatedBooking as any).user?.name || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+                const recipientPhone = (updatedBooking as any).phone || (updatedBooking as any).user?.phone || '';
 
                 if (recipientEmail) {
                     await this.emailService.sendBookingConfirmationEmail(
@@ -335,7 +338,6 @@ export class PaymentsService {
                         );
 
                         // Send WhatsApp Notification with Receipt Doc
-                        const recipientPhone = (updatedBooking as any).user?.phone || (updatedBooking as any).phone || '';
                         if (recipientPhone) {
                             await this.whatsappService.sendBookingInvoiceDoc(
                                 recipientPhone,
@@ -357,9 +359,9 @@ export class PaymentsService {
                         adminEmail,
                         {
                             bookingReference: (updatedBooking as any).bookingReference,
-                            customerName: (updatedBooking as any).user?.name || (updatedBooking as any).travelerDetails?.[0]?.name || 'Guest',
+                            customerName: recipientName,
                             customerEmail: recipientEmail,
-                            customerPhone: (updatedBooking as any).user?.phone || (updatedBooking as any).phone,
+                            customerPhone: recipientPhone,
                             tourName: tour?.title || 'Your Yatra',
                             travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
                             numberOfTravelers: (updatedBooking as any).numberOfTravelers,
@@ -382,8 +384,10 @@ export class PaymentsService {
             // Send payment failure email
             try {
                 const tour = (updatedBooking as any).tour;
-                const recipientEmail = email || (updatedBooking as any).email || '';
-                const recipientName = firstname || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+                const recipientEmail = email || (updatedBooking as any).email || (updatedBooking as any).user?.email || '';
+                const billingName = (updatedBooking as any).billingAddress ? `${(updatedBooking as any).billingAddress.firstName} ${(updatedBooking as any).billingAddress.lastName}` : '';
+                const recipientName = billingName || firstname || (updatedBooking as any).user?.name || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+                const recipientPhone = (updatedBooking as any).phone || (updatedBooking as any).user?.phone || '';
 
                 if (recipientEmail) {
                     await this.emailService.sendPaymentFailureEmail(

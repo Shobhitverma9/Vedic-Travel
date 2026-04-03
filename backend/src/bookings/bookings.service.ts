@@ -49,6 +49,7 @@ export class BookingsService {
             specialRequests: createBookingDto.specialRequests,
             email,
             phone,
+            billingAddress: (createBookingDto as any).billingAddress,
         });
 
         return booking.populate(['user', 'tour']);
@@ -254,6 +255,9 @@ export class BookingsService {
                 travelerDetails: checkoutDto.travelerDetails.slice(0, item.quantity),
                 specialRequests: checkoutDto.specialRequests,
                 bookingReference: this.generateBookingReference(),
+                email: checkoutDto.email,
+                phone: checkoutDto.phone,
+                billingAddress: checkoutDto.billingAddress,
             });
 
             bookings.push(booking);
@@ -298,6 +302,7 @@ export class BookingsService {
                 bookingReference: this.generateBookingReference(),
                 email,
                 phone,
+                billingAddress: guestDto.billingAddress,
                 isGuest: true,
             });
 

@@ -39,7 +39,8 @@ export class EmailSchedulerService {
         for (const booking of upcomingBookings) {
             try {
                 const recipientEmail = booking.email || (booking.user as any)?.email;
-                const recipientName = (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
+                const billingName = (booking as any).billingAddress ? `${(booking as any).billingAddress.firstName} ${(booking as any).billingAddress.lastName}` : '';
+                const recipientName = billingName || (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
 
                 if (recipientEmail) {
                     await this.emailService.sendTripReminderEmail(
@@ -82,7 +83,8 @@ export class EmailSchedulerService {
         for (const booking of pendingBookings) {
             try {
                 const recipientEmail = booking.email || (booking.user as any)?.email;
-                const recipientName = (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
+                const billingName = (booking as any).billingAddress ? `${(booking as any).billingAddress.firstName} ${(booking as any).billingAddress.lastName}` : '';
+                const recipientName = billingName || (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
 
                 if (recipientEmail) {
                     await this.emailService.sendPendingPaymentReminderEmail(
@@ -125,7 +127,8 @@ export class EmailSchedulerService {
         for (const booking of completedBookings) {
             try {
                 const recipientEmail = booking.email || (booking.user as any)?.email;
-                const recipientName = (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
+                const billingName = (booking as any).billingAddress ? `${(booking as any).billingAddress.firstName} ${(booking as any).billingAddress.lastName}` : '';
+                const recipientName = billingName || (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
 
                 if (recipientEmail) {
                     await this.emailService.sendFeedbackRequestEmail(

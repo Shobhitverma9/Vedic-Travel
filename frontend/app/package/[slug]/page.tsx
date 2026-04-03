@@ -145,8 +145,8 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                 setTour(data);
 
                 // Fetch other tours for "Others are also choosing"
-                const allTours = await toursService.getAllTours({ limit: 5 });
-                const filteredOtherTours = allTours.filter((t: any) => t._id !== data._id).slice(0, 4);
+                const allToursResponse = await toursService.getAllTours({ limit: 5 });
+                const filteredOtherTours = (allToursResponse.tours || []).filter((t: any) => t._id !== data._id).slice(0, 4);
                 setOtherTours(filteredOtherTours);
             } catch (error) {
                 console.error('Error fetching tour:', error);
@@ -421,86 +421,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                             </ul>
                         </div>
 
-                            {/* 9. Policies & Terms Section */}
-                            <div id="policies-section" className="scroll-mt-24">
-                                <TourPolicies
-                                    paymentTerms={tour.paymentTerms}
-                                    cancellationPolicy={tour.useDefaultCancellationPolicy !== false ? undefined : tour.cancellationPolicy}
-                                    termsAndConditions={tour.termsAndConditions}
-                                />
-                                
-                                {tour.useDefaultCancellationPolicy !== false && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Standard Cancellation Policy</h4>
-                                        <div className="prose prose-sm max-w-none text-gray-700 space-y-4 leading-relaxed italic">
-                                            <p>
-                                                It is our most important aim that you enjoy your holiday and that we earn your trust. However, we are not responsible for any cancellation due to any industrial disputes, Technical failure of any type of transport we use, loss of earnings, late arrivals or force majeure, or any items beyond our control. After booking, if you wish to cancel your trip, you must notify Vedic Travel in writing. Once a Vedic Travel notice is received, cancellation will take effect subject to the following:
-                                            </p>
-                                            <ul className="list-disc pl-5 space-y-3 font-medium">
-                                                <li>Between 90 – 150 days before departure: Full refund (minus USD 300 deposit).</li>
-                                                <li>Between 30-90 days before departure: 75% refund (minus USD 300 deposit).</li>
-                                                <li>Less than 30 days prior: Non-Refundable.</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {tour.hasEasyCancellation && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Easy Cancellation</h4>
-                                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                            <li>Cancellation before 45 days from travel date - <span className="font-bold text-green-600">NO Cancellation Charges.</span></li>
-                                            <li>Cancelled between 45-30 days - <span className="font-bold text-orange-500">25% Cancellation charges</span></li>
-                                            <li>Cancelled between 30-15 days - <span className="font-bold text-orange-600">50% Cancellation charges</span></li>
-                                            <li>Cancelled within 15 days - <span className="font-bold text-red-600">Non-Refundable</span></li>
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {tour.hasEasyVisa && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Visa Easy</h4>
-                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                            Just mention the reference code & drop the passport to the nearest VFS Center. You do not require to do the biometrics again or submit any financial documents.
-                                        </p>
-                                    </div>
-                                )}
-
-                                {tour.hasHighSeason && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">High Season</h4>
-                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                            Prices can fluctuate during peak season dates.
-                                        </p>
-                                    </div>
-                                )}
-
-                                {tour.hasTravelValidity && (
-                                    <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">Travel Validity</h4>
-                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                            The deal is valid for travel till Wednesday, 31 December 2025.
-                                        </p>
-                                    </div>
-                                )}
-
-                                {tour.customBlocks && tour.customBlocks.map((block: any, idx: number) => (
-                                    <div key={idx} className="bg-gradient-to-r from-blue-50 to-white rounded-2xl p-6 border border-blue-100 mb-8 shadow-sm">
-                                        <h4 className="font-bold text-deepBlue mb-4 border-b border-blue-200 pb-2 text-lg uppercase tracking-tight">{block.title}</h4>
-                                        {block.isLink ? (
-                                            <a href={block.content} target="_blank" rel="noopener noreferrer" className="inline-block bg-deepBlue text-white px-6 py-3 rounded-xl font-bold hover:bg-saffron transition-colors shadow-lg transform hover:-translate-y-0.5">
-                                                Go to {block.title}
-                                            </a>
-                                        ) : (
-                                            <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                                {block.content}
-                                            </p>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-
-                        {/* 10. Footer / Need Help - Updated to matches redesigned style */}
+                        {/* 10. Need Help Section */}
                         <div className="relative group overflow-hidden rounded-2xl bg-gradient-to-r from-deepBlue to-purple p-8 mb-8 shadow-2xl">
                             {/* Decorative Pichwai-inspired circles */}
                             <div className="absolute -right-10 -top-10 w-40 h-40 bg-saffron/10 rounded-full blur-3xl group-hover:bg-saffron/20 transition-colors"></div>

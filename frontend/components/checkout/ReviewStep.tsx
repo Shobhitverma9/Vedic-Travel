@@ -28,7 +28,7 @@ export default function ReviewStep({ bookingDetails, onContinue }: ReviewStepPro
         exchangeRate
     } = bookingDetails;
 
-    const baseAmountInINR = costPerAdult * exchangeRate;
+    const baseAmountInINR = costPerAdult; // Price is already in INR from the backend
     const totalTourCost = baseAmountInINR * adults;
     const gstRate = 0.05;
     const gstAmount = totalTourCost * gstRate;
@@ -91,8 +91,8 @@ export default function ReviewStep({ bookingDetails, onContinue }: ReviewStepPro
                         <div className="flex justify-between items-start">
                             <div className="text-gray-500">
                                 Total Tour Cost
-                                <span className="block text-[11px] text-gray-400 mt-0.5">
-                                    USD @ ₹{exchangeRate}
+                                <span className="block text-[11px] text-gray-400 mt-0.5 uppercase tracking-wider">
+                                    Final price per adult
                                 </span>
                             </div>
                             <span className="font-semibold text-[#1A2332]">
