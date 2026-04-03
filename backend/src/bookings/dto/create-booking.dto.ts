@@ -112,4 +112,12 @@ export class CreateBookingDto {
     @ValidateNested()
     @Type(() => AddressDetailDto)
     billingAddress?: AddressDetailDto;
+ 
+    @IsOptional()
+    @IsString()
+    departureCity?: string;
+ 
+    @IsOptional()
+    @IsNumber()
+    citySurcharge?: number;
 }

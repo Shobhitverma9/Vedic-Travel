@@ -33,6 +33,12 @@ export class Booking {
 
     @Prop({ required: true })
     totalAmount: number;
+ 
+    @Prop()
+    departureCity: string;
+ 
+    @Prop({ default: 0 })
+    citySurcharge: number;
 
     @Prop({ default: PaymentStatus.PENDING, enum: PaymentStatus })
     paymentStatus: PaymentStatus;

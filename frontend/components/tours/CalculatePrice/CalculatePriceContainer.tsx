@@ -415,7 +415,7 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                         {/* Continue Button */}
                         <div className="flex items-center justify-end mt-8 pt-6 border-t border-dashed border-gray-200">
                             <Link
-                                href={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}`}
+                                href={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}`}
                                 className="bg-deepBlue text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-blue-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block"
                             >
                                 Continue

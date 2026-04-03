@@ -12,6 +12,8 @@ interface ReviewStepProps {
         costPerAdult: number;
         currency: string;
         exchangeRate: number;
+        departureCity: string;
+        citySurcharge: number;
     };
     onContinue: () => void;
 }
@@ -25,10 +27,12 @@ export default function ReviewStep({ bookingDetails, onContinue }: ReviewStepPro
         adults,
         costPerAdult,
         currency,
-        exchangeRate
+        exchangeRate,
+        departureCity,
+        citySurcharge
     } = bookingDetails;
 
-    const baseAmountInINR = costPerAdult; // Price is already in INR from the backend
+    const baseAmountInINR = (costPerAdult + citySurcharge); // Price includes city surcharge if any
     const totalTourCost = baseAmountInINR * adults;
     const gstRate = 0.05;
     const gstAmount = totalTourCost * gstRate;
@@ -41,7 +45,7 @@ export default function ReviewStep({ bookingDetails, onContinue }: ReviewStepPro
     });
 
     const rows = [
-        { icon: <MapPin size={15} className="text-saffron" />, label: 'Starting From', value: 'Joining Direct' },
+        { icon: <MapPin size={15} className="text-saffron" />, label: 'Starting From', value: departureCity },
         { icon: <Tag size={15} className="text-saffron" />, label: 'Tour Type', value: tourType },
         { icon: <Package size={15} className="text-saffron" />, label: 'Package Type', value: packageType },
         { icon: <Calendar size={15} className="text-saffron" />, label: 'Date of Travel', value: formattedDate },

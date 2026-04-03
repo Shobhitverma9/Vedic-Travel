@@ -31,8 +31,10 @@ export class BookingsService {
             throw new BadRequestException(`Maximum group size is ${tour.maxGroupSize}`);
         }
 
-        // Calculate total amount
-        const totalAmount = tour.price * numberOfTravelers;
+        // Calculate total amount (Price + Surcharge) * Travelers + 5% GST
+        const citySurcharge = createBookingDto.citySurcharge || 0;
+        const baseCost = (tour.price + citySurcharge) * numberOfTravelers;
+        const totalAmount = baseCost * 1.05;
 
         // Generate booking reference
         const bookingReference = this.generateBookingReference();
@@ -50,6 +52,8 @@ export class BookingsService {
             email,
             phone,
             billingAddress: (createBookingDto as any).billingAddress,
+            departureCity: createBookingDto.departureCity,
+            citySurcharge: createBookingDto.citySurcharge,
         });
 
         return booking.populate(['user', 'tour']);
@@ -289,7 +293,9 @@ export class BookingsService {
                 throw new BadRequestException(`${tour.title}: Maximum group size is ${tour.maxGroupSize}`);
             }
 
-            const bookingAmount = tour.price * item.quantity;
+            const citySurcharge = guestDto.citySurcharge || 0;
+            const baseCost = (tour.price + citySurcharge) * item.quantity;
+            const bookingAmount = baseCost * 1.05;
             totalAmount += bookingAmount;
 
             const booking = await this.bookingModel.create({
@@ -303,6 +309,8 @@ export class BookingsService {
                 email,
                 phone,
                 billingAddress: guestDto.billingAddress,
+                departureCity: guestDto.departureCity,
+                citySurcharge: guestDto.citySurcharge,
                 isGuest: true,
             });
 

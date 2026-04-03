@@ -22,6 +22,8 @@ function CheckoutContent() {
     const tourId = searchParams.get('tourId');
     const dateParam = searchParams.get('date');
     const adultsParam = searchParams.get('adults');
+    const departureCityParam = searchParams.get('departureCity');
+    const citySurchargeParam = searchParams.get('citySurcharge');
 
     // Derived State
     const [tour, setTour] = useState<any>(null);
@@ -34,6 +36,8 @@ function CheckoutContent() {
         costPerAdult: 0,
         currency: 'INR',
         exchangeRate: 1.00, // No conversion needed as price is already in INR
+        departureCity: departureCityParam || 'Joining Direct',
+        citySurcharge: citySurchargeParam ? parseFloat(citySurchargeParam) : 0,
     });
 
     // User Data
@@ -157,7 +161,7 @@ function CheckoutContent() {
     }
 
     // Calculate total for PaymentStep
-    const baseAmountInINR = bookingDetails.costPerAdult * bookingDetails.exchangeRate;
+    const baseAmountInINR = (bookingDetails.costPerAdult + bookingDetails.citySurcharge);
     const totalTourCost = baseAmountInINR * bookingDetails.adults;
     const gstAmount = totalTourCost * 0.05;
     const grandTotal = totalTourCost + gstAmount;
