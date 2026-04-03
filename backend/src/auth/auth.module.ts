@@ -20,12 +20,31 @@ import { OTPService } from './services/otp.service';
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.registerAsync({
             imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: {
-                    expiresIn: configService.get<string>('JWT_EXPIRATION') || '7d',
-                },
-            }),
+            useFactory: async (configService: ConfigService) => {
+                const expiresInConfig = configService.get<string>('JWT_EXPIRATION') || '7d';
+                
+                // Robust parsing of expiresIn
+                let expiresIn: string | number = expiresInConfig;
+                if (typeof expiresIn === 'string') {
+                    expiresIn = expiresIn.trim();
+                    // If it's a numeric string, convert to number
+                    if (/^\d+$/.test(expiresIn)) {
+                        expiresIn = parseInt(expiresIn, 10);
+                    }
+                }
+                
+                // Final check to ensure it's not an empty string or null
+                if (!expiresIn) {
+                    expiresIn = '7d';
+                }
+
+                return {
+                    secret: configService.get<string>('JWT_SECRET'),
+                    signOptions: {
+                        expiresIn,
+                    },
+                };
+            },
             inject: [ConfigService],
         }),
         MongooseModule.forFeature([
