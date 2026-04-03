@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { toursService } from '@/services/tours.service';
+import { settingsService } from '@/services/settings.service';
 import { notFound } from 'next/navigation';
 import TourPageHero from '@/components/tours/TourPageHero';
 import TourPricingCard from '@/components/tours/TourPricingCard';
@@ -144,10 +145,28 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                 }
                 setTour(data);
 
-                // Fetch other tours for "Others are also choosing"
-                const allToursResponse = await toursService.getAllTours({ limit: 5 });
-                const filteredOtherTours = (allToursResponse.tours || []).filter((t: any) => t._id !== data._id).slice(0, 4);
-                setOtherTours(filteredOtherTours);
+                // Fetch global "Others are also choosing" settings
+                try {
+                    const settingsData = await settingsService.getSetting('global_others_choosing');
+                    if (settingsData && settingsData.value && Array.isArray(settingsData.value) && settingsData.value.length > 0) {
+                        const globalToursResponse = await toursService.getAllTours({ ids: settingsData.value, limit: 12 });
+                        // Sort hydrated tours to match the order of IDs in the setting
+                        const hydrated = settingsData.value
+                            .map((id: string) => globalToursResponse.tours.find((t: any) => t._id === id))
+                            .filter((t: any) => t && t._id !== data._id);
+                        setOtherTours(hydrated.slice(0, 4));
+                    } else {
+                        // Fallback to existing logic if no global settings
+                        const allToursResponse = await toursService.getAllTours({ limit: 5 });
+                        const filteredOtherTours = (allToursResponse.tours || []).filter((t: any) => t._id !== data._id).slice(0, 4);
+                        setOtherTours(filteredOtherTours);
+                    }
+                } catch (err) {
+                    // Fallback to existing logic if settings fetch fails
+                    const allToursResponse = await toursService.getAllTours({ limit: 5 });
+                    const filteredOtherTours = (allToursResponse.tours || []).filter((t: any) => t._id !== data._id).slice(0, 4);
+                    setOtherTours(filteredOtherTours);
+                }
             } catch (error) {
                 console.error('Error fetching tour:', error);
             } finally {

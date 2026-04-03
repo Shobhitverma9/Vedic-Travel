@@ -45,6 +45,7 @@ export class ToursService {
             order = 'desc',
             isTrending,
             isActive,
+            ids,
         } = query;
 
         const filter: any = {};
@@ -90,6 +91,11 @@ export class ToursService {
 
         if (query.isFavorite) {
             filter.isFavorite = query.isFavorite === 'true';
+        }
+ 
+        if (ids) {
+            const idArray = Array.isArray(ids) ? ids : ids.split(',');
+            filter._id = { $in: idArray };
         }
 
         const skip = (page - 1) * limit;
