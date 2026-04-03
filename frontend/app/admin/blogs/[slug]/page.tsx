@@ -2,8 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { blogsService } from '@/services/blogs.service';
 import ImageUpload from '@/components/common/ImageUpload';
+
+// Load BlogEditor client-side only (Editor.js requires browser APIs)
+const BlogEditor = dynamic(() => import('@/components/admin/blog-editor'), {
+    ssr: false,
+    loading: () => (
+        <div className="border rounded-lg p-4 min-h-[400px] bg-white flex items-center justify-center text-gray-400">
+            Loading editor...
+        </div>
+    ),
+});
 
 export default function BlogEditorPage({ params }: { params: Promise<{ slug: string }> }) {
     const router = useRouter();
@@ -11,15 +22,16 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
     const [initialLoading, setInitialLoading] = useState(true);
     const [id, setId] = useState<string>('');
     const [isEditMode, setIsEditMode] = useState(false);
+    const [editorData, setEditorData] = useState<any>(undefined);
 
     const [formData, setFormData] = useState({
         title: '',
         excerpt: '',
-        content: '',
         image: '',
         author: '',
+        category: '',
         tags: [''],
-        isActive: true,
+        status: 'draft' as 'draft' | 'published',
         publishedDate: new Date().toISOString().split('T')[0],
     });
 
@@ -41,15 +53,26 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
         try {
             const blog = await blogsService.getById(blogId);
             setFormData({
-                title: blog.title,
-                excerpt: blog.excerpt,
-                content: blog.content,
-                image: blog.image,
-                author: blog.author,
-                tags: blog.tags || [''],
-                isActive: blog.isActive,
-                publishedDate: blog.publishedDate ? new Date(blog.publishedDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                title: blog.title || '',
+                excerpt: blog.excerpt || '',
+                image: blog.image || blog.featuredImage || '',
+                author: blog.author || '',
+                category: blog.category || '',
+                tags: blog.tags?.length ? blog.tags : [''],
+                status: (blog.status as any) || (blog.isActive ? 'published' : 'draft'),
+                publishedDate: blog.publishedDate
+                    ? new Date(blog.publishedDate).toISOString().split('T')[0]
+                    : new Date().toISOString().split('T')[0],
             });
+            // Set editor content — handle both JSON and legacy HTML string
+            if (typeof blog.content === 'object' && blog.content !== null) {
+                setEditorData(blog.content);
+            } else if (typeof blog.content === 'string' && blog.content) {
+                // Legacy HTML — wrap as a single html block for the editor
+                setEditorData({
+                    blocks: [{ type: 'html', data: { html: blog.content } }]
+                });
+            }
         } catch (error) {
             console.error('Failed to fetch blog:', error);
             alert('Error loading blog data');
@@ -87,7 +110,10 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
         try {
             const payload = {
                 ...formData,
+                content: editorData,
+                featuredImage: formData.image,
                 tags: formData.tags.filter(t => t.trim()),
+                isActive: formData.status === 'published',
             };
 
             if (isEditMode) {
@@ -104,89 +130,81 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
         }
     };
 
-    if (initialLoading) return <div className="p-8">Loading...</div>;
+    if (initialLoading) return <div className="p-8 text-center">Loading...</div>;
 
     return (
         <div className="max-w-4xl mx-auto pb-16">
-            <h1 className="text-2xl font-bold mb-6">
-                {isEditMode ? 'Edit Blog' : 'Create New Blog'}
-            </h1>
+            <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-bold text-gray-900">
+                    {isEditMode ? 'Edit Blog' : 'Create New Blog'}
+                </h1>
+                <button
+                    type="button"
+                    onClick={() => router.push('/admin/blogs')}
+                    className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                    ← Back to Blogs
+                </button>
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+            <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Basic Info */}
-                <section className="space-y-4">
+                <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Basic Information</h2>
-                    <div className="grid grid-cols-1 gap-4">
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Title *</label>
+                        <input
+                            type="text"
+                            name="title"
+                            required
+                            value={formData.title}
+                            onChange={handleChange}
+                            className="input-field mt-1"
+                            placeholder="The Role of Kedarnath Temple in Indian Mythology and Culture"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Excerpt</label>
+                        <textarea
+                            name="excerpt"
+                            rows={2}
+                            value={formData.excerpt}
+                            onChange={handleChange}
+                            className="input-field mt-1"
+                            placeholder="Short summary for the blog card (2-3 sentences)"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Title *</label>
+                            <label className="block text-sm font-medium text-gray-700">Author</label>
                             <input
                                 type="text"
-                                name="title"
-                                required
-                                value={formData.title}
+                                name="author"
+                                value={formData.author}
                                 onChange={handleChange}
                                 className="input-field mt-1"
-                                placeholder="The Role of Kedarnath Temple in Indian Mythology and Culture"
+                                placeholder="e.g. VedicTravel Team"
                             />
                         </div>
-
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Excerpt *</label>
-                            <textarea
-                                name="excerpt"
-                                required
-                                rows={2}
-                                value={formData.excerpt}
+                            <label className="block text-sm font-medium text-gray-700">Category</label>
+                            <input
+                                type="text"
+                                name="category"
+                                value={formData.category}
                                 onChange={handleChange}
                                 className="input-field mt-1"
-                                placeholder="Short summary for the blog card (2-3 sentences)"
-                            ></textarea>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Content *</label>
-                            <textarea
-                                name="content"
-                                required
-                                rows={12}
-                                value={formData.content}
-                                onChange={handleChange}
-                                className="input-field mt-1"
-                                placeholder="Full blog content... You can use HTML for formatting if needed."
-                            ></textarea>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Author *</label>
-                                <input
-                                    type="text"
-                                    name="author"
-                                    required
-                                    value={formData.author}
-                                    onChange={handleChange}
-                                    className="input-field mt-1"
-                                    placeholder="e.g. VedicTravel Team"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Published Date *</label>
-                                <input
-                                    type="date"
-                                    name="publishedDate"
-                                    required
-                                    value={formData.publishedDate}
-                                    onChange={handleChange}
-                                    className="input-field mt-1"
-                                />
-                            </div>
+                                placeholder="e.g. Spiritual, Travel Tips"
+                            />
                         </div>
                     </div>
                 </section>
 
-                {/* Image */}
-                <section className="space-y-4">
+                {/* Featured Image */}
+                <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Featured Image</h2>
                     <ImageUpload
                         value={formData.image ? [formData.image] : []}
@@ -195,8 +213,20 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
                     />
                 </section>
 
+                {/* Rich Text Editor */}
+                <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+                    <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Content</h2>
+                    <p className="text-xs text-gray-500">
+                        Use the toolbar to add headers, images, carousels, quotes, tables, buttons, and more.
+                    </p>
+                    <BlogEditor
+                        data={editorData}
+                        onChange={(data) => setEditorData(data)}
+                    />
+                </section>
+
                 {/* Tags */}
-                <section className="space-y-4">
+                <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Tags</h2>
                     {formData.tags.map((tag, index) => (
                         <div key={index} className="flex gap-2">
@@ -210,7 +240,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
                             <button
                                 type="button"
                                 onClick={() => removeTag(index)}
-                                className="text-red-500 hover:text-red-700"
+                                className="text-red-500 hover:text-red-700 px-2"
                             >
                                 ×
                             </button>
@@ -225,32 +255,50 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
                     </button>
                 </section>
 
-                {/* Status */}
-                <section className="space-y-4 pt-4 border-t">
-                    <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Status</h2>
-                    <div className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            name="isActive"
-                            id="isActive"
-                            checked={formData.isActive}
-                            onChange={handleChange}
-                            className="h-4 w-4 text-saffron border-gray-300 rounded"
-                        />
-                        <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
-                            Active (Visible to public)
-                        </label>
+                {/* Publish Settings */}
+                <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+                    <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Publish Settings</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Status</label>
+                            <select
+                                name="status"
+                                value={formData.status}
+                                onChange={handleChange}
+                                className="input-field mt-1"
+                            >
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Published Date</label>
+                            <input
+                                type="date"
+                                name="publishedDate"
+                                value={formData.publishedDate}
+                                onChange={handleChange}
+                                className="input-field mt-1"
+                            />
+                        </div>
                     </div>
                 </section>
 
                 {/* Submit */}
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-end gap-4">
+                    <button
+                        type="button"
+                        onClick={() => router.push('/admin/blogs')}
+                        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                    >
+                        Cancel
+                    </button>
                     <button
                         type="submit"
                         disabled={loading}
                         className="btn-primary"
                     >
-                        {loading ? 'Saving...' : 'Save Blog'}
+                        {loading ? 'Saving...' : isEditMode ? 'Update Blog' : 'Publish Blog'}
                     </button>
                 </div>
             </form>

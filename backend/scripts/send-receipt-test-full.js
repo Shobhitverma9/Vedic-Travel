@@ -29,78 +29,214 @@ const client = new postmark.ServerClient(apiKey);
 function getInvoiceHtml(booking) {
     const date = new Date().toLocaleDateString('en-IN', {
         day: 'numeric',
-        month: 'long',
+        month: 'short',
         year: 'numeric',
     });
 
     const travelerName = booking.travelerDetails?.[0]?.name || 'Valued Guest';
-    const tourTitle = booking.tour?.title || 'Spiritual Yatra';
-    const amount = booking.totalAmount.toLocaleString('en-IN');
+    const tourTitle = booking.tour?.title || 'Religious/Spiritual Travel Service';
+    const totalAmount = booking.totalAmount || 0;
+    
+    // Reverse calculation for 5% GST (Inclusive)
+    const basePrice = Math.round(totalAmount / 1.05);
+    const gstAmount = totalAmount - basePrice;
+    
+    const amountStr = totalAmount.toLocaleString('en-IN');
+    const basePriceStr = basePrice.toLocaleString('en-IN');
+    const gstAmountStr = gstAmount.toLocaleString('en-IN');
+    
+    const frontendUrl = 'http://localhost:3000';
 
     return `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; color: #1A2332; margin: 0; padding: 40px; background: #fff; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F5F5F5; padding-bottom: 30px; margin-bottom: 40px; }
-        .logo img { max-width: 200px; height: auto; }
-        .invoice-label { text-align: right; }
-        .invoice-label h1 { margin: 0; font-size: 32px; color: #7B2CBF; letter-spacing: -1px; }
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 60px; }
-        .section-title { font-size: 12px; text-transform: uppercase; color: #999; letter-spacing: 1px; margin-bottom: 12px; font-weight: 700; }
-        .info-box p { margin: 4px 0; font-size: 15px; line-height: 1.5; }
-        .table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-        .table th { text-align: left; background: #F8F9FA; padding: 14px 20px; font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-        .table td { padding: 20px; border-bottom: 1px solid #F0F0F0; font-size: 15px; }
-        .total-section { margin-left: auto; width: 300px; }
-        .total-row { display: flex; justify-content: space-between; padding: 10px 0; }
-        .total-row.grand-total { margin-top: 10px; padding-top: 20px; border-top: 2px solid #F5F5F5; font-size: 20px; font-weight: 700; color: #FF5722; }
-        .status-badge { display: inline-block; background: #E8F5E9; color: #2E7D32; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
-        .footer { margin-top: 100px; text-align: center; color: #999; font-size: 13px; border-top: 1px solid #F5F5F5; padding-top: 30px; }
+        @page { size: A4; margin: 0; }
+        body { font-family: 'Inter', sans-serif; color: #1A2332; margin: 0; padding: 0; background: #fff; -webkit-print-color-adjust: exact; }
+        .page-container { padding: 40px; position: relative; min-height: 29.7cm; box-sizing: border-box; }
+        
+        /* ─── Header Section ─── */
+        .tax-header { width: 100%; border-bottom: 2px solid #000; padding-bottom: 25px; margin-bottom: 20px; }
+        .tax-columns { display: table; width: 100%; table-layout: fixed; }
+        .tax-col { display: table-cell; vertical-align: top; }
+        
+        .title-h1 { margin: 0 0 15px 0; font-size: 24px; font-weight: 700; color: #000; text-transform: uppercase; }
+        .logo-center { text-align: center; }
+        .logo-center img { max-width: 150px; height: auto; margin-bottom: 10px; }
+        
+        .ids-table { width: 100%; font-size: 10px; line-height: 1.4; color: #333; }
+        .ids-col { text-align: left; padding-bottom: 3px; }
+        .ids-col span { font-weight: 700; color: #000; display: block; font-size: 11px; }
+
+        .company-info { text-align: right; font-size: 10px; color: #333; line-height: 1.5; }
+        .company-name { font-size: 12px; font-weight: 700; color: #000; margin-bottom: 5px; text-transform: uppercase; }
+
+        /* ─── Metadata Summary Table ─── */
+        .summary-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1px solid #CCC; }
+        .summary-table th { background: #E0E0E0; border: 1px solid #CCC; padding: 8px 12px; font-size: 11px; font-weight: 700; text-align: left; width: 25%; }
+        .summary-table td { border: 1px solid #CCC; padding: 8px 12px; font-size: 11px; width: 25%; }
+
+        /* ─── Detail Sections ─── */
+        .section { margin-bottom: 20px; }
+        .section-title { font-size: 13px; font-weight: 700; color: #000; margin-bottom: 8px; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 2px; }
+        .detail-row { font-size: 12px; line-height: 1.6; color: #333; margin-bottom: 4px; }
+        .detail-row strong { color: #000; width: 120px; display: inline-block; }
+
+        /* ─── Points (Inclusions) ─── */
+        .points-list { font-size: 11px; color: #444; line-height: 1.4; margin: 5px 0; }
+        .points-list span { display: inline-block; margin-right: 15px; position: relative; padding-left: 10px; }
+        .points-list span:before { content: '•'; position: absolute; left: 0; color: #000; font-weight: bold; }
+
+        /* ─── Financial Table ─── */
+        .finance-table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid #000; }
+        .finance-table th { background: #CCC; border: 1px solid #000; padding: 10px 15px; font-size: 12px; font-weight: 700; text-align: left; }
+        .finance-table td { border: 1px solid #CCC; padding: 10px 15px; font-size: 12px; }
+        .finance-table tr.grand { background: #EEE; font-weight: 700; }
+        .finance-table tr.grand td { border: 1px solid #000; }
+
+        /* ─── Fixed Footer ─── */
+        .page-footer { position: absolute; bottom: 40px; left: 40px; right: 40px; border-top: 1px solid #EEE; padding-top: 20px; display: table; width: 100%; }
+        .footer-left { display: table-cell; vertical-align: top; font-size: 9px; color: #999; }
+        .footer-right { display: table-cell; vertical-align: bottom; text-align: right; font-size: 10px; font-weight: 600; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">
-            <img src="https://res.cloudinary.com/duuedlbxa/image/upload/v1775119508/branding/vt-logo-email.png" alt="VedicTravel Logo">
+    <div class="page-container">
+        <!-- Main Header -->
+        <div class="tax-header">
+            <div class="tax-columns">
+                <div class="tax-col" style="width: 33%;">
+                    <h1 class="title-h1">TAX INVOICE</h1>
+                    <div style="font-size: 10px; color: #666; text-transform: uppercase;">Place of Supply</div>
+                    <div style="font-size: 12px; font-weight: 700; color: #000;">Uttar Pradesh</div>
+                </div>
+                <div class="tax-col" style="width: 34%;">
+                    <div class="logo-center">
+                        <img src="http://localhost:3000/vt-logo-retina-black.png" alt="VedicTravel Logo">
+                        <table class="ids-table">
+                            <tr><td class="ids-col">PAN: <span>AAMCT0974F</span></td></tr>
+                            <tr><td class="ids-col">CIN: <span>U79110UP2025PTC228487</span></td></tr>
+                            <tr><td class="ids-col">GSTIN: <span>09AAMCT0974F1Z0</span></td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="tax-col" style="width: 33%;">
+                    <div class="company-info">
+                        <div class="company-name">Travergetic Innovations PVT LTD</div>
+                        <div>193/4, 2nd Floor, Sector 4, Aditya World City,<br>Bamheta, Ghaziabad, Uttar Pradesh, 201002</div>
+                        <div style="margin-top: 5px;"><strong>Email:</strong> info@vedictravel.com</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="invoice-label">
-            <h1>RECEIPT</h1>
-            <p style="color: #666; margin: 4px 0;">#${booking.bookingReference}</p>
-        </div>
-    </div>
-    <div class="details-grid">
-        <div class="info-box">
-            <div class="section-title">Billed To</div>
-            <p><strong>${travelerName}</strong></p>
-            <p>${booking.email}</p>
-        </div>
-        <div class="info-box" style="text-align: right;">
-            <div class="section-title">Payment Details</div>
-            <p>Date: ${date}</p>
-            <p>Transaction ID: ${booking.payuTransactionId || 'N/A'}</p>
-            <p><span class="status-badge">Paid Successfully</span></p>
-        </div>
-    </div>
-    <table class="table">
-        <thead><tr><th>Description</th><th>Travelers</th><th style="text-align: right;">Amount</th></tr></thead>
-        <tbody>
+
+        <!-- Metadata Summary Table -->
+        <table class="summary-table">
             <tr>
-                <td><strong>${tourTitle}</strong><br><span style="font-size: 13px; color: #666;">Yatra Date: ${new Date(booking.travelDate).toLocaleDateString('en-IN')}</span></td>
-                <td>${booking.numberOfTravelers} Person(s)</td>
-                <td style="text-align: right;">₹${amount}</td>
+                <th>Invoice No.</th>
+                <td>VT/${booking.bookingReference}</td>
+                <th>Invoice Date</th>
+                <td>${date}</td>
             </tr>
-        </tbody>
-    </table>
-    <div class="total-section">
-        <div class="total-row grand-total"><span>Total Paid</span><span>₹${amount}</span></div>
-    </div>
-    <div class="footer">
-        <p>This is a computer-generated receipt. No signature is required.</p>
-        <p><strong>VedicTravel</strong> &bull; Haridwar, Uttarakhand &bull; www.vedictravel.in</p>
+            <tr>
+                <th>Booking ID</th>
+                <td>${booking.bookingReference}</td>
+                <th>Payment Mode</th>
+                <td>UPI / Online</td>
+            </tr>
+            <tr>
+                <th>Transaction ID</th>
+                <td>${booking.payuTransactionId || 'N/A'}</td>
+                <th>Place of Supply</th>
+                <td>Uttar Pradesh</td>
+            </tr>
+        </table>
+
+        <!-- Customer Details -->
+        <div class="section">
+            <div class="section-title">Customer Details</div>
+            <div class="detail-row"><strong>Name:</strong> ${travelerName}</div>
+            <div class="detail-row"><strong>Phone:</strong> +91-XXXXXXXXXX</div>
+            <div class="detail-row"><strong>Email:</strong> ${booking.email}</div>
+            <div class="detail-row"><strong>Address:</strong> Ghaziabad, Uttar Pradesh, India</div>
+        </div>
+
+        <!-- Package Details -->
+        <div class="section">
+            <div class="section-title">Package Details</div>
+            <div class="detail-row"><strong>Package:</strong> ${tourTitle}</div>
+            <div class="detail-row"><strong>Yatra Date:</strong> 20 May 2026 to 24 May 2026</div>
+            <div class="detail-row"><strong>Travellers:</strong> ${booking.numberOfTravelers} Adult(s)</div>
+            <div class="detail-row"><strong>Type:</strong> Spiritual Pilgrimage / Guided Service</div>
+        </div>
+
+        <!-- Inclusions & Exclusions -->
+        <div class="section" style="margin-top: 25px;">
+            <div class="section-title">Inclusions</div>
+            <div class="points-list">
+                <span>Coordination of Sacred Rituals</span>
+                <span>Spiritual Guidance</span>
+                <span>Hotel/Dharamshala Coordination</span>
+                <span>Local Transfers</span>
+                <span>Assistance at Holy Shrines</span>
+            </div>
+            
+            <div class="section-title" style="margin-top: 15px;">Exclusions</div>
+            <div class="points-list">
+                <span>Personal Offerings (Dakshina)</span>
+                <span>Private Poojas</span>
+                <span>Travel Insurance</span>
+                <span>Personal Medical Expenses</span>
+                <span>Extra Meals</span>
+            </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <table class="finance-table">
+            <thead>
+                <tr>
+                    <th style="width: 70%">Description</th>
+                    <th style="width: 30%; text-align: right;">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Package Cost (${booking.numberOfTravelers} Pax)</td>
+                    <td style="text-align: right;">${basePriceStr}</td>
+                </tr>
+                <tr>
+                    <td>GST @ 5%</td>
+                    <td style="text-align: right;">${gstAmountStr}</td>
+                </tr>
+                <tr class="grand">
+                    <td>Total Amount</td>
+                    <td style="text-align: right;">₹${amountStr}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Payment Status -->
+        <div class="section" style="margin-top: 30px;">
+            <div class="section-title">Payment Status</div>
+            <div class="detail-row"><strong>Amount Paid:</strong> ₹${amountStr}</div>
+            <div class="detail-row"><strong>Balance:</strong> ₹0</div>
+            <div class="detail-row"><strong>Payment Date:</strong> ${date}</div>
+        </div>
+
+        <!-- Page Footer -->
+        <div class="page-footer">
+            <div class="footer-left">
+                <strong>Registered Office:</strong> 193/4, 2nd Floor, Sector 4, Aditya World City, Bamheta, Ghaziabad, Uttar Pradesh, INDIA - 201002
+                <br>Terms & Conditions apply. This is a computer-generated receipt and requires no physical signature.
+            </div>
+            <div class="footer-right">
+                <div style="color: #666; margin-bottom: 2px;">Invoice No. VT/${booking.bookingReference}</div>
+                <div class="page-number">Page 1 of 1</div>
+            </div>
+        </div>
     </div>
 </body>
 </html>`;

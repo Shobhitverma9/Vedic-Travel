@@ -1,4 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors } from '@nestjs/common';
+import {
+    Controller, Get, Post, Body, Patch, Param, Delete, Query,
+    UseInterceptors, UploadedFile, HttpException, HttpStatus
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -16,15 +20,33 @@ export class BlogsController {
         return this.blogsService.create(createBlogDto);
     }
 
+    @Post('upload')
+    @ApiOperation({ summary: 'Upload an image for the blog editor' })
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadImage(@UploadedFile() file: Express.Multer.File) {
+        try {
+            if (!file) {
+                throw new HttpException('No file provided', HttpStatus.BAD_REQUEST);
+            }
+            const url = await this.blogsService.uploadImage(file);
+            return { url };
+        } catch (error: any) {
+            throw new HttpException(
+                error.message || 'Image upload failed',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     @Get()
     @UseInterceptors(CacheInterceptor)
-    @ApiOperation({ summary: 'Get all blogs' })
+    @ApiOperation({ summary: 'Get all published blogs' })
     findAll(@Query('limit') limit?: number) {
         return this.blogsService.findAll(limit);
     }
 
     @Get('admin')
-    @ApiOperation({ summary: 'Get all blogs for admin (includes inactive)' })
+    @ApiOperation({ summary: 'Get all blogs for admin (includes drafts)' })
     findAllAdmin() {
         return this.blogsService.findAllAdmin();
     }
@@ -41,6 +63,12 @@ export class BlogsController {
     @ApiOperation({ summary: 'Get blog by slug' })
     findBySlug(@Param('slug') slug: string) {
         return this.blogsService.findBySlug(slug);
+    }
+
+    @Post(':id/view')
+    @ApiOperation({ summary: 'Increment view count' })
+    incrementView(@Param('id') id: string) {
+        return this.blogsService.incrementViews(id);
     }
 
     @Patch(':id')

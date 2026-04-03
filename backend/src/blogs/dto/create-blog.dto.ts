@@ -1,4 +1,4 @@
-import { IsString, IsArray, IsOptional, IsBoolean, IsDateString } from 'class-validator';
+import { IsString, IsArray, IsOptional, IsBoolean, IsDateString, IsObject, IsEnum, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBlogDto {
@@ -6,26 +6,52 @@ export class CreateBlogDto {
     @IsString()
     title: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsString()
-    excerpt: string;
+    @IsOptional()
+    slug?: string;
+
+    @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    excerpt?: string;
+
+    @ApiProperty({
+        description: 'Editor.js JSON content object, or legacy HTML string',
+        required: false,
+    })
+    @IsOptional()
+    content?: any;
+
+    @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    image?: string;
+
+    @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    featuredImage?: string;
 
     @ApiProperty()
     @IsString()
-    content: string;
+    @IsOptional()
+    author?: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsString()
-    image: string;
-
-    @ApiProperty()
-    @IsString()
-    author: string;
+    @IsOptional()
+    category?: string;
 
     @ApiProperty({ type: [String], required: false })
     @IsArray()
     @IsOptional()
     tags?: string[];
+
+    @ApiProperty({ required: false, enum: ['draft', 'published'], default: 'draft' })
+    @IsEnum(['draft', 'published'])
+    @IsOptional()
+    status?: string;
 
     @ApiProperty({ required: false, default: true })
     @IsBoolean()
@@ -36,4 +62,18 @@ export class CreateBlogDto {
     @IsDateString()
     @IsOptional()
     publishedDate?: Date;
+
+    @ApiProperty({ required: false })
+    @IsDateString()
+    @IsOptional()
+    publishedAt?: Date;
+
+    @ApiProperty({ required: false })
+    @IsObject()
+    @IsOptional()
+    seo?: {
+        title?: string;
+        description?: string;
+        keywords?: string[];
+    };
 }

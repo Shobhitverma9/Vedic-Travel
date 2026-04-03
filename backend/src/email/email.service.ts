@@ -1333,8 +1333,8 @@ export class EmailService {
                 <table align="center" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                         ${[1, 2, 3, 4, 5].map(star => `
-                            <td style="padding: 0 10px;">
-                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=${star}" style="display: block; width: 45px; height: 45px; line-height: 45px; background: #FF5722; color: #ffffff; border-radius: 50%; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.2);">${star}</a>
+                            <td style="padding: 0 5px;">
+                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/reviews/new?ref=${details.bookingReference}&rating=${star}" style="display: block; width: 38px; height: 38px; line-height: 38px; background: #FF5722; color: #ffffff; border-radius: 50%; text-decoration: none; font-weight: 700; font-size: 16px; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.2);">${star}</a>
                             </td>
                         `).join('')}
                     </tr>
