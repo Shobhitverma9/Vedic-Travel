@@ -13,6 +13,8 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
     const [initialLoading, setInitialLoading] = useState(true);
     const [id, setId] = useState<string>('');
     const [isEditMode, setIsEditMode] = useState(false);
+    const [draftRestored, setDraftRestored] = useState(false);
+    const [saveDraftStatus, setSaveDraftStatus] = useState('');
 
     // Data for selection
     const [availablePackages, setAvailablePackages] = useState<any[]>([]);
@@ -63,6 +65,17 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                         faqs: yatra.faqs || [],
                         thumbnailImages: yatra.thumbnailImages || [],
                     });
+                } else {
+                    // Try to rehydrate draft from Local Storage
+                    try {
+                        const savedDraft = localStorage.getItem('yatra_draft_new');
+                        if (savedDraft) {
+                            setFormData(JSON.parse(savedDraft));
+                            setDraftRestored(true);
+                        }
+                    } catch (e) {
+                         console.error("Failed to restore yatra draft", e);
+                    }
                 }
             } catch (error: any) {
                 console.error('Initialization error:', error);
@@ -75,6 +88,20 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
 
         init();
     }, [params]);
+
+    // Auto-save draft to local storage
+    useEffect(() => {
+        if (!initialLoading && id === 'new') {
+            try {
+                localStorage.setItem('yatra_draft_new', JSON.stringify(formData));
+                setSaveDraftStatus('Draft saved locally');
+                const timer = setTimeout(() => setSaveDraftStatus(''), 2000);
+                return () => clearTimeout(timer);
+            } catch (e) {
+                console.error("Failed to save draft to local storage", e);
+            }
+        }
+    }, [formData, initialLoading, id]);
 
     const generateSlug = (text: string) => {
         return text
@@ -203,6 +230,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                 await yatrasService.updateYatra(id, payload);
             } else {
                 await yatrasService.createYatra(payload);
+                localStorage.removeItem('yatra_draft_new');
             }
             router.push('/admin/yatras');
         } catch (error: any) {
@@ -221,9 +249,33 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
 
     return (
         <div className="w-full max-w-4xl mx-auto pb-16 px-4 sm:px-0">
-            <h1 className="text-2xl font-bold mb-6">
-                {isEditMode ? 'Edit Yatra' : 'Create New Yatra'}
-            </h1>
+            <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-4">
+                    <h1 className="text-2xl font-bold">
+                        {isEditMode ? 'Edit Yatra' : 'Create New Yatra'}
+                    </h1>
+                    {!isEditMode && draftRestored && (
+                        <button 
+                            type="button" 
+                            onClick={() => {
+                                if (confirm('Are you sure you want to clear the locally saved draft and start fresh?')) {
+                                    localStorage.removeItem('yatra_draft_new');
+                                    window.location.reload();
+                                }
+                            }}
+                            className="text-xs text-red-500 hover:text-red-700 underline bg-red-50 px-2 py-1 rounded"
+                        >
+                            Clear Draft
+                        </button>
+                    )}
+                </div>
+                {!isEditMode && saveDraftStatus && (
+                    <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded flex items-center gap-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        {saveDraftStatus}
+                    </span>
+                )}
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-8 bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-gray-200 mt-6">
                 {/* Basic Info */}

@@ -14,6 +14,8 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
     const [initialLoading, setInitialLoading] = useState(true);
     const [id, setId] = useState<string>('');
     const [isEditMode, setIsEditMode] = useState(false);
+    const [draftRestored, setDraftRestored] = useState(false);
+    const [saveDraftStatus, setSaveDraftStatus] = useState('');
     const [availableYatras, setAvailableYatras] = useState<any[]>([]);
 
     // Form State
@@ -95,11 +97,44 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 setIsEditMode(true);
                 fetchTour(resolvedParams.slug);
             } else {
+                // Check local storage for draft
+                try {
+                    const savedDraft = localStorage.getItem('tour_draft_new');
+                    if (savedDraft) {
+                        const parsed = JSON.parse(savedDraft);
+                        // Rehydrate Dates
+                        if (parsed.departureCities) {
+                            parsed.departureCities = parsed.departureCities.map((dc: any) => ({
+                                ...dc,
+                                availableDates: dc.availableDates ? dc.availableDates.map((d: any) => new Date(d)) : [],
+                                blackoutDates: dc.blackoutDates ? dc.blackoutDates.map((d: any) => new Date(d)) : []
+                            }));
+                        }
+                        setFormData(parsed);
+                        setDraftRestored(true);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse draft from local storage", e);
+                }
                 setInitialLoading(false);
             }
         };
         resolveParams();
     }, [params]);
+
+    // Auto-save draft to local storage
+    useEffect(() => {
+        if (!initialLoading && id === 'new') {
+            try {
+                localStorage.setItem('tour_draft_new', JSON.stringify(formData));
+                setSaveDraftStatus('Draft saved locally');
+                const timer = setTimeout(() => setSaveDraftStatus(''), 2000);
+                return () => clearTimeout(timer);
+            } catch (e) {
+                console.error("Failed to save draft to local storage", e);
+            }
+        }
+    }, [formData, initialLoading, id]);
 
     const fetchTour = async (tourId: string) => {
         try {
@@ -374,6 +409,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 await toursService.updateTour(id, payload);
             } else {
                 await toursService.createTour(payload);
+                localStorage.removeItem('tour_draft_new');
             }
             router.push('/admin/tours');
         } catch (error) {
@@ -431,9 +467,33 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
 
     return (
         <div className="w-full max-w-5xl mx-auto pb-20">
-            <h1 className="text-2xl font-bold mb-6">
-                {isEditMode ? 'Edit Package' : 'Create New Package'}
-            </h1>
+            <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-4">
+                    <h1 className="text-2xl font-bold">
+                        {isEditMode ? 'Edit Package' : 'Create New Package'}
+                    </h1>
+                    {!isEditMode && draftRestored && (
+                        <button 
+                            type="button" 
+                            onClick={() => {
+                                if (confirm('Are you sure you want to clear the locally saved draft and start fresh?')) {
+                                    localStorage.removeItem('tour_draft_new');
+                                    window.location.reload();
+                                }
+                            }}
+                            className="text-xs text-red-500 hover:text-red-700 underline bg-red-50 px-2 py-1 rounded"
+                        >
+                            Clear Draft
+                        </button>
+                    )}
+                </div>
+                {!isEditMode && saveDraftStatus && (
+                    <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded flex items-center gap-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        {saveDraftStatus}
+                    </span>
+                )}
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
 

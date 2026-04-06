@@ -6,10 +6,17 @@ import * as streamifier from 'streamifier';
 @Injectable()
 export class FilesService {
     constructor(private configService: ConfigService) {
+        const cloudName = this.configService.get('CLOUDINARY_CLOUD_NAME')?.trim();
+        const apiKey = this.configService.get('CLOUDINARY_API_KEY')?.trim();
+        const apiSecret = this.configService.get('CLOUDINARY_API_SECRET')?.trim();
+
+        // Safety check logging (masked)
+        console.log(`Cloudinary Config Check: Name=${cloudName}, Key=${apiKey?.substring(0, 4)}...${apiKey?.slice(-3)}, Secret=${apiSecret?.substring(0, 3)}...${apiSecret?.slice(-3)}`);
+
         cloudinary.config({
-            cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
-            api_key: this.configService.get('CLOUDINARY_API_KEY'),
-            api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
+            cloud_name: cloudName,
+            api_key: apiKey,
+            api_secret: apiSecret,
         });
     }
 
