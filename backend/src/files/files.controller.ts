@@ -5,6 +5,7 @@ import {
     UploadedFile,
     UploadedFiles,
     UseGuards,
+    BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -64,6 +65,9 @@ export class FilesController {
     })
     @UseInterceptors(FilesInterceptor('files', 10))
     async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
+        if (!files || files.length === 0) {
+            throw new BadRequestException('No files provided');
+        }
         const urls = await this.filesService.uploadImages(files);
         return { urls };
     }

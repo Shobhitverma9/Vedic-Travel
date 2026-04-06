@@ -31,7 +31,17 @@ export class FilesService {
     }
 
     async uploadImages(files: Array<Express.Multer.File>): Promise<string[]> {
-        const uploadPromises = files.map((file) => this.uploadImage(file));
-        return Promise.all(uploadPromises);
+        if (!files || !files.length) return [];
+        const urls: string[] = [];
+        for (const file of files) {
+            try {
+                const url = await this.uploadImage(file);
+                urls.push(url);
+            } catch (error) {
+                console.error('Error uploading image in batch:', error);
+                throw error;
+            }
+        }
+        return urls;
     }
 }
