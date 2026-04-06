@@ -115,7 +115,14 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                                 blackoutDates: dc.blackoutDates ? dc.blackoutDates.map((d: any) => new Date(d)) : []
                             }));
                         }
-                        setFormData(parsed);
+                        setFormData(prev => ({
+                            ...prev,
+                            ...parsed,
+                            seo: {
+                                ...prev.seo,
+                                ...(parsed.seo || {})
+                            }
+                        }));
                         setDraftRestored(true);
                     }
                 } catch (e) {

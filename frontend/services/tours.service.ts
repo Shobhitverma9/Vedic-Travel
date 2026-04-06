@@ -58,6 +58,11 @@ export interface Tour {
         amount: number;
         paymentType: string;
     };
+    seo?: {
+        title?: string;
+        description?: string;
+        keywords?: string;
+    };
 }
 
 export const toursService = {
