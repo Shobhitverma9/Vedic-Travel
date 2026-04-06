@@ -199,6 +199,13 @@ export class Tour {
 
     @Prop({ type: AdvancePayment, default: { amount: 5000, paymentType: 'fixed' } })
     advancePayment: AdvancePayment;
+
+    @Prop({ type: Object, default: {} })
+    seo: {
+        title: string;
+        description: string;
+        keywords: string;
+    };
 }
 
 export const TourSchema = SchemaFactory.createForClass(Tour);

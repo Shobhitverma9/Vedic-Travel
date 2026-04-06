@@ -60,7 +60,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
     const heroImage = blog.featuredImage || blog.image;
 
     return (
-        <div className="min-h-screen bg-cream/30 py-12">
+        <div className="min-h-screen bg-cream/30 pt-28 pb-12">
             <article className="container mx-auto px-4 max-w-4xl">
                 {/* Hero Image */}
                 {heroImage && (

@@ -254,4 +254,12 @@ export class CreateTourDto {
     @Type(() => DepartureCityDto)
     @IsOptional()
     departureCities?: DepartureCityDto[];
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    seo?: {
+        title?: string;
+        description?: string;
+        keywords?: string;
+    };
 }

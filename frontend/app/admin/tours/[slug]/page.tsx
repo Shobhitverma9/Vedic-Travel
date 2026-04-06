@@ -80,6 +80,11 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
             monthlyDays: number[];
             blackoutDates: Date[];
         }[],
+        seo: {
+            title: '',
+            description: '',
+            keywords: '',
+        },
     });
 
     useEffect(() => {
@@ -187,6 +192,11 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                     availableDates: dc.availableDates?.map((d: any) => new Date(d)) || [],
                     blackoutDates: dc.blackoutDates?.map((d: any) => new Date(d)) || []
                 })) || [],
+                seo: {
+                    title: tour.seo?.title || '',
+                    description: tour.seo?.description || '',
+                    keywords: tour.seo?.keywords || '',
+                },
             });
         } catch (error) {
             console.error('Failed to fetch tour:', error);
@@ -198,6 +208,19 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
 
     const handleChange = (e: any) => {
         const { name, value, type, checked } = e.target;
+        
+        if (name.startsWith('seo.')) {
+            const seoField = name.split('.')[1];
+            setFormData(prev => ({
+                ...prev,
+                seo: {
+                    ...prev.seo,
+                    [seoField]: value
+                }
+            }));
+            return;
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
@@ -572,6 +595,49 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                         <div className="md:col-span-2">
                             <label className="label">Places to Visit (Short Text)</label>
                             <input type="text" name="placesToVisit" value={formData.placesToVisit} onChange={handleChange} className="input-field" placeholder="e.g. 2N Varanasi / 1N Ayodhya" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 1.5 SEO Information */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 className="text-xl font-bold text-gray-800 border-b pb-4 mb-4">SEO Metadata</h2>
+                    <div className="grid grid-cols-1 gap-6">
+                        <div>
+                            <label className="label">Meta Title</label>
+                            <input 
+                                type="text" 
+                                name="seo.title" 
+                                value={formData.seo.title} 
+                                onChange={handleChange} 
+                                className="input-field" 
+                                placeholder="E.g. Best Char Dham Yatra Tour Package | Vedic Travel" 
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Recommended length: 50-60 characters</p>
+                        </div>
+                        <div>
+                            <label className="label">Meta Description</label>
+                            <textarea 
+                                name="seo.description" 
+                                rows={2} 
+                                value={formData.seo.description} 
+                                onChange={handleChange} 
+                                className="input-field" 
+                                placeholder="E.g. Book our exclusive 11N/12D Char Dham Yatra. Get the best pricing with hotels, darshan, and dedicated transport included." 
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Recommended length: 150-160 characters</p>
+                        </div>
+                        <div>
+                            <label className="label">Meta Keywords</label>
+                            <input 
+                                type="text" 
+                                name="seo.keywords" 
+                                value={formData.seo.keywords} 
+                                onChange={handleChange} 
+                                className="input-field" 
+                                placeholder="E.g. char dham package, kedarnath tour, badrinath booking, spiritual yatra" 
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Comma-separated terms</p>
                         </div>
                     </div>
                 </div>

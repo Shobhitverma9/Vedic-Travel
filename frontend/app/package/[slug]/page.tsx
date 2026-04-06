@@ -83,26 +83,6 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
     const [hasAutoTriggered, setHasAutoTriggered] = useState(false);
     const inclusionsRef = useRef<HTMLDivElement>(null);
 
-    // Auto-open modal after 10 seconds
-    useEffect(() => {
-        if (loading || !tour || hasAutoTriggered) return;
-
-        const timer = setTimeout(() => {
-            if (!hasAutoTriggered) {
-                setIsEnquiryModalOpen(true);
-                setHasAutoTriggered(true);
-            }
-        }, 10000); // 10 seconds
-
-        return () => clearTimeout(timer);
-    }, [loading, tour, hasAutoTriggered]);
-
-    // Ensure auto-trigger is disabled if modal is opened (manually or automatically)
-    useEffect(() => {
-        if (isEnquiryModalOpen && !hasAutoTriggered) {
-            setHasAutoTriggered(true);
-        }
-    }, [isEnquiryModalOpen, hasAutoTriggered]);
 
     // Intersection Observer for Inclusions section
     useEffect(() => {

@@ -8,6 +8,11 @@ const CarouselBlock = dynamic(() => import('./carousel-block'), {
     ssr: false
 });
 
+const GridBlock = dynamic(() => import('./grid-block'), {
+    loading: () => <div className="animate-pulse h-64 bg-gray-200 rounded-xl my-8"></div>,
+    ssr: false
+});
+
 export function renderBlock(block: any) {
     switch (block.type) {
         case 'header':
@@ -81,6 +86,8 @@ export function renderBlock(block: any) {
                     </a>
                 </div>
             );
+        case 'grid':
+            return <GridBlock data={block.data} />;
         default:
             return null;
     }
