@@ -8,6 +8,7 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FilesService } from './files.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -37,7 +38,7 @@ export class FilesController {
             },
         },
     })
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
     async uploadFile(@UploadedFile() file: Express.Multer.File) {
         const url = await this.filesService.uploadImage(file);
         return { url };
@@ -63,7 +64,7 @@ export class FilesController {
             },
         },
     })
-    @UseInterceptors(FilesInterceptor('files', 10))
+    @UseInterceptors(FilesInterceptor('files', 10, { storage: memoryStorage() }))
     async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
         if (!files || files.length === 0) {
             throw new BadRequestException('No files provided');

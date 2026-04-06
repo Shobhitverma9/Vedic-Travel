@@ -14,6 +14,10 @@ export class FilesService {
     }
 
     async uploadImage(file: Express.Multer.File, resourceType: 'auto' | 'image' | 'video' = 'auto'): Promise<string> {
+        if (!file || !file.buffer) {
+            throw new Error(`File or file buffer is missing. Multer may not be using memoryStorage. File: ${JSON.stringify({ originalname: file?.originalname, mimetype: file?.mimetype, size: file?.size })}`);
+        }
+
         return new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
@@ -21,7 +25,13 @@ export class FilesService {
                     resource_type: resourceType,
                 },
                 (error, result) => {
-                    if (error) return reject(error);
+                    if (error) {
+                        console.error('Cloudinary upload error:', JSON.stringify(error));
+                        return reject(error);
+                    }
+                    if (!result?.secure_url) {
+                        return reject(new Error('Cloudinary returned no secure_url'));
+                    }
                     resolve(result.secure_url);
                 },
             );
