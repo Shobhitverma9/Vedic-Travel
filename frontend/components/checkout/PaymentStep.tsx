@@ -86,7 +86,7 @@ export default function PaymentStep({
 
             if (!booking || !booking._id) throw new Error('Failed to create booking');
 
-            const paymentResponse = await paymentsService.initiatePayment(booking._id);
+            const paymentResponse = await paymentsService.initiatePayment(booking._id, totalAmount);
             setPaymentData(paymentResponse);
         } catch (error) {
             console.error('Payment initiation failed', error);
@@ -146,9 +146,9 @@ export default function PaymentStep({
                                     <p className="text-xs text-gray-400">Cards · Net Banking · UPI · Wallets</p>
                                 </div>
                             </div>
-                            <div className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center
+                            <div className={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center
                                 ${selectedMethod === 'full' ? 'border-[#FF5722] bg-[#FF5722]' : 'border-gray-300'}`}>
-                                {selectedMethod === 'full' && <div className="w-2 h-2 bg-white rounded-full" />}
+                                {selectedMethod === 'full' && <CheckCircle className="w-3.5 h-3.5 text-white animate-in zoom-in duration-300" />}
                             </div>
                         </div>
 
@@ -178,9 +178,9 @@ export default function PaymentStep({
                                         <p className="text-xs text-gray-400">Starting ₹{emiInfo.lowestEmi?.toLocaleString('en-IN')}/month</p>
                                     </div>
                                 </div>
-                                <div className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center
+                                <div className={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center
                                     ${selectedMethod === 'emi' ? 'border-[#FF5722] bg-[#FF5722]' : 'border-gray-300'}`}>
-                                    {selectedMethod === 'emi' && <div className="w-2 h-2 bg-white rounded-full" />}
+                                    {selectedMethod === 'emi' && <CheckCircle className="w-3.5 h-3.5 text-white animate-in zoom-in duration-300" />}
                                 </div>
                             </div>
                         )}

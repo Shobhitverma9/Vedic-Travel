@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { inquiriesService } from '@/services/inquiries.service';
 import { User, Mail, Phone, MessageSquare, Send, MessageCircle } from 'lucide-react';
+import ReCaptcha from '../shared/ReCaptcha';
+import { toast } from 'sonner';
 
 export default function ContactForm() {
     const [formData, setFormData] = useState({
@@ -13,6 +15,7 @@ export default function ContactForm() {
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,15 +23,23 @@ export default function ContactForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!recaptchaToken) {
+            toast.error('Please complete the reCAPTCHA verification');
+            return;
+        }
+
         setLoading(true);
         try {
             await inquiriesService.createInquiry({
                 ...formData,
                 tourId: 'contact-page',
-                tourName: 'Contact Page Inquiry'
+                tourName: 'Contact Page Inquiry',
+                recaptchaToken,
             });
             setStatus('success');
             setFormData({ name: '', email: '', mobile: '', message: '' });
+            setRecaptchaToken(null);
         } catch (error) {
             console.error('Error submitting form:', error);
             setStatus('error');
@@ -105,6 +116,8 @@ export default function ContactForm() {
                             className="w-full bg-white text-gray-800 pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-saffron resize-none"
                         ></textarea>
                     </div>
+
+                    <ReCaptcha onChange={(token) => setRecaptchaToken(token)} theme="dark" />
 
                     <button
                         type="submit"

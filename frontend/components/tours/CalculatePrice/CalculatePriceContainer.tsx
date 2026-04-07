@@ -33,17 +33,62 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
     const [showPrice, setShowPrice] = useState(false);
     const [showBreakup, setShowBreakup] = useState(false);
     const [activePolicy, setActivePolicy] = useState<'payment' | 'cancellation' | 'terms' | 'privacy' | null>(null);
+    const [paymentOption, setPaymentOption] = useState<'advance' | 'full' | 'custom'>('full');
+    const [customAmount, setCustomAmount] = useState<string>('');
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Derived states
     const totalTravelers = rooms.reduce((acc, room) => acc + room.adults + room.childrenWithBed, 0);
 
-    // Initial city setup
+    // Initial load from localStorage
     useEffect(() => {
+        const savedDraft = localStorage.getItem(`calc_price_draft_${tour._id}`);
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed.selectedCity) setSelectedCity(parsed.selectedCity);
+                if (parsed.rooms) setRooms(parsed.rooms);
+                if (parsed.travelDate) setTravelDate(new Date(parsed.travelDate));
+                if (parsed.mobile) setMobile(parsed.mobile);
+                if (parsed.email) setEmail(parsed.email);
+                if (parsed.paymentOption) setPaymentOption(parsed.paymentOption);
+                if (parsed.customAmount) setCustomAmount(parsed.customAmount);
+                if (parsed.showPrice) setShowPrice(parsed.showPrice);
+                if (parsed.acceptedTerms) setAcceptedTerms(parsed.acceptedTerms);
+                if (parsed.pricePerPerson) setPricePerPerson(parsed.pricePerPerson);
+            } catch (e) {
+                console.error("Failed to load draft", e);
+            }
+        }
+        setIsLoaded(true);
+    }, [tour._id]);
+
+    // Save to localStorage
+    useEffect(() => {
+        if (!isLoaded) return;
+        const draft = {
+            selectedCity,
+            rooms,
+            travelDate,
+            mobile,
+            email,
+            paymentOption,
+            customAmount,
+            showPrice,
+            acceptedTerms,
+            pricePerPerson
+        };
+        localStorage.setItem(`calc_price_draft_${tour._id}`, JSON.stringify(draft));
+    }, [selectedCity, rooms, travelDate, mobile, email, paymentOption, customAmount, showPrice, acceptedTerms, pricePerPerson, tour._id, isLoaded]);
+
+    // Initial city setup (only if not loaded from draft)
+    useEffect(() => {
+        if (!isLoaded || selectedCity) return;
         const defaultCity = tour.departureCities?.find((c: any) => c.isDefault) ||
             tour.departureCities?.[0] ||
             { city: 'Joining Direct', surcharge: 0, availabilityType: 'daily' };
         setSelectedCity(defaultCity);
-    }, [tour]);
+    }, [tour, isLoaded, selectedCity]);
 
     // Reset group discount if travelers <= 6
     useEffect(() => {
@@ -77,6 +122,14 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
     const gstRate = 0.05;
     const gstAmount = baseCost * gstRate;
     const totalCost = baseCost + gstAmount;
+
+    // Selected payment amount
+    const advanceAmount = tour.advancePayment?.amount || 5000;
+    const amountToPay = paymentOption === 'advance' 
+        ? advanceAmount 
+        : paymentOption === 'custom' 
+            ? parseFloat(customAmount) || 0 
+            : totalCost;
 
     // Policy content parsing logic
     const parseSections = (text: string | undefined, defaultTitle: string) => {
@@ -368,26 +421,51 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                             <h3 className="text-center font-medium text-gray-700">Select Payment Amount</h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                {/* Option 1: Advance */}
                                 <label className="cursor-pointer group relative">
-                                    <input type="radio" name="paymentOption" className="peer sr-only" />
-                                    <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-saffron peer-checked:bg-orange-50/50 hover:border-gray-300 transition-all h-full text-center">
+                                    <input 
+                                        type="radio" 
+                                        name="paymentOption" 
+                                        className="peer sr-only" 
+                                        checked={paymentOption === 'advance'}
+                                        onChange={() => setPaymentOption('advance')}
+                                    />
+                                    <div className={`p-4 rounded-xl border-2 transition-all h-full text-center ${
+                                        paymentOption === 'advance' ? 'border-saffron bg-orange-50/50' : 'border-gray-200 hover:border-gray-300'
+                                    }`}>
                                         <div className="flex justify-center mb-2">
-                                            <div className="w-5 h-5 rounded border border-gray-400 peer-checked:border-saffron peer-checked:bg-saffron flex items-center justify-center">
-                                                <CheckCircle className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100" />
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
+                                                paymentOption === 'advance' ? 'border-saffron bg-saffron' : 'border-gray-400'
+                                            }`}>
+                                                <CheckCircle className={`w-3 h-3 text-white transition-opacity ${
+                                                    paymentOption === 'advance' ? 'opacity-100' : 'opacity-0'
+                                                }`} />
                                             </div>
                                         </div>
                                         <h4 className="font-bold text-gray-800 mb-2 text-sm">Pay Advance &amp; Book your seats</h4>
-                                        <p className="text-xl font-bold text-deepBlue whitespace-nowrap">₹ {(tour.advancePayment?.amount || 5000).toLocaleString()}</p>
+                                        <p className="text-xl font-bold text-deepBlue whitespace-nowrap">₹ {advanceAmount.toLocaleString()}</p>
                                     </div>
                                 </label>
 
                                 {/* Option 2: Full Payment */}
                                 <label className="cursor-pointer group relative">
-                                    <input type="radio" name="paymentOption" className="peer sr-only" defaultChecked />
-                                    <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-saffron peer-checked:bg-orange-50/50 hover:border-gray-300 transition-all h-full text-center">
+                                    <input 
+                                        type="radio" 
+                                        name="paymentOption" 
+                                        className="peer sr-only" 
+                                        checked={paymentOption === 'full'}
+                                        onChange={() => setPaymentOption('full')}
+                                    />
+                                    <div className={`p-4 rounded-xl border-2 transition-all h-full text-center ${
+                                        paymentOption === 'full' ? 'border-saffron bg-orange-50/50' : 'border-gray-200 hover:border-gray-300'
+                                    }`}>
                                         <div className="flex justify-center mb-2">
-                                            <div className="w-5 h-5 rounded border border-gray-400 peer-checked:border-saffron peer-checked:bg-saffron flex items-center justify-center"></div>
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
+                                                paymentOption === 'full' ? 'border-saffron bg-saffron' : 'border-gray-400'
+                                            }`}>
+                                                <CheckCircle className={`w-3 h-3 text-white transition-opacity ${
+                                                    paymentOption === 'full' ? 'opacity-100' : 'opacity-0'
+                                                }`} />
+                                            </div>
                                         </div>
                                         <h4 className="font-bold text-gray-800 mb-2 text-sm">Pay Full Amount</h4>
                                         <p className="text-xl font-bold text-deepBlue whitespace-nowrap">₹ {totalCost.toLocaleString()}</p>
@@ -396,16 +474,35 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
 
                                 {/* Option 3: Custom Amount */}
                                 <label className="cursor-pointer group relative">
-                                    <input type="radio" name="paymentOption" className="peer sr-only" />
-                                    <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-saffron peer-checked:bg-orange-50/50 hover:border-gray-300 transition-all h-full text-center">
+                                    <input 
+                                        type="radio" 
+                                        name="paymentOption" 
+                                        className="peer sr-only" 
+                                        checked={paymentOption === 'custom'}
+                                        onChange={() => setPaymentOption('custom')}
+                                    />
+                                    <div className={`p-4 rounded-xl border-2 transition-all h-full text-center ${
+                                        paymentOption === 'custom' ? 'border-saffron bg-orange-50/50' : 'border-gray-200 hover:border-gray-300'
+                                    }`}>
                                         <div className="flex justify-center mb-2">
-                                            <div className="w-5 h-5 rounded border border-gray-400 peer-checked:border-saffron peer-checked:bg-saffron flex items-center justify-center"></div>
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
+                                                paymentOption === 'custom' ? 'border-saffron bg-saffron' : 'border-gray-400'
+                                            }`}>
+                                                <CheckCircle className={`w-3 h-3 text-white transition-opacity ${
+                                                    paymentOption === 'custom' ? 'opacity-100' : 'opacity-0'
+                                                }`} />
+                                            </div>
                                         </div>
                                         <h4 className="font-bold text-gray-800 mb-2 text-sm">Enter the amount you wish to pay</h4>
                                         <input
                                             type="number"
                                             className="w-full border-b border-gray-300 bg-transparent text-center font-bold text-xl py-1 focus:outline-none focus:border-deepBlue"
                                             placeholder="Enter Amount"
+                                            value={customAmount}
+                                            onChange={(e) => {
+                                                setCustomAmount(e.target.value);
+                                                setPaymentOption('custom');
+                                            }}
                                         />
                                     </div>
                                 </label>
@@ -415,7 +512,7 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                         {/* Continue Button */}
                         <div className="flex items-center justify-end mt-8 pt-6 border-t border-dashed border-gray-200">
                             <Link
-                                href={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}`}
+                                href={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}&paidAmount=${amountToPay}`}
                                 className="bg-deepBlue text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-blue-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block"
                             >
                                 Continue

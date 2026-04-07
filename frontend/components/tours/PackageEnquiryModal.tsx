@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, User, Phone, Mail, MapPin, Loader2, Minus, Plus } from 'lucide-react';
 import { inquiriesService } from '@/services/inquiries.service';
 import { toast } from 'sonner';
+import ReCaptcha from '../shared/ReCaptcha';
 
 interface PackageEnquiryModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
         infants: 0,
     });
     const [loading, setLoading] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -33,12 +35,19 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!recaptchaToken) {
+            toast.error('Please complete the reCAPTCHA verification');
+            return;
+        }
+
         setLoading(true);
         try {
             await inquiriesService.createInquiry({
                 ...formData,
                 tourId,
                 tourName,
+                recaptchaToken,
             });
             toast.success('Inquiry submitted successfully! We will contact you soon.');
             onClose();
@@ -51,6 +60,7 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                 children: 0,
                 infants: 0,
             });
+            setRecaptchaToken(null);
         } catch (error) {
             console.error('Error submitting inquiry:', error);
             toast.error('Failed to submit inquiry. Please try again.');
@@ -211,6 +221,7 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                                 </div>
                             </div>
                         </div>
+                        <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
 
                         <button
                             type="submit"

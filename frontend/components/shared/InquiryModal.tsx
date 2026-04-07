@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { inquiriesService } from '@/services/inquiries.service';
+import ReCaptcha from './ReCaptcha';
+import { toast } from 'sonner';
 
 interface InquiryModalProps {
     isOpen: boolean;
@@ -19,27 +21,36 @@ export default function InquiryModal({ isOpen, onClose, tourId, tourName, tourIm
     });
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!recaptchaToken) {
+            toast.error('Please complete the reCAPTCHA verification');
+            return;
+        }
+
         setLoading(true);
         try {
             await inquiriesService.createInquiry({
                 ...formData,
                 tourId,
                 tourName,
+                recaptchaToken,
             });
             setSuccess(true);
             setTimeout(() => {
                 onClose();
                 setSuccess(false);
                 setFormData({ name: '', email: '', mobile: '' });
+                setRecaptchaToken(null);
             }, 2000);
         } catch (error) {
             console.error('Error submitting inquiry:', error);
-            alert('Failed to submit inquiry. Please try again.');
+            toast.error('Failed to submit inquiry. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -107,6 +118,7 @@ export default function InquiryModal({ isOpen, onClose, tourId, tourName, tourIm
                                     onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                                 />
                             </div>
+                            <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
                             <button
                                 type="submit"
                                 disabled={loading}

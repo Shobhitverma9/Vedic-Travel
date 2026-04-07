@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, X, CheckCircle } from 'lucide-react';
 import { format, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, startOfWeek, endOfWeek, addDays, getDay, isBefore, startOfDay } from 'date-fns';
 
 interface BookingCalendarProps {
@@ -151,9 +151,14 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                                         }
                                     `}
                                 >
-                                    <span className={`font-semibold ${isSelected ? 'text-deepBlue' : 'text-gray-700'}`}>
-                                        {format(day, 'd')}
-                                    </span>
+                                    <div className="flex justify-between items-start">
+                                        <span className={`font-semibold ${isSelected ? 'text-deepBlue' : 'text-gray-700'}`}>
+                                            {format(day, 'd')}
+                                        </span>
+                                        {isSelected && (
+                                            <CheckCircle className="w-4 h-4 text-deepBlue animate-in zoom-in duration-300" />
+                                        )}
+                                    </div>
 
                                     {available && (
                                         <div className="mt-auto text-right">

@@ -185,7 +185,7 @@ export class PaymentsService {
         };
     }
 
-    async initiatePayment(bookingId: string, userId?: string) {
+    async initiatePayment(bookingId: string, userId?: string, providedAmount?: number) {
         const query: any = { _id: bookingId };
         if (userId) {
             query.user = userId;
@@ -208,7 +208,7 @@ export class PaymentsService {
             await this.bookingModel.findByIdAndUpdate(bookingId, { payuTransactionId: txnid });
         }
 
-        const amount = booking.totalAmount.toFixed(2);
+        const amount = (providedAmount || booking.totalAmount).toFixed(2);
         const productinfo = `Tour Booking - ${booking.bookingReference}`;
 
         // Handle guest vs logged-in user — Prioritize communication email given at checkout

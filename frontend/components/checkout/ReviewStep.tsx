@@ -15,10 +15,11 @@ interface ReviewStepProps {
         departureCity: string;
         citySurcharge: number;
     };
+    paidAmount?: number;
     onContinue: () => void;
 }
 
-export default function ReviewStep({ bookingDetails, onContinue }: ReviewStepProps) {
+export default function ReviewStep({ bookingDetails, paidAmount, onContinue }: ReviewStepProps) {
     const {
         tourName,
         tourType,
@@ -36,7 +37,11 @@ export default function ReviewStep({ bookingDetails, onContinue }: ReviewStepPro
     const totalTourCost = baseAmountInINR * adults;
     const gstRate = 0.05;
     const gstAmount = totalTourCost * gstRate;
-    const grandTotal = totalTourCost + gstAmount;
+    const fullGrandTotal = totalTourCost + gstAmount;
+    
+    // The amount the user actually selected to pay now
+    const selectedPayableAmount = paidAmount || fullGrandTotal;
+    const isPartialPayment = paidAmount && Math.abs(paidAmount - fullGrandTotal) > 1;
 
     const formattedDate = new Date(travelDate).toLocaleDateString('en-GB', {
         day: '2-digit',
@@ -116,11 +121,22 @@ export default function ReviewStep({ bookingDetails, onContinue }: ReviewStepPro
                             </span>
                         </div>
 
-                        <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between items-center">
-                            <span className="font-bold text-[#1A2332]">Grand Total</span>
-                            <span className="font-bold text-lg text-[#FF5722]">
-                                ₹{grandTotal.toLocaleString('en-IN')}
-                            </span>
+                        <div className="border-t border-dashed border-gray-200 pt-3 flex flex-col gap-2">
+                            <div className="flex justify-between items-center text-xs text-gray-500 uppercase tracking-wide">
+                                <span>Total Package Cost</span>
+                                <span>₹{fullGrandTotal.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div className="flex justify-between items-center bg-orange-50 -mx-5 px-5 py-3 mt-1">
+                                <span className="font-bold text-[#1A2332] uppercase tracking-wider text-xs">Amount to Pay Now</span>
+                                <span className="font-bold text-xl text-[#FF5722]">
+                                    ₹{selectedPayableAmount.toLocaleString('en-IN')}
+                                </span>
+                            </div>
+                            {isPartialPayment && (
+                                <p className="text-[10px] text-amber-600 mt-1 italic text-right leading-tight">
+                                    Remaining amount to be paid as per payment policy
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>

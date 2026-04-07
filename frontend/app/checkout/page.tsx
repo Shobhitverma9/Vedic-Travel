@@ -16,6 +16,7 @@ function CheckoutContent() {
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Booking Data
     // We expect tourId, date, adults from URL
@@ -24,6 +25,7 @@ function CheckoutContent() {
     const adultsParam = searchParams.get('adults');
     const departureCityParam = searchParams.get('departureCity');
     const citySurchargeParam = searchParams.get('citySurcharge');
+    const paidAmountParam = searchParams.get('paidAmount');
 
     // Derived State
     const [tour, setTour] = useState<any>(null);
@@ -117,6 +119,38 @@ function CheckoutContent() {
         checkAuth();
     }, [tourId]);
 
+    // Initial load from localStorage
+    useEffect(() => {
+        if (!tourId) return;
+        const savedDraft = localStorage.getItem(`checkout_draft_${tourId}`);
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed.currentStep) setCurrentStep(parsed.currentStep);
+                if (parsed.userEmail) setUserEmail(parsed.userEmail);
+                if (parsed.isGuest !== undefined) setIsGuest(parsed.isGuest);
+                if (parsed.travelerDetails) setTravelerDetails(parsed.travelerDetails);
+                if (parsed.addressDetails) setAddressDetails(parsed.addressDetails);
+            } catch (e) {
+                console.error("Failed to load checkout draft", e);
+            }
+        }
+        setIsLoaded(true);
+    }, [tourId]);
+
+    // Save to localStorage
+    useEffect(() => {
+        if (!isLoaded || !tourId) return;
+        const draft = {
+            currentStep,
+            userEmail,
+            isGuest,
+            travelerDetails,
+            addressDetails
+        };
+        localStorage.setItem(`checkout_draft_${tourId}`, JSON.stringify(draft));
+    }, [currentStep, userEmail, isGuest, travelerDetails, addressDetails, tourId, isLoaded]);
+
 
     const handleReviewContinue = () => {
         // If already logged in, skip the auth step entirely
@@ -164,7 +198,10 @@ function CheckoutContent() {
     const baseAmountInINR = (bookingDetails.costPerAdult + bookingDetails.citySurcharge);
     const totalTourCost = baseAmountInINR * bookingDetails.adults;
     const gstAmount = totalTourCost * 0.05;
-    const grandTotal = totalTourCost + gstAmount;
+    const fullGrandTotal = totalTourCost + gstAmount;
+    
+    // If paidAmount was passed in URL, use it, otherwise use full grand total
+    const grandTotal = paidAmountParam ? parseFloat(paidAmountParam) : fullGrandTotal;
 
     return (
         <div className="min-h-screen bg-[#F8F6F2] pb-12">
@@ -174,6 +211,7 @@ function CheckoutContent() {
                 {currentStep === 1 && (
                     <ReviewStep
                         bookingDetails={bookingDetails}
+                        paidAmount={grandTotal}
                         onContinue={handleReviewContinue}
                     />
                 )}

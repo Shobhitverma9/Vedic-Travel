@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   title: "VedicTravel - Rediscovering Ancient Bharat",
   description: "India's #1 Cultural & Spiritual Tourism Company. Experience mesmerizing spiritual tours across ancient Bharat.",
   keywords: "spiritual tours, India tourism, cultural tours, temple tours, pilgrimage, Char Dham, Varanasi",
+  icons: {
+    icon: "/vt-icon.png",
+  },
 };
 
 export default function RootLayout({

@@ -14,6 +14,7 @@ export const inquiriesService = {
         yatraId?: string;
         yatraName?: string;
         destination?: string;
+        recaptchaToken?: string;
     }) {
         const response = await apiClient.post('/inquiries', data);
         return response.data;

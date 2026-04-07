@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Inquiry, InquiryDocument } from './schemas/inquiry.schema';
 import { CreateInquiryDto } from './dto/create-inquiry.dto';
 import { EmailService } from '../email/email.service';
+import axios from 'axios';
 
 @Injectable()
 export class InquiriesService {
@@ -14,8 +15,34 @@ export class InquiriesService {
         private configService: ConfigService,
     ) { }
 
+    private async verifyRecaptcha(token: string): Promise<boolean> {
+        const secretKey = this.configService.get<string>('RECAPTCHA_SECRET_KEY');
+        
+        if (!secretKey) {
+            console.warn('RECAPTCHA_SECRET_KEY is not defined. Skipping verification in development mode.');
+            return true; // Skip if no key (for dev)
+        }
+
+        try {
+            const response = await axios.post(
+                `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`
+            );
+            return response.data.success;
+        } catch (error) {
+            console.error('reCAPTCHA verification error:', error);
+            return false;
+        }
+    }
+
     async create(createInquiryDto: CreateInquiryDto): Promise<Inquiry> {
-        const createdInquiry = new this.inquiryModel(createInquiryDto);
+        const { recaptchaToken, ...inquiryData } = createInquiryDto;
+
+        const isValid = await this.verifyRecaptcha(recaptchaToken);
+        if (!isValid) {
+            throw new BadRequestException('reCAPTCHA verification failed. Please try again.');
+        }
+
+        const createdInquiry = new this.inquiryModel(inquiryData);
         const savedInquiry = await createdInquiry.save();
 
         // Send notification emails (asynchronously)

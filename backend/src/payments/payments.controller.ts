@@ -28,6 +28,7 @@ export class PaymentsController {
         return this.paymentsService.initiatePayment(
             initiatePaymentDto.bookingId,
             userId,
+            initiatePaymentDto.amount,
         );
     }
 

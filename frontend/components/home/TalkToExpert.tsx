@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { inquiriesService } from '@/services/inquiries.service';
 import { ChevronDown } from 'lucide-react';
 import { countries } from '@/data/countries';
+import ReCaptcha from '../shared/ReCaptcha';
+import { toast } from 'sonner';
 
 export default function TalkToExpert() {
     const [mobile, setMobile] = useState('');
@@ -11,10 +13,16 @@ export default function TalkToExpert() {
     const [selectedCountry, setSelectedCountry] = useState(countries.find(c => c.dial_code === '+91') || countries[0]);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!mobile) return;
+        
+        if (!recaptchaToken) {
+            toast.error('Please complete the reCAPTCHA verification');
+            return;
+        }
 
         setLoading(true);
         setStatus('idle');
@@ -27,9 +35,11 @@ export default function TalkToExpert() {
                 message: 'Requesting callback from expert',
                 tourId: 'general-inquiry',
                 tourName: 'General Inquiry',
+                recaptchaToken,
             });
             setStatus('success');
             setMobile('');
+            setRecaptchaToken(null);
         } catch (error) {
             console.error('Error submitting inquiry:', error);
             setStatus('error');
@@ -106,6 +116,9 @@ export default function TalkToExpert() {
                                 >
                                     {loading ? '...' : 'Request Call'}
                                 </button>
+                            </div>
+                            <div className="mt-4">
+                                <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
                             </div>
                         </form>
                         {status === 'success' && (

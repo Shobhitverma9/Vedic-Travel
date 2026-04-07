@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Send, Users, MapPin, Calendar, User, Phone, Mail } from 'lucide-react';
 import { inquiriesService } from '@/services/inquiries.service';
+import ReCaptcha from '../shared/ReCaptcha';
+import { toast } from 'sonner';
 
 interface CustomEnquiryFormProps {
     yatraId: string;
@@ -12,6 +14,7 @@ interface CustomEnquiryFormProps {
 export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryFormProps) {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -30,6 +33,12 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!recaptchaToken) {
+            toast.error('Please complete the reCAPTCHA verification');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -39,8 +48,10 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
                 yatraName,
                 tourName: `Custom: ${yatraName}`,
                 tourId: 'custom',
+                recaptchaToken,
             });
             setSuccess(true);
+            setRecaptchaToken(null);
             setFormData({
                 name: '',
                 email: '',
@@ -53,7 +64,7 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
             });
         } catch (error) {
             console.error('Inquiry failed:', error);
-            alert('Failed to send enquiry. Please try again.');
+            toast.error('Failed to send enquiry. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -190,6 +201,8 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
                                         placeholder="Tell us about your trip requirements..."
                                     ></textarea>
                                 </div>
+
+                                <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
 
                                 <button
                                     type="submit"

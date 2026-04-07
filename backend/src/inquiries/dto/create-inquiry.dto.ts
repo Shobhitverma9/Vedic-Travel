@@ -35,4 +35,8 @@ export class CreateInquiryDto {
     @IsString()
     @IsOptional()
     tourName?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    recaptchaToken: string;
 }

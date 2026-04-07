@@ -1,8 +1,8 @@
 import apiClient from '../lib/api-client';
 
 export const paymentsService = {
-    initiatePayment: async (bookingId: string) => {
-        const response = await apiClient.post('/payments/initiate', { bookingId });
+    initiatePayment: async (bookingId: string, amount?: number) => {
+        const response = await apiClient.post('/payments/initiate', { bookingId, amount });
         return response.data;
     },
 
