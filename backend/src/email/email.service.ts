@@ -267,96 +267,16 @@ export class EmailService {
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #FFF8F3;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #4A148C 0%, #7B2CBF 100%);
-            padding: 40px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .greeting {
-            font-size: 18px;
-            color: #1A2332;
-            margin-bottom: 20px;
-        }
-        .otp-box {
-            background: #F3E8FF;
-            border: 2px solid #7B2CBF;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            margin: 30px 0;
-        }
-        .otp-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .otp-code {
-            font-size: 36px;
-            font-weight: bold;
-            color: #FF5722;
-            letter-spacing: 8px;
-            font-family: 'Courier New', monospace;
-        }
-        .expiry {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #7B2CBF;
-        }
-        .info {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-top: 20px;
-        }
-        .footer {
-            background-color: #1A2332;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-        }
-        .footer a {
-            color: #FF5722;
-            text-decoration: none;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🕉️ VedicTravel</h1>
-        </div>
+        ${this.getEmailHeader('Verify Your Account', 'Complete Your Registration')}
         <div class="content">
-            <div class="greeting">
-                Hello ${name},
-            </div>
-            <p>Thank you for signing up with VedicTravel. To complete your registration, please use the OTP code below:</p>
+            <div class="greeting">Namaste ${name},</div>
+            <p class="message">Thank you for signing up with VedicTravel. To complete your registration and begin your spiritual journey, please use the verification code below:</p>
             
             <div class="otp-box">
                 <div class="otp-label">Your Verification Code</div>
@@ -364,21 +284,17 @@ export class EmailService {
                 <div class="expiry">⏱️ Expires in 10 minutes</div>
             </div>
             
-            <p class="info">
+            <p class="message" style="font-size: 14px; color: #718096; margin-top: 20px;">
                 If you didn't request this code, please ignore this email. Your account security is important to us.
             </p>
-            <p class="info">
+            <p class="message" style="text-align: center; color: #7B2CBF; font-weight: 600;">
                 We're excited to help you begin your spiritual journey!
             </p>
         </div>
-        <div class="footer">
-            <p>© 2026 VedicTravel. All rights reserved.</p>
-            <p>Begin your spiritual journey with us.</p>
-        </div>
+        ${this.getEmailFooter()}
     </div>
 </body>
-</html>
-        `;
+</html>`;
     }
 
     private getLoginOTPEmailTemplate(otp: string, name: string): string {
@@ -386,121 +302,37 @@ export class EmailService {
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #FFF8F3;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #4A148C 0%, #7B2CBF 100%);
-            padding: 40px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .greeting {
-            font-size: 18px;
-            color: #1A2332;
-            margin-bottom: 20px;
-        }
-        .otp-box {
-            background: linear-gradient(135deg, #F3E8FF 0%, #FFE8E0 100%);
-            border: 2px solid #7B2CBF;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            margin: 30px 0;
-        }
-        .otp-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .otp-code {
-            font-size: 36px;
-            font-weight: bold;
-            color: #7B2CBF;
-            letter-spacing: 8px;
-            font-family: 'Courier New', monospace;
-        }
-        .expiry {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #FF5722;
-        }
-        .warning {
-            background-color: #FFF3CD;
-            border-left: 4px solid #FFA726;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .info {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .footer {
-            background-color: #1A2332;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${this.getEmailStyles()}</style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🕉️ VedicTravel</h1>
-        </div>
+        ${this.getEmailHeader('Login Verification', 'Your Secure Access Code')}
         <div class="content">
-            <div class="greeting">
-                Hello ${name},
-            </div>
-            <p>Someone requested a login code for your VedicTravel account. Use the code below to sign in:</p>
+            <div class="greeting">Namaste ${name},</div>
+            <p class="message">Someone requested a login code for your VedicTravel account. Use the code below to sign in safely:</p>
             
-            <div class="otp-box">
+            <div class="otp-box" style="background: linear-gradient(135deg, #F3E8FF 0%, #FFE8E0 100%); border-color: #7B2CBF;">
                 <div class="otp-label">Your Login Code</div>
-                <div class="otp-code">${otp}</div>
+                <div class="otp-code" style="color: #7B2CBF;">${otp}</div>
                 <div class="expiry">⏱️ Expires in 10 minutes</div>
             </div>
             
-            <div class="warning">
-                <strong>⚠️ Security Alert:</strong> If you didn't request this code, please secure your account immediately by changing your password.
+            <div style="background-color: #FFF3CD; border-left: 4px solid #FFA726; padding: 15px; margin: 20px 0; border-radius: 8px;">
+                <p style="margin: 0; font-size: 13px; color: #92400E;">
+                    <strong>⚠️ Security Alert:</strong> If you didn't request this code, please secure your account immediately or contact our support team.
+                </p>
             </div>
             
-            <p class="info">
+            <p class="message" style="font-size: 14px; color: #718096; margin-top: 20px;">
                 This code can only be used once and will expire in 10 minutes.
             </p>
         </div>
-        <div class="footer">
-            <p>© 2026 VedicTravel. All rights reserved.</p>
-            <p>Your spiritual journey, secured.</p>
-        </div>
+        ${this.getEmailFooter()}
     </div>
 </body>
-</html>
-        `;
+</html>`;
     }
 
     private getWelcomeEmailTemplate(name: string): string {
@@ -1433,6 +1265,10 @@ export class EmailService {
             .footer-social { margin-top: 25px; }
             .footer-social a { display: inline-block; margin: 0 8px; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; line-height: 32px; font-size: 14px; text-decoration: none; color: white; }
             .footer-address { margin-top: 25px; font-size: 12px; color: #718096; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; }
+            .otp-box { background: #F3E8FF; border: 2px solid #7B2CBF; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0; }
+            .otp-label { font-size: 14px; color: #666; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+            .otp-code { font-size: 36px; font-weight: bold; color: #FF5722; letter-spacing: 8px; font-family: 'Courier New', monospace; }
+            .expiry { margin-top: 15px; font-size: 14px; color: #7B2CBF; }
         `;
     }
 

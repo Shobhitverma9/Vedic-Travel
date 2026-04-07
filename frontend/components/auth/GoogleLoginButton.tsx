@@ -8,7 +8,7 @@ export default function GoogleLoginButton() {
     const handleGoogleLogin = () => {
         setIsLoading(true);
         // Store current URL to return to after login
-        localStorage.setItem('auth_return_url', window.location.pathname);
+        localStorage.setItem('auth_return_url', window.location.pathname + window.location.search);
 
         const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
         window.location.href = `${backendUrl}/auth/google`;

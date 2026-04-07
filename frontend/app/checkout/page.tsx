@@ -151,6 +151,13 @@ function CheckoutContent() {
         localStorage.setItem(`checkout_draft_${tourId}`, JSON.stringify(draft));
     }, [currentStep, userEmail, isGuest, travelerDetails, addressDetails, tourId, isLoaded]);
 
+    // Auto-advance if user is already logged in on step 2
+    useEffect(() => {
+        if (!isGuest && currentStep === 2) {
+            setCurrentStep(3);
+        }
+    }, [isGuest, currentStep]);
+
 
     const handleReviewContinue = () => {
         // If already logged in, skip the auth step entirely

@@ -30,6 +30,16 @@ export class PaymentsService {
         this.payuBaseUrl = this.configService.get<string>('PAYU_BASE_URL');
         this.successUrl = this.configService.get<string>('PAYU_SUCCESS_URL');
         this.failureUrl = this.configService.get<string>('PAYU_FAILURE_URL');
+
+        // Debug logging for production deployment issues
+        if (process.env.NODE_ENV === 'production' || !this.payuBaseUrl) {
+            console.log(`[PaymentsService] Configuration check:
+                PAYU_BASE_URL: ${this.payuBaseUrl ? 'SET' : 'MISSING'} (${this.payuBaseUrl?.substring(0, 10)}${this.payuBaseUrl ? '...' : ''})
+                PAYU_MERCHANT_KEY: ${this.merchantKey ? 'SET' : 'MISSING'}
+                PAYU_SUCCESS_URL: ${this.successUrl ? 'SET' : 'MISSING'}
+                PAYU_FAILURE_URL: ${this.failureUrl ? 'SET' : 'MISSING'}
+            `);
+        }
     }
 
 
@@ -199,6 +209,11 @@ export class PaymentsService {
 
         if (booking.paymentStatus === PaymentStatus.SUCCESS) {
             throw new BadRequestException('Payment already completed');
+        }
+
+        if (!this.payuBaseUrl) {
+            console.error('[PaymentsService] Cannot initiate payment: PAYU_BASE_URL is missing in environment variables');
+            throw new BadRequestException('Payment gateway configuration error. Please contact support.');
         }
 
         let txnid = booking.payuTransactionId;

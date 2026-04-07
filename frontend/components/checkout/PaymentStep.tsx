@@ -87,10 +87,15 @@ export default function PaymentStep({
             if (!booking || !booking._id) throw new Error('Failed to create booking');
 
             const paymentResponse = await paymentsService.initiatePayment(booking._id, totalAmount);
+            
+            if (!paymentResponse || !paymentResponse.paymentUrl) {
+                throw new Error('Payment gateway is not currently available. This is likely due to a server configuration issue.');
+            }
+
             setPaymentData(paymentResponse);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Payment initiation failed', error);
-            alert('Failed to initiate payment. Please try again.');
+            alert(error.message || 'Failed to initiate payment. Please try again.');
             setIsProcessing(false);
         }
     };

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import { toast } from 'sonner';
 import OTPInput from '@/components/auth/OTPInput';
@@ -14,6 +14,8 @@ type LoginMethod = 'password' | 'otp';
 
 export default function SignInPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl');
     const [loginMethod, setLoginMethod] = useState<LoginMethod>('password');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -23,13 +25,13 @@ export default function SignInPage() {
     const [loading, setLoading] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
 
-    // Redirect to dashboard if already logged in
+    // Redirect if already logged in
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            router.replace('/dashboard');
+            router.replace(callbackUrl || '/dashboard');
         }
-    }, [router]);
+    }, [router, callbackUrl]);
 
     const handlePasswordLogin = async () => {
         try {
@@ -39,7 +41,7 @@ export default function SignInPage() {
             } else {
                 toast.success('You’re one step closer to your next dream destination.');
             }
-            router.push('/dashboard');
+            router.push(callbackUrl || '/dashboard');
         } catch (err: any) {
             const msg = err.response?.data?.message || 'Login failed. Please try again.';
             setError(msg);
@@ -96,7 +98,7 @@ export default function SignInPage() {
             } else {
                 toast.success('You’re one step closer to your next dream destination.');
             }
-            router.push('/dashboard');
+            router.push(callbackUrl || '/dashboard');
         } catch (err: any) {
             const msg = err.response?.data?.message || 'Login failed. Please try again.';
             setError(msg);

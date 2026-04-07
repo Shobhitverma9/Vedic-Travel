@@ -1,7 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Shield, Eye, EyeOff } from 'lucide-react';
+import { Shield, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { authService } from '@/services/auth.service';
+import { toast } from 'sonner';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 interface AuthStepProps {
     onContinue: (email: string, isGuest: boolean) => void;
@@ -13,15 +16,33 @@ export default function AuthStep({ onContinue }: AuthStepProps) {
     const [loginPassword, setLoginPassword] = useState('');
     const [showPass, setShowPass] = useState(false);
     const [view, setView] = useState<'login' | 'guest'>('login');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleGuestSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onContinue(guestEmail, true);
     };
 
-    const handleLoginSubmit = (e: React.FormEvent) => {
+    const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onContinue(loginEmail, false);
+        setError('');
+        setIsLoading(true);
+
+        try {
+            await authService.login({
+                email: loginEmail,
+                password: loginPassword
+            });
+            toast.success('Successfully signed in!');
+            onContinue(loginEmail, false);
+        } catch (err: any) {
+            const msg = err.response?.data?.message || 'Invalid email or password';
+            setError(msg);
+            toast.error(msg);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const inputClass =
@@ -44,16 +65,9 @@ export default function AuthStep({ onContinue }: AuthStepProps) {
 
                 <div className="p-6">
                     {/* Google Sign In */}
-                    <button className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl p-3 hover:bg-gray-50 transition-colors mb-5 group">
-                        <img
-                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                            alt="Google"
-                            className="w-5 h-5"
-                        />
-                        <span className="font-medium text-gray-700 text-sm group-hover:text-[#1A2332]">
-                            Continue with Google
-                        </span>
-                    </button>
+                    <div className="mb-5">
+                        <GoogleLoginButton />
+                    </div>
 
                     {/* Divider */}
                     <div className="relative mb-5 flex items-center">
@@ -90,11 +104,23 @@ export default function AuthStep({ onContinue }: AuthStepProps) {
                                 </button>
                             </div>
 
+                            {error && (
+                                <p className="text-red-500 text-xs font-medium px-1">{error}</p>
+                            )}
+
                             <button
                                 type="submit"
-                                className="w-full bg-[#FF5722] hover:bg-[#E64A19] text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-orange-200 hover:-translate-y-0.5 active:translate-y-0 text-sm tracking-wide mt-1"
+                                disabled={isLoading}
+                                className="w-full bg-[#FF5722] hover:bg-[#E64A19] text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-orange-200 hover:-translate-y-0.5 active:translate-y-0 text-sm tracking-wide mt-1 flex items-center justify-center gap-2"
                             >
-                                Sign In & Continue
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 size={18} className="animate-spin" />
+                                        Signing in...
+                                    </>
+                                ) : (
+                                    'Sign In & Continue'
+                                )}
                             </button>
 
                             <div className="text-center pt-2">

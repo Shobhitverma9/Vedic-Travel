@@ -77,28 +77,28 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
 
                 {/* Header */}
-                <div className="p-6 border-b flex justify-between items-center bg-gray-50">
+                <div className="p-4 md:p-6 border-b flex justify-between items-center bg-gray-50">
                     <div>
-                        <h2 className="text-2xl font-bold text-deepBlue">Select Date of Travel</h2>
-                        <p className="text-sm text-gray-500">The price in calendar represents the starting price per person.</p>
+                        <h2 className="text-lg md:text-2xl font-bold text-deepBlue">Select Date of Travel</h2>
+                        <p className="text-[10px] md:text-sm text-gray-500 line-clamp-1 md:line-clamp-none">Starting price per person shown in calendar.</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                        <X className="w-6 h-6 text-gray-500" />
+                    <button onClick={onClose} className="p-1.5 md:p-2 hover:bg-gray-200 rounded-full transition-colors">
+                        <X className="w-5 h-5 md:w-6 md:h-6 text-gray-500" />
                     </button>
                 </div>
 
                 {/* Calendar Controls */}
-                <div className="flex items-center justify-between p-4 px-8 border-b">
-                    <div className="flex items-center gap-4">
-                        <h3 className="text-xl font-bold text-gray-800 w-40">
+                <div className="flex items-center justify-between p-3 md:p-4 px-4 md:px-8 border-b">
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <h3 className="text-base md:text-xl font-bold text-gray-800 w-32 md:w-40">
                             {format(currentMonth, 'MMMM yyyy')}
                         </h3>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1 md:gap-2">
                             <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded-full">
-                                <ChevronLeft className="w-6 h-6 text-gray-600" />
+                                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
                             </button>
                             <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded-full">
-                                <ChevronRight className="w-6 h-6 text-gray-600" />
+                                <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
                             </button>
                         </div>
                     </div>
@@ -114,27 +114,24 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 {/* Grid Header */}
                 <div className="grid grid-cols-7 border-b bg-gray-50/50">
                     {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
-                        <div key={d} className="py-3 text-center text-xs font-semibold text-gray-500 tracking-wider">
-                            {d}
+                        <div key={d} className="py-2 md:py-3 text-center text-[10px] md:text-xs font-semibold text-gray-500 tracking-wider">
+                            <span className="hidden md:inline">{d}</span>
+                            <span className="md:hidden">{d.charAt(0)}</span>
                         </div>
                     ))}
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="flex-1 overflow-y-auto p-4">
-                    <div className="grid grid-cols-7 gap-2">
+                <div className="flex-1 overflow-y-auto p-2 md:p-4">
+                    <div className="grid grid-cols-7 gap-1 md:gap-2">
                         {calendarDays.map((day: Date, idx: number) => {
                             // Adjust for Monday start if needed, but date-fns startOfWeek handles it
-                            // Note: date-fns default startOfWeek is Sunday without options. 
-                            // We need to visually align if the grid header is Mon-Sun.
-                            // However, let's stick to standard alignment for now.
-
                             const isCurrentMonth = isSameMonth(day, monthStart);
                             const available = isDateAvailable(day);
                             const price = getPriceForDate(day);
                             const isSelected = selectedDate && isSameDay(day, selectedDate);
 
-                            if (!isCurrentMonth) return <div key={idx} className="h-24 bg-gray-50/30 rounded-lg"></div>;
+                            if (!isCurrentMonth) return <div key={idx} className="h-20 md:h-28 bg-gray-50/30 rounded-lg"></div>;
 
                             return (
                                 <button
@@ -142,9 +139,9 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                                     disabled={!available}
                                     onClick={() => available && onSelectDate(day, price)}
                                     className={`
-                                        h-28 rounded-xl border flex flex-col justify-between p-2 text-left transition-all
+                                        h-20 md:h-28 rounded-lg md:rounded-xl border flex flex-col justify-between p-1 md:p-2 text-left transition-all
                                         ${isSelected
-                                            ? 'border-deepBlue bg-blue-50 ring-2 ring-deepBlue ring-offset-2'
+                                            ? 'border-deepBlue bg-blue-50 ring-1 md:ring-2 ring-deepBlue ring-offset-1 md:ring-offset-2'
                                             : available
                                                 ? 'border-gray-200 hover:border-deepBlue hover:shadow-md cursor-pointer bg-white'
                                                 : 'border-transparent bg-gray-50 text-gray-300 cursor-not-allowed'
@@ -152,20 +149,20 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                                     `}
                                 >
                                     <div className="flex justify-between items-start">
-                                        <span className={`font-semibold ${isSelected ? 'text-deepBlue' : 'text-gray-700'}`}>
+                                        <span className={`text-xs md:text-sm font-semibold ${isSelected ? 'text-deepBlue' : 'text-gray-700'}`}>
                                             {format(day, 'd')}
                                         </span>
                                         {isSelected && (
-                                            <CheckCircle className="w-4 h-4 text-deepBlue animate-in zoom-in duration-300" />
+                                            <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-deepBlue animate-in zoom-in duration-300" />
                                         )}
                                     </div>
 
                                     {available && (
                                         <div className="mt-auto text-right">
-                                            <div className="text-[10px] text-gray-500 line-through decoration-red-500">
+                                            <div className="hidden md:block text-[10px] text-gray-500 line-through decoration-red-500">
                                                 ₹ {Math.round(price * 1.2).toLocaleString()}
                                             </div>
-                                            <div className="text-sm font-bold text-deepBlue">
+                                            <div className="text-[10px] md:text-sm font-bold text-deepBlue">
                                                 ₹ {price.toLocaleString()}
                                             </div>
                                             {/* Optional: Add "Available" tag or icon */}
