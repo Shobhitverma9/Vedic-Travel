@@ -28,7 +28,7 @@ export default function GlobalOthersChoosingSettings() {
                 if (data.value.length > 0) {
                     const response = await toursService.getAllTours({ ids: data.value, limit: 100 });
                     // Sort hydrated tours to match the order of IDs in the setting
-                    const hydrated = data.value.map(id => response.tours.find((t: Tour) => t._id === id)).filter(Boolean);
+                    const hydrated = (data.value as string[]).map((id: string) => response.tours.find((t: Tour) => t._id === id)).filter(Boolean) as Tour[];
                     setSelectedTours(hydrated);
                 }
             }
