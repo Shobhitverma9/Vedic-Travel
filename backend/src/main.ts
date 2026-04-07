@@ -53,20 +53,34 @@ async function bootstrap() {
         (process.env.FRONTEND_URL || 'http://localhost:3000').trim(),
         'http://localhost:3000',
         'http://localhost:3001',
+        'https://test.payu.in',
+        'https://secure.payu.in',
+        'https://api.payu.in',
         ...envOrigins,
     ].filter(Boolean);
+
+    console.log('CORS Allowed Origins:', allowedOrigins);
 
     app.enableCors({
         origin: (origin, callback) => {
             // Allow requests with no origin (curl, Postman, server-to-server)
             if (!origin) return callback(null, true);
+            
             if (allowedOrigins.includes(origin)) {
                 return callback(null, true);
             }
+            
             // Allow any *.vercel.app or *.web.app subdomain for previews
             if (origin.endsWith('.vercel.app') || origin.endsWith('.web.app') || origin.endsWith('.run.app')) {
                 return callback(null, true);
             }
+            
+            // Allow any PayU domain explicitly via regex as a fallback
+            if (origin.match(/^https?:\/\/([a-z0-9-]+\.)*payu\.in$/i)) {
+                return callback(null, true);
+            }
+
+            console.error(`CORS Blocked Origin: ${origin}`);
             return callback(new Error(`CORS: Origin ${origin} not allowed`));
         },
         credentials: true,
