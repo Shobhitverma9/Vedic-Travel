@@ -1,0 +1,84 @@
+﻿Connected to MongoDB
+--- TOURS ---
+Keyword: Char Dham
+Title: Premium Char Dham Yatra by Helicopter
+Slug: char-dham-helicopter-5d4n
+Price: 185000
+Duration: 5
+Image: https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2072&auto=format&fit=crop
+---
+Keyword: Char Dham
+Title: Char Dham Yatra by Helicopter
+Slug: char-dham-yatra-by-helicopter-2026
+Price: 230000
+Duration: 6
+Image: https://res.cloudinary.com/duuedlbxa/image/upload/v1774947420/vedic-travel/uploads/nb2yzcyu1fis6tt3bspa.webp
+---
+Keyword: Do Dham
+Title: Do Dham by Road Ex-Delhi  
+Slug: dodham-yatra-by-road-ex-delhi-2026
+Price: 30000
+Duration: 8
+Image: https://res.cloudinary.com/duuedlbxa/image/upload/v1775201222/vedic-travel/uploads/fd4jfpdmocg5w3fy6alm.jpg
+---
+Keyword: Kailash Mansarovar
+Title: Kailash Mansarovar Yatra Standard Package
+Slug: kailash-mansarovar-yatra-standard-package
+Price: 31491
+Duration: 6
+Image: https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop
+---
+Keyword: Kailash Mansarovar
+Title: Kailash Mansarovar Yatra By Helicopter
+Slug: kailash-mansarovar-helicopter-yatra-2026
+Price: 280000
+Duration: 9
+Image: https://res.cloudinary.com/duuedlbxa/image/upload/v1774947374/vedic-travel/uploads/kkmz0rbto4ljjf3djjfh.jpg
+---
+Keyword: Vietnam
+Title: Vietnam Signature Journey
+Slug: vietnam-signature-journey-2026
+Price: 59999
+Duration: 6
+Image: https://res.cloudinary.com/duuedlbxa/image/upload/v1775288558/vedic-travel/uploads/aucdlxz9orfgjdptjvnn.webp
+---
+Keyword: Spiritual Heritage Expedition
+Title: Spiritual Heritage Expedition - Varanasi-Prayagraj-Ayodhya
+Slug: spiritual-heritage-varanasi-prayagraj-ayodhya-2026
+Price: 21000
+Duration: 5
+Image: https://res.cloudinary.com/duuedlbxa/image/upload/v1775308500/vedic-travel/uploads/fz3ysnzeupmmy96tyqzj.webp
+---
+Keyword: Heavenly Kashmir
+Title: Heavenly Kashmir ΓÇô A Curated Luxe Escape
+Slug: heavenly-kashmir-curated-2026
+Price: 39999
+Duration: 6
+Image: https://res.cloudinary.com/duuedlbxa/image/upload/v1775481135/vedic-travel/uploads/o0buxlvnzswoummjkqwi.jpg
+---
+Keyword: Temple & Tides
+Title: Temple & Tides ΓÇô The South India Luxe Trail
+Slug: temples-tides-rameshwarm-madurai-kanyakumari-2026
+Price: 42000
+Duration: 5
+Image: https://res.cloudinary.com/duuedlbxa/image/upload/v1775468943/vedic-travel/uploads/uqunu1uztyno8w4alaoc.jpg
+---
+--- YATRAS ---
+Keyword: Char Dham
+Title: Char Dham Yatra
+Slug: char-dham-yatra
+Price: undefined
+Image: https://images.unsplash.com/photo-1544735716-992bc67a17d2?q=80&w=2070&auto=format&fit=crop
+---
+Keyword: Kailash Mansarovar
+Title: Kailash Mansarovar
+Slug: kailash-mansarovar
+Price: undefined
+Image: https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop
+---
+Keyword: Kailash Mansarovar
+Title: Kailash Mansarovar Yatra
+Slug: kailash-mansarovar-yatra
+Price: undefined
+Image: https://images.unsplash.com/photo-1544735716-992bc67a17d2?q=80&w=2070&auto=format&fit=crop
+---

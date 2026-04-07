@@ -5,55 +5,56 @@ import Link from 'next/link';
 
 const cards = [
     {
-        title: 'Char Dham Yatra',
-        duration: '10D/9N',
-        price: '₹25,999',
-        image: '/images/cards/chardham.png',
-        link: '/tours/char-dham-yatra',
-    },
-    {
-        title: 'Do Dham Yatra',
+        title: 'Char Dham Yatra by Helicopter',
         duration: '6D/5N',
-        price: '₹18,500',
-        image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=2070&auto=format&fit=crop',
-        link: '/tours/do-dham-yatra',
+        price: '₹2,30,000',
+        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1774947420/vedic-travel/uploads/nb2yzcyu1fis6tt3bspa.webp',
+        link: '/package/char-dham-yatra-by-helicopter-2026',
     },
     {
-        title: 'Kailash Mansarovar',
-        duration: '14D/13N',
-        price: '₹1,65,000',
-        image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop',
-        link: '/tours/kailash-mansarovar-yatra',
-    },
-    {
-        title: 'Vietnam Spiritual',
+        title: 'Do Dham by Road Ex-Delhi',
         duration: '8D/7N',
-        price: '₹62,000',
-        image: 'https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=2070&auto=format&fit=crop',
-        link: '/tours/vietnam-spiritual',
+        price: '₹30,000',
+        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775201222/vedic-travel/uploads/fd4jfpdmocg5w3fy6alm.jpg',
+        link: '/package/dodham-yatra-by-road-ex-delhi-2026',
     },
     {
-        title: 'Spiritual Heritage Exp.',
+        title: 'Kailash Mansarovar By Helicopter',
+        duration: '9D/8N',
+        price: '₹2,80,000',
+        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1774947374/vedic-travel/uploads/kkmz0rbto4ljjf3djjfh.jpg',
+        link: '/package/kailash-mansarovar-helicopter-yatra-2026',
+    },
+    {
+        title: 'Vietnam Signature Journey',
         duration: '6D/5N',
-        price: '₹19,999',
-        image: '/images/cards/varanasi.png',
-        link: '/package/up-golden-triangle-yatra-6d5n',
+        price: '₹59,999',
+        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775288558/vedic-travel/uploads/aucdlxz9orfgjdptjvnn.webp',
+        link: '/package/vietnam-signature-journey-2026',
     },
     {
-        title: 'Heavenly Kashmir',
-        duration: '6D/5N',
-        price: '₹21,500',
-        image: 'https://images.unsplash.com/photo-1598305077399-68475a305943?q=80&w=2070&auto=format&fit=crop',
-        link: '/tours/heavenly-kashmir',
-    },
-    {
-        title: 'Temple & Tides',
+        title: 'Spiritual Heritage Expedition',
         duration: '5D/4N',
-        price: '₹17,500',
-        image: '/images/cards/tirupati.png',
-        link: '/tours/tales-of-tamil-nadu',
+        price: '₹21,000',
+        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775308500/vedic-travel/uploads/fz3ysnzeupmmy96tyqzj.webp',
+        link: '/package/spiritual-heritage-varanasi-prayagraj-ayodhya-2026',
+    },
+    {
+        title: 'Heavenly Kashmir – Luxe Escape',
+        duration: '6D/5N',
+        price: '₹39,999',
+        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775481135/vedic-travel/uploads/o0buxlvnzswoummjkqwi.jpg',
+        link: '/package/heavenly-kashmir-curated-2026',
+    },
+    {
+        title: 'Temple & Tides – Luxe Trail',
+        duration: '5D/4N',
+        price: '₹42,000',
+        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775468943/vedic-travel/uploads/uqunu1uztyno8w4alaoc.jpg',
+        link: '/package/temples-tides-rameshwarm-madurai-kanyakumari-2026',
     },
 ];
+
 
 
 export default function HeroCardsAnimation() {
