@@ -10,9 +10,11 @@ import OTPInput from '@/components/auth/OTPInput';
 import CountdownTimer from '@/components/auth/CountdownTimer';
 import Slideshow from '@/components/auth/Slideshow';
 
+import { Suspense } from 'react';
+
 type LoginMethod = 'password' | 'otp';
 
-export default function SignInPage() {
+function SignInContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
@@ -317,3 +319,16 @@ export default function SignInPage() {
         </div>
     );
 }
+
+export default function SignInPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen bg-white items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-saffron"></div>
+            </div>
+        }>
+            <SignInContent />
+        </Suspense>
+    );
+}
+
