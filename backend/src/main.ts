@@ -44,11 +44,16 @@ async function bootstrap() {
         urlencoded({ extended: true, limit: '50mb' })(req, res, next);
     });
 
-    // Enable CORS — allow both production and local origins
+    // Enable CORS — allow production, local, and any additional origins from env
+    const envOrigins = process.env.ALLOWED_ORIGINS
+        ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+        : [];
+
     const allowedOrigins = [
         (process.env.FRONTEND_URL || 'http://localhost:3000').trim(),
         'http://localhost:3000',
         'http://localhost:3001',
+        ...envOrigins,
     ].filter(Boolean);
 
     app.enableCors({
