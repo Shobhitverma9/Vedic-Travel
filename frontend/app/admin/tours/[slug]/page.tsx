@@ -167,6 +167,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 slideshowImages: tour.slideshowImages || [],
                 placesHighlights: tour.placesHighlights || [],
                 placesToVisit: tour.placesToVisit || '',
+                joiningFrom: tour.joiningFrom || 'Joining Direct',
                 packageIncludes: tour.packageIncludes || [],
                 hotels: tour.hotels || [],
                 itinerary: tour.itinerary || [],
@@ -599,9 +600,13 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                             <label className="label">Description</label>
                             <textarea name="description" required rows={3} value={formData.description} onChange={handleChange} className="input-field" />
                         </div>
-                        <div className="md:col-span-2">
+                        <div className="md:col-span-1">
                             <label className="label">Places to Visit (Short Text)</label>
                             <input type="text" name="placesToVisit" value={formData.placesToVisit} onChange={handleChange} className="input-field" placeholder="e.g. 2N Varanasi / 1N Ayodhya" />
+                        </div>
+                        <div className="md:col-span-1">
+                            <label className="label">Joining From (Ex-City)</label>
+                            <input type="text" name="joiningFrom" value={formData.joiningFrom} onChange={handleChange} className="input-field" placeholder="e.g. Delhi, Mumbai, Joining Direct" />
                         </div>
                     </div>
                 </div>

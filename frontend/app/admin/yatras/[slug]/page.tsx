@@ -25,6 +25,8 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
         description: '',
         longDescription: '',
         heroImage: '',
+        mobileHeroImage: '',
+        cardImage: '',
         category: 'Pilgrimage Yatra Packages',
         isActive: true,
         isVedicImprint: false,
@@ -57,6 +59,8 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                         description: yatra.description,
                         longDescription: yatra.longDescription || '',
                         heroImage: yatra.heroImage || '',
+                        mobileHeroImage: yatra.mobileHeroImage || '',
+                        cardImage: yatra.cardImage || '',
                         category: yatra.category || 'Pilgrimage Yatra Packages',
                         isActive: yatra.isActive,
                         isVedicImprint: yatra.isVedicImprint || false,
@@ -160,7 +164,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
         });
     };
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string = 'heroImage') => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -169,7 +173,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
             // Result URL might be directly returned or nested depending on backend interceptors
             const imageUrl = result.url || result.data?.url || result;
             if (typeof imageUrl === 'string') {
-                setFormData(prev => ({ ...prev, heroImage: imageUrl }));
+                setFormData(prev => ({ ...prev, [field]: imageUrl }));
             } else {
                 throw new Error('Could not resolve image URL from response');
             }
@@ -374,7 +378,65 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={handleImageUpload}
+                                    onChange={(e) => handleImageUpload(e)}
+                                    className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-saffron/10 file:text-saffron hover:file:bg-saffron/20 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Hero Image (Mobile - Vertical Recommended)</label>
+                        <div className="flex items-start space-x-4">
+                            {formData.mobileHeroImage && (
+                                <img
+                                    src={formData.mobileHeroImage}
+                                    alt="Mobile Hero Preview"
+                                    className="w-20 h-32 object-cover rounded shadow-sm border"
+                                />
+                            )}
+                            <div className="flex-1">
+                                <input
+                                    type="text"
+                                    name="mobileHeroImage"
+                                    value={formData.mobileHeroImage}
+                                    onChange={handleChange}
+                                    className="input-field mb-2"
+                                    placeholder="Enter mobile image URL or upload"
+                                />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e, 'mobileHeroImage')}
+                                    className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-saffron/10 file:text-saffron hover:file:bg-saffron/20 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Card Image (Home Page Cards)</label>
+                        <div className="flex items-start space-x-4">
+                            {formData.cardImage && (
+                                <img
+                                    src={formData.cardImage}
+                                    alt="Card Preview"
+                                    className="w-32 h-20 object-cover rounded shadow-sm border"
+                                />
+                            )}
+                            <div className="flex-1">
+                                <input
+                                    type="text"
+                                    name="cardImage"
+                                    value={formData.cardImage}
+                                    onChange={handleChange}
+                                    className="input-field mb-2"
+                                    placeholder="Enter card image URL or upload"
+                                />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e, 'cardImage')}
                                     className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-saffron/10 file:text-saffron hover:file:bg-saffron/20 cursor-pointer"
                                 />
                             </div>

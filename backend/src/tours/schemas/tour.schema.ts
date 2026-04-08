@@ -50,6 +50,9 @@ export class Tour {
     @Prop({ required: false })
     placesToVisit: string;
 
+    @Prop({ default: 'Joining Direct' })
+    joiningFrom: string;
+
     @Prop({ type: [Object], default: [] })
     itinerary: {
         day: number;

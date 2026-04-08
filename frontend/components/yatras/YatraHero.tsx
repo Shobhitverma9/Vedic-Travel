@@ -5,6 +5,7 @@ import React from 'react';
 interface YatraHeroProps {
     title: string;
     image: string;
+    mobileImage?: string;
     thumbnailImages?: string[];
 }
 
@@ -13,20 +14,23 @@ const FALLBACK_THUMBNAILS = [
     '/images/tours/divine_south_india.png',
 ];
 
-export default function YatraHero({ title, image, thumbnailImages }: YatraHeroProps) {
+export default function YatraHero({ title, image, mobileImage, thumbnailImages }: YatraHeroProps) {
     // Use provided thumbnails, fall back to default decorative images
     const thumb1 = thumbnailImages?.[0] ?? FALLBACK_THUMBNAILS[0];
     const thumb2 = thumbnailImages?.[1] ?? FALLBACK_THUMBNAILS[1];
 
     return (
-        <section className="relative w-full h-[400px] md:h-[550px] lg:h-[650px] overflow-hidden">
+        <section className="relative w-full h-[450px] md:h-[650px] overflow-hidden">
             {/* Background Image */}
             <div className="absolute inset-0">
-                <img
-                    src={image || '/images/hero-placeholder.jpg'}
-                    alt={title}
-                    className="w-full h-full object-cover"
-                />
+                <picture>
+                    {mobileImage && <source media="(max-width: 767px)" srcSet={mobileImage} />}
+                    <img
+                        src={image || '/images/hero-placeholder.jpg'}
+                        alt={title}
+                        className="w-full h-full object-cover"
+                    />
+                </picture>
                 <div className="absolute inset-0 bg-black/30"></div>
             </div>
 

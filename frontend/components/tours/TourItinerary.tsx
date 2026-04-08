@@ -134,21 +134,27 @@ export default function TourItinerary({ itinerary }: TourItineraryProps) {
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-[600px] relative">
             {/* Top Navigation */}
-            <div className="w-full overflow-x-auto p-3 md:p-4 no-scrollbar bg-gray-50 border-b border-gray-100 z-20 flex-shrink-0 shadow-sm">
-                <div className="flex gap-3 min-w-max px-2 pb-1">
-                    {itinerary.map((day, index) => (
-                        <button
-                            key={index}
-                            ref={el => { sidebarRefs.current[index] = el }}
-                            onClick={() => scrollToDay(index)}
-                            className={`px-5 py-2.5 rounded-xl whitespace-nowrap text-sm font-bold flex-shrink-0 transition-all duration-300 ${activeDay === index
-                                ? 'bg-deepBlue text-white shadow-md scale-105'
-                                : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-200'
-                                }`}
-                        >
-                            Day {day.day < 10 ? `0${day.day}` : day.day}
-                        </button>
-                    ))}
+            <div className="relative w-full bg-gray-50 border-b border-gray-100 z-20 flex-shrink-0">
+                {/* Gradient Masks */}
+                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none" />
+                
+                <div className="w-full overflow-x-auto p-3 md:p-4 no-scrollbar">
+                    <div className="flex gap-3 min-w-max px-6 pb-1">
+                        {itinerary.map((day, index) => (
+                            <button
+                                key={index}
+                                ref={el => { sidebarRefs.current[index] = el }}
+                                onClick={() => scrollToDay(index)}
+                                className={`px-5 py-2.5 rounded-xl whitespace-nowrap text-sm font-bold flex-shrink-0 transition-all duration-300 ${activeDay === index
+                                    ? 'bg-deepBlue text-white shadow-md scale-105'
+                                    : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-200 shadow-sm'
+                                    }`}
+                            >
+                                Day {day.day < 10 ? `0${day.day}` : day.day}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 

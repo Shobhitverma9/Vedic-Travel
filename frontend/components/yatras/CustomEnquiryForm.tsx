@@ -24,15 +24,24 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
         infants: 0,
         message: '',
         destination: yatraName,
+        acceptedPrivacy: false,
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { name, value, type } = e.target as any;
+        setFormData(prev => ({ 
+            ...prev, 
+            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value 
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!formData.acceptedPrivacy) {
+            toast.error('Please accept the Privacy Policy to proceed');
+            return;
+        }
 
         if (!recaptchaToken) {
             toast.error('Please complete the reCAPTCHA verification');
@@ -61,6 +70,7 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
                 infants: 0,
                 message: `Interested in a custom package for ${yatraName}`,
                 destination: yatraName,
+                acceptedPrivacy: false,
             });
         } catch (error) {
             console.error('Inquiry failed:', error);
@@ -200,6 +210,21 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
                                         className="w-full p-6 rounded-2xl border-2 border-gray-100 focus:border-saffron outline-none transition-all font-bold"
                                         placeholder="Tell us about your trip requirements..."
                                     ></textarea>
+                                </div>
+
+                                <div className="flex items-start gap-3 py-2">
+                                    <input
+                                        type="checkbox"
+                                        name="acceptedPrivacy"
+                                        id="custom-privacy"
+                                        required
+                                        className="mt-1 w-5 h-5 text-deepBlue rounded border-gray-300 focus:ring-deepBlue"
+                                        checked={formData.acceptedPrivacy}
+                                        onChange={handleChange}
+                                    />
+                                    <label htmlFor="custom-privacy" className="text-sm text-gray-500 leading-snug">
+                                        I accept the <span className="text-blue-600 underline font-medium cursor-pointer">Privacy Policy</span> and authorize VedicTravel to contact me with details.
+                                    </label>
                                 </div>
 
                                 <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />

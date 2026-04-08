@@ -11,18 +11,28 @@ export default function ContactForm() {
         name: '',
         email: '',
         mobile: '',
-        message: ''
+        message: '',
+        acceptedPrivacy: false
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, type } = e.target as any;
+        setFormData({ 
+            ...formData, 
+            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value 
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!formData.acceptedPrivacy) {
+            toast.error('Please accept the Privacy Policy to proceed');
+            return;
+        }
 
         if (!recaptchaToken) {
             toast.error('Please complete the reCAPTCHA verification');
@@ -38,7 +48,7 @@ export default function ContactForm() {
                 recaptchaToken,
             });
             setStatus('success');
-            setFormData({ name: '', email: '', mobile: '', message: '' });
+            setFormData({ name: '', email: '', mobile: '', message: '', acceptedPrivacy: false });
             setRecaptchaToken(null);
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -115,6 +125,21 @@ export default function ContactForm() {
                             onChange={handleChange}
                             className="w-full bg-white text-gray-800 pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-saffron resize-none"
                         ></textarea>
+                    </div>
+
+                    <div className="flex items-start gap-3 py-1 mb-4">
+                        <input
+                            type="checkbox"
+                            name="acceptedPrivacy"
+                            id="contact-privacy"
+                            required
+                            className="mt-1 w-4 h-4 text-saffron rounded border-gray-300 focus:ring-saffron"
+                            checked={formData.acceptedPrivacy}
+                            onChange={handleChange}
+                        />
+                        <label htmlFor="contact-privacy" className="text-[11px] text-gray-300 leading-tight">
+                            I accept the <span className="text-blue-400 underline cursor-pointer">Privacy Policy</span> and authorize VedicTravel to contact me with details.
+                        </label>
                     </div>
 
                     <ReCaptcha onChange={(token) => setRecaptchaToken(token)} theme="dark" />

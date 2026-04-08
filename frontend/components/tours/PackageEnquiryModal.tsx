@@ -53,7 +53,6 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                 tourId,
                 tourName,
                 recaptchaToken,
-                // These are removed from the form but might be expected by the schema
                 adults: 1,
                 children: 0,
                 infants: 0,
@@ -77,61 +76,59 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
     };
 
     const features = [
-        "Rated Best Travel Partner",
-        "Most Experienced Tour Managers",
-        "Choose from 1000+ Holiday Packages"
+        "Best Travel Partner",
+        "Experienced Tour Managers",
+        "1000+ Holiday Packages"
     ];
 
     const modalContent = (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative animate-slide-up overflow-hidden">
-                {/* Header Section (Blue Gradient) */}
-                <div className="bg-gradient-to-br from-[#003580] to-[#0052cc] p-6 text-white relative">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative animate-slide-up overflow-hidden">
+                {/* Compact Header Section */}
+                <div className="bg-gradient-to-br from-[#003580] to-[#0052cc] p-4 text-white relative">
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+                        className="absolute top-3 right-3 text-white/80 hover:text-white transition-colors"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="w-5 h-5" />
                     </button>
 
-                    <h2 className="text-2xl font-bold mb-4 pr-8">Get Exclusive Deals</h2>
+                    <h2 className="text-xl font-bold mb-3 pr-8">Get Exclusive Deals</h2>
                     
-                    <div className="space-y-3">
+                    <div className="flex flex-wrap gap-x-4 gap-y-2">
                         {features.map((feature, i) => (
-                            <div key={i} className="flex items-center gap-3">
+                            <div key={i} className="flex items-center gap-1.5">
                                 <div className="bg-yellow-400 rounded-full p-0.5">
-                                    <CheckCircle2 className="w-4 h-4 text-[#003580] fill-yellow-400 stroke-[#003580]" />
+                                    <CheckCircle2 className="w-3 h-3 text-[#003580] fill-yellow-400 stroke-[#003580]" />
                                 </div>
-                                <span className="text-sm font-medium">{feature}</span>
+                                <span className="text-[11px] font-bold uppercase tracking-wider">{feature}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Form Section */}
-                <div className="p-8">
-                    <div className="mb-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-1">Get an Instant Call Back From Our Holiday Expert</h3>
-                        <p className="text-sm text-gray-500 font-medium truncate">Interested in: <span className="text-deepBlue">{tourName}</span></p>
+                <div className="p-6">
+                    <div className="mb-5">
+                        <h3 className="text-lg font-bold text-gray-800 mb-0.5 leading-tight">Get an Instant Call Back From Our Holiday Expert</h3>
+                        <p className="text-xs text-gray-500 font-medium truncate">Interested in: <span className="text-deepBlue">{tourName}</span></p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-1">
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Name*"
-                                    required
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003580] focus:border-transparent outline-none transition-all placeholder:text-gray-400"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
-                                <User className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
-                            </div>
+                    <form onSubmit={handleSubmit} className="space-y-3.5">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Name*"
+                                required
+                                className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003580] focus:border-transparent outline-none transition-all placeholder:text-gray-400 font-medium"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            />
+                            <User className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                         </div>
 
                         <div className="flex gap-2">
-                             <div className="w-20 px-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-500 font-medium flex items-center justify-center">
+                             <div className="w-16 px-2 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-500 font-bold flex items-center justify-center">
                                  +91
                              </div>
                             <div className="flex-1 relative">
@@ -139,29 +136,27 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                                     type="tel"
                                     placeholder="Mobile*"
                                     required
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003580] focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                                    className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003580] focus:border-transparent outline-none transition-all placeholder:text-gray-400 font-medium"
                                     value={formData.mobile}
                                     onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                                 />
-                                <Phone className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                                <Phone className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                             </div>
                         </div>
 
-                        <div className="space-y-1">
-                            <div className="relative">
-                                <input
-                                    type="email"
-                                    placeholder="Email*"
-                                    required
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003580] focus:border-transparent outline-none transition-all placeholder:text-gray-400"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                />
-                                <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
-                            </div>
+                        <div className="relative">
+                            <input
+                                type="email"
+                                placeholder="Email*"
+                                required
+                                className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003580] focus:border-transparent outline-none transition-all placeholder:text-gray-400 font-medium"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            />
+                            <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                         </div>
 
-                        <div className="flex items-start gap-3 py-2">
+                        <div className="flex items-start gap-3 py-1">
                             <input
                                 type="checkbox"
                                 id="privacy"
@@ -170,21 +165,23 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                                 checked={formData.acceptedPrivacy}
                                 onChange={(e) => setFormData({ ...formData, acceptedPrivacy: e.target.checked })}
                             />
-                            <label htmlFor="privacy" className="text-xs text-gray-500 leading-tight">
+                            <label htmlFor="privacy" className="text-[10px] text-gray-500 leading-tight">
                                 I accept the <span className="text-blue-600 underline cursor-pointer">Privacy Policy</span> and authorize VedicTravel to contact me with details.
                             </label>
                         </div>
 
-                        <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
+                        <div className="scale-90 origin-left">
+                            <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
+                        </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-[#003580] hover:bg-[#002860] text-white font-bold py-4 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
+                            className="w-full bg-[#003580] hover:bg-[#002860] text-white font-bold py-3.5 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
                         >
                             {loading ? (
                                 <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    <Loader2 className="w-4 h-4 animate-spin" />
                                     Submitting...
                                 </>
                             ) : (
@@ -193,16 +190,17 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                         </button>
                     </form>
 
-                    <div className="mt-6 pt-6 border-t border-gray-100">
-                        <p className="text-center text-sm font-medium text-gray-600 mb-4">We're happy to help you on</p>
-                        <div className="flex gap-3">
-                            <a href="tel:+918447470062" className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
-                                <Phone className="w-4 h-4 text-blue-600" />
+                    {/* Compact Assistance Section */}
+                    <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] uppercase font-bold text-gray-400 tracking-widest">Support</span>
+                            <a href="tel:18002099100" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
                                 1800-2099-100
                             </a>
-                            <div className="flex-1 flex items-center justify-center py-3 px-4 border border-gray-200 rounded-lg text-sm font-bold text-gray-700">
-                                Assistance
-                            </div>
+                        </div>
+                        <div className="px-3 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] font-bold text-gray-500 uppercase">
+                            Assistance
                         </div>
                     </div>
                 </div>

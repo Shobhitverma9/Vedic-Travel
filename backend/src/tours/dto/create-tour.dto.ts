@@ -99,6 +99,11 @@ export class CreateTourDto {
     @IsOptional()
     placesToVisit?: string;
 
+    @ApiProperty({ required: false, default: 'Joining Direct' })
+    @IsString()
+    @IsOptional()
+    joiningFrom?: string;
+
     @ApiProperty({ type: [String], required: false })
     @IsArray()
     @IsOptional()

@@ -10,6 +10,8 @@ interface Yatra {
     title: string;
     description: string;
     heroImage?: string;
+    mobileHeroImage?: string;
+    cardImage?: string;
     packages: {
         _id: string;
         title: string;
@@ -98,7 +100,7 @@ export default function VedicImprintsSection() {
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     >
                         {yatras.map((yatra, index) => {
-                            const coverImage = yatra.heroImage || yatra.packages?.[0]?.images?.[0] || '/images/hero-bg.jpg';
+                            const coverImage = yatra.cardImage || yatra.heroImage || yatra.packages?.[0]?.images?.[0] || '/images/hero-bg.jpg';
                             const startingPrice = yatra.packages?.[0]?.price;
 
                             return (

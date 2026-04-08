@@ -41,9 +41,9 @@ export class ToursService {
             category,
             minPrice,
             maxPrice,
+            isTrending,
             sortBy = isTrending === 'true' ? 'trendingRank' : 'createdAt',
             order = isTrending === 'true' ? 'asc' : 'desc',
-            isTrending,
             isActive,
             ids,
         } = query;

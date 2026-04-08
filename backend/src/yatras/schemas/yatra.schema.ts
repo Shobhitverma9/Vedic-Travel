@@ -19,6 +19,12 @@ export class Yatra {
     heroImage: string;
 
     @Prop()
+    mobileHeroImage: string;
+
+    @Prop()
+    cardImage: string;
+
+    @Prop()
     longDescription: string;
 
     @Prop({ type: [String], default: [] })

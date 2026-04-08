@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Heart, ChevronDown, ChevronRight } from 'lucide-react';
 import CartIcon from '@/components/layout/CartIcon';
 import { menuItems, MenuItem } from '@/data/menu';
+import { yatrasService } from '@/services/yatras.service';
 
 export default function Header({ isEmbedded = false }: { isEmbedded?: boolean }) {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -19,10 +20,9 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
     useEffect(() => {
         const fetchYatras = async () => {
             try {
-                // Fetch yatras for dynamic menu injection
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/yatras?isActive=true`);
-                if (response.ok) {
-                    const data = await response.json();
+                // Fetch active yatras for dynamic menu injection
+                const data = await yatrasService.getAllYatras({ isActive: true });
+                if (data) {
                     setYatras(data);
                 }
             } catch (err) {
@@ -126,11 +126,11 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
         if (!toursMenu || !toursMenu.children) return dynamicMenu;
 
         yatras.forEach(yatra => {
-            const categoryLabel = yatra.category || 'Pilgrimage Yatra Packages';
+            const categoryLabel = (yatra.category || 'Pilgrimage Yatra Packages').trim();
             const yatraItem: MenuItem = { label: yatra.title, href: `/yatras/${yatra.slug}` };
 
             // Find the matching category group inside "Tours & Packages"
-            let categoryGroup = toursMenu.children?.find(child => child.label === categoryLabel);
+            let categoryGroup = toursMenu.children?.find(child => child.label.trim() === categoryLabel);
 
             // If category doesn't exist, we could technically create it, but for now we expect them to match
             if (categoryGroup) {

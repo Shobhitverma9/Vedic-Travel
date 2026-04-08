@@ -525,7 +525,7 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
 
             {/* Policy Tabs & Content */}
             <div className="border-t border-gray-100">
-                <div className="flex border-b border-gray-50 bg-gray-50/30 overflow-x-auto no-scrollbar">
+                <div className="flex border-b border-gray-50 bg-gray-50/30 overflow-x-auto no-scrollbar scroll-smooth">
                     <button 
                         onClick={() => togglePolicy('payment')}
                         className={`flex-1 min-w-[120px] py-4 px-2 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all relative ${
