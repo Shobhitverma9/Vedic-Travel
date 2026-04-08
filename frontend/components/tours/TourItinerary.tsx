@@ -71,26 +71,31 @@ export default function TourItinerary({ itinerary }: TourItineraryProps) {
         return () => scrollContainer.removeEventListener('scroll', handleScroll);
     }, [itinerary.length]);
 
-    // Scroll active sidebar item into view
-
+    // Scroll active day into view in the top navigation
+    useEffect(() => {
+        const activeButton = sidebarRefs.current[activeDay];
+        if (activeButton) {
+            activeButton.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    }, [activeDay]);
 
     const scrollToDay = (index: number) => {
         const container = document.getElementById('itinerary-scroll-container');
         const element = document.getElementById(`day-section-${index}`);
 
         if (container && element) {
-            // Calculate position relative to the scroll container's current scroll
             const containerTop = container.getBoundingClientRect().top;
             const elementTop = element.getBoundingClientRect().top;
-
-            // Current scroll + distance of element from top of container - arbitrary offset
             const targetScrollPosition = container.scrollTop + (elementTop - containerTop) - 20;
 
             container.scrollTo({
                 top: targetScrollPosition,
                 behavior: 'smooth'
             });
-            // State update will happen via scroll listener
             setActiveDay(index);
         }
     };
@@ -127,54 +132,28 @@ export default function TourItinerary({ itinerary }: TourItineraryProps) {
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[600px] relative">
-            {/* Sidebar Navigation */}
-            <div className="hidden md:block w-64 md:w-72 flex-shrink-0 bg-gray-50 border-r border-gray-100 p-6 overflow-y-auto custom-scrollbar relative z-10">
-                <h3 className="text-xl font-bold text-gray-700 mb-6 font-display">Day Plan</h3>
-                <div className="space-y-0 relative border-l-2 border-gray-200 ml-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-[600px] relative">
+            {/* Top Navigation */}
+            <div className="w-full overflow-x-auto p-3 md:p-4 no-scrollbar bg-gray-50 border-b border-gray-100 z-20 flex-shrink-0 shadow-sm">
+                <div className="flex gap-3 min-w-max px-2 pb-1">
                     {itinerary.map((day, index) => (
-                        <div key={index} className="relative">
-                            {/* Dot */}
-                            <div className={`absolute -left-[9px] top-6 w-4 h-4 rounded-full border-2 transition-all duration-300 z-10 ${activeDay === index
-                                ? 'bg-deepBlue border-deepBlue scale-110'
-                                : 'bg-gray-300 border-white'
-                                }`}></div>
-
-                            <button
-                                ref={el => { sidebarRefs.current[index] = el }}
-                                onClick={() => scrollToDay(index)}
-                                className={`w-full text-left py-4 pl-6 pr-4 transition-all duration-300 rounded-r-lg group flex items-center justify-between ${activeDay === index
-                                    ? 'bg-deepBlue text-white shadow-md -ml-0.5'
-                                    : 'text-gray-500 hover:bg-gray-50'
-                                    }`}
-                            >
-                                <span className={`text-sm font-bold ${activeDay === index ? 'text-white' : 'text-gray-600'}`}>
-                                    Day {day.day < 10 ? `0${day.day}` : day.day}
-                                </span>
-                            </button>
-                        </div>
+                        <button
+                            key={index}
+                            ref={el => { sidebarRefs.current[index] = el }}
+                            onClick={() => scrollToDay(index)}
+                            className={`px-5 py-2.5 rounded-xl whitespace-nowrap text-sm font-bold flex-shrink-0 transition-all duration-300 ${activeDay === index
+                                ? 'bg-deepBlue text-white shadow-md scale-105'
+                                : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-200'
+                                }`}
+                        >
+                            Day {day.day < 10 ? `0${day.day}` : day.day}
+                        </button>
                     ))}
                 </div>
             </div>
 
-            {/* Mobile Navigation */}
-            <div className="md:hidden w-full overflow-x-auto p-4 flex gap-2 no-scrollbar bg-gray-50 border-b border-gray-200 z-20 flex-shrink-0 shadow-sm relative">
-                {itinerary.map((day, index) => (
-                    <button
-                        key={index}
-                        onClick={() => scrollToDay(index)}
-                        className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-bold flex-shrink-0 transition-colors ${activeDay === index
-                            ? 'bg-deepBlue text-white'
-                            : 'bg-gray-100 text-gray-600'
-                            }`}
-                    >
-                        Day {day.day}
-                    </button>
-                ))}
-            </div>
-
             {/* Main Content Area (Scrollable) */}
-            <div id="itinerary-scroll-container" ref={scrollContainerRef} className="flex-1 min-w-0 p-6 md:p-8 overflow-y-auto custom-scrollbar relative">
+            <div id="itinerary-scroll-container" ref={scrollContainerRef} className="flex-1 min-w-0 p-6 md:p-8 overflow-y-auto custom-scrollbar relative bg-white">
                 <div className="space-y-8 pb-12">
                     {itinerary.map((day, index) => {
                         const inclusions = getDayInclusions(day);

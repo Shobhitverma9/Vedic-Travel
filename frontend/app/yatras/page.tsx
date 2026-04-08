@@ -66,7 +66,7 @@ function YatrasContent() {
 
             {/* Yatras Grid */}
             <section className="py-16 px-4">
-                <div className="container mx-auto">
+                <div className="max-w-7xl mx-auto">
                     {loading ? (
                         <div className="text-center py-12 min-h-[300px] flex items-center justify-center">
                             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>

@@ -112,7 +112,7 @@ export const menuItems: MenuItem[] = [
                 ],
             },
             {
-                label: 'Vedic Imprints',
+                label: 'Vedic Imprints (International)',
                 children: [
                     { label: 'Sacred Ramayana Trails of Sri Lanka', href: '/tours/sri-lanka-ramayana' },
                     { label: 'Nepal – Himalayan Spiritual Realm', href: '/tours/nepal-spiritual' },

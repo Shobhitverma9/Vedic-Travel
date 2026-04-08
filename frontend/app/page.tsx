@@ -35,7 +35,7 @@ export default function HomePage() {
       {/* Yatras Section - Only trending yatras */}
       <YatraSection />
 
-      {/* Vedic Imprints Section */}
+      {/* Vedic Imprints (International) Section */}
       <VedicImprintsSection />
 
       {/* Testimonials */}

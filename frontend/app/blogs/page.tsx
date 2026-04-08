@@ -50,7 +50,7 @@ export default function BlogsPage() {
             </section>
 
             {/* Blogs Listing Section */}
-            <section className="container mx-auto px-4 -mt-16 relative z-20">
+            <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-20">
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[1, 2, 3, 4, 5, 6].map((i) => (

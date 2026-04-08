@@ -80,7 +80,10 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 <div className="p-4 md:p-6 border-b flex justify-between items-center bg-gray-50">
                     <div>
                         <h2 className="text-lg md:text-2xl font-bold text-deepBlue">Select Date of Travel</h2>
-                        <p className="text-[10px] md:text-sm text-gray-500 line-clamp-1 md:line-clamp-none">Starting price per person shown in calendar.</p>
+                        <p className="text-[10px] md:text-sm text-gray-500 line-clamp-1 md:line-clamp-none">
+                            <span className="hidden md:inline">Starting price per person shown in calendar.</span>
+                            <span className="md:hidden">Check available dates for traveling.</span>
+                        </p>
                     </div>
                     <button onClick={onClose} className="p-1.5 md:p-2 hover:bg-gray-200 rounded-full transition-colors">
                         <X className="w-5 h-5 md:w-6 md:h-6 text-gray-500" />
@@ -139,12 +142,12 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                                     disabled={!available}
                                     onClick={() => available && onSelectDate(day, price)}
                                     className={`
-                                        h-20 md:h-28 rounded-lg md:rounded-xl border flex flex-col justify-between p-1 md:p-2 text-left transition-all
+                                        h-16 md:h-28 rounded-lg md:rounded-xl border flex flex-col justify-between p-1.5 md:p-2 text-left transition-all
                                         ${isSelected
                                             ? 'border-deepBlue bg-blue-50 ring-1 md:ring-2 ring-deepBlue ring-offset-1 md:ring-offset-2'
                                             : available
                                                 ? 'border-gray-200 hover:border-deepBlue hover:shadow-md cursor-pointer bg-white'
-                                                : 'border-transparent bg-gray-50 text-gray-300 cursor-not-allowed'
+                                                : 'border-transparent bg-gray-100/80 text-gray-400 cursor-not-allowed opacity-60 grayscale'
                                         }
                                     `}
                                 >
@@ -158,11 +161,11 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                                     </div>
 
                                     {available && (
-                                        <div className="mt-auto text-right">
-                                            <div className="hidden md:block text-[10px] text-gray-500 line-through decoration-red-500">
+                                        <div className="hidden md:block mt-auto text-right">
+                                            <div className="text-[10px] text-gray-500 line-through decoration-red-500">
                                                 ₹ {Math.round(price * 1.2).toLocaleString()}
                                             </div>
-                                            <div className="text-[10px] md:text-sm font-bold text-deepBlue">
+                                            <div className="text-sm font-bold text-deepBlue">
                                                 ₹ {price.toLocaleString()}
                                             </div>
                                             {/* Optional: Add "Available" tag or icon */}

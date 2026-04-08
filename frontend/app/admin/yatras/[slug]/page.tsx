@@ -320,7 +320,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                             <option value="Yoga & Wellness Retreats">Yoga & Wellness Retreats</option>
                             <option value="Heritage and Cultural Tours">Heritage and Cultural Tours</option>
                             <option value="Adventure & Eco Tours">Adventure & Eco Tours</option>
-                            <option value="Vedic Imprints">Vedic Imprints</option>
+                            <option value="Vedic Imprints (International)">Vedic Imprints (International)</option>
                             <option value="Customized Packages">Customized Packages</option>
                         </select>
                     </div>

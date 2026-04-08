@@ -152,7 +152,7 @@ export default function HeroSectionV1() {
                 </div>
             ))}
 
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center pt-24 md:pt-32 lg:pt-20">
+            <div className="relative z-10 w-full max-w-screen-2xl mx-auto px-4 flex flex-col items-center pt-24 md:pt-32 lg:pt-20">
                 {/* Text Content */}
                 <div className="text-center mb-6 lg:mb-4 animate-fade-in max-w-4xl mx-auto">
                     <h1 className="mb-4 leading-tight drop-shadow-lg">
@@ -323,12 +323,7 @@ export default function HeroSectionV1() {
                 </div>
             </div>
 
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-            </div>
+
         </section>
     );
 }

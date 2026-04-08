@@ -75,11 +75,11 @@ export default function HeroCardsAnimation() {
             `}</style>
 
             <div
-                className="relative mt-8 overflow-hidden select-none mx-auto"
+                className="relative mt-8 overflow-hidden select-none mx-auto w-full"
                 style={{
-                    maxWidth: '850px', // Roughly 4 cards (180px + gaps)
-                    maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
-                    WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+                    maxWidth: '1240px', // Wider on high screen resolution
+                    maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+                    WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
                 }}
             >
                 <div className="flex animate-marquee-scroll">

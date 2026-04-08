@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Send, Users, MapPin, Calendar, User, Phone, Mail } from 'lucide-react';
+import { Send, User, Phone, Mail, CheckCircle2, Loader2 } from 'lucide-react';
 import { inquiriesService } from '@/services/inquiries.service';
 import ReCaptcha from '../shared/ReCaptcha';
 import { toast } from 'sonner';
@@ -19,20 +19,16 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
         name: '',
         email: '',
         mobile: '',
-        adults: 2,
-        children: 0,
-        infants: 0,
-        message: '',
-        destination: yatraName,
+        acceptedPrivacy: false,
     });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!formData.acceptedPrivacy) {
+            toast.error('Please accept the Privacy Policy to proceed');
+            return;
+        }
 
         if (!recaptchaToken) {
             toast.error('Please complete the reCAPTCHA verification');
@@ -43,12 +39,19 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
 
         try {
             await inquiriesService.createInquiry({
-                ...formData,
+                name: formData.name,
+                email: formData.email,
+                mobile: formData.mobile,
                 yatraId,
                 yatraName,
                 tourName: `Custom: ${yatraName}`,
                 tourId: 'custom',
                 recaptchaToken,
+                // Removed fields fallback
+                adults: 1,
+                children: 0,
+                infants: 0,
+                message: `Interested in a custom package for ${yatraName}`,
             });
             setSuccess(true);
             setRecaptchaToken(null);
@@ -56,11 +59,7 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
                 name: '',
                 email: '',
                 mobile: '',
-                adults: 2,
-                children: 0,
-                infants: 0,
-                message: `Interested in a custom package for ${yatraName}`,
-                destination: yatraName,
+                acceptedPrivacy: false,
             });
         } catch (error) {
             console.error('Inquiry failed:', error);
@@ -70,148 +69,134 @@ export default function CustomEnquiryForm({ yatraId, yatraName }: CustomEnquiryF
         }
     };
 
-    return (
-        <section className="py-20 bg-white">
-            <div className="max-w-7xl mx-auto px-4">
-                <div className="bg-deepBlue rounded-[40px] overflow-hidden shadow-2xl flex flex-col lg:flex-row">
-                    {/* Left Side: Info */}
-                    <div className="lg:w-2/5 p-12 lg:p-20 bg-[url('/images/pattern-bg.png')] bg-cover relative text-white">
-                        <div className="absolute inset-0 bg-deepBlue/90 backdrop-blur-sm"></div>
-                        <div className="relative z-10">
-                            <h2 className="text-4xl font-black uppercase tracking-tight mb-6">
-                                Haven't found what you're looking for?
-                            </h2>
-                            <p className="text-blue-100 text-lg mb-10 font-medium">
-                                No worries! Our spiritual travel experts can customize a package just for you. Tell us your preferences and we'll create the perfect pilgrimage.
-                            </p>
+    const features = [
+        "Rated Best Travel Partner",
+        "Most Experienced Tour Managers",
+        "Choose from 1000+ Holiday Packages"
+    ];
 
-                            <ul className="space-y-6">
-                                <li className="flex items-center space-x-4">
-                                    <div className="bg-saffron p-3 rounded-2xl shadow-lg">
-                                        <Users className="w-6 h-6 text-white" />
+    return (
+        <section className="py-20 bg-gray-50">
+            <div className="max-w-6xl mx-auto px-4">
+                <div className="bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-gray-100">
+                    {/* Left Side: Thomas Cook inspired Info Section */}
+                    <div className="lg:w-2/5 p-10 lg:p-16 bg-gradient-to-br from-[#003580] to-[#0052cc] text-white relative flex flex-col justify-center">
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-bold mb-6">
+                                Get Exclusive Deals
+                            </h2>
+                            
+                            <div className="space-y-4 mb-10">
+                                {features.map((feature, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <div className="bg-yellow-400 rounded-full p-0.5">
+                                            <CheckCircle2 className="w-5 h-5 text-[#003580] fill-yellow-400 stroke-[#003580]" />
+                                        </div>
+                                        <span className="text-lg font-medium">{feature}</span>
                                     </div>
-                                    <span className="font-bold text-lg">Custom Group Sizes</span>
-                                </li>
-                                <li className="flex items-center space-x-4">
-                                    <div className="bg-saffron p-3 rounded-2xl shadow-lg">
-                                        <Calendar className="w-6 h-6 text-white" />
-                                    </div>
-                                    <span className="font-bold text-lg">Flexible Dates</span>
-                                </li>
-                                <li className="flex items-center space-x-4">
-                                    <div className="bg-saffron p-3 rounded-2xl shadow-lg">
-                                        <MapPin className="w-6 h-6 text-white" />
-                                    </div>
-                                    <span className="font-bold text-lg">Personalized Itineraries</span>
-                                </li>
-                            </ul>
+                                ))}
+                            </div>
+
+                            <p className="text-blue-100/80 text-sm font-medium border-t border-white/20 pt-8">
+                                VedicTravel is committed to providing spiritual and professional travel experiences across the globe.
+                            </p>
                         </div>
                     </div>
 
-                    {/* Right Side: Form */}
-                    <div className="lg:w-3/5 p-12 lg:p-20 bg-white">
+                    {/* Right Side: Simplified Form */}
+                    <div className="lg:w-3/5 p-10 lg:p-16 bg-white flex flex-col justify-center">
                         {success ? (
-                            <div className="h-full flex flex-col items-center justify-center text-center">
-                                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+                            <div className="text-center animate-fade-in">
+                                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <Send className="w-10 h-10" />
                                 </div>
-                                <h3 className="text-3xl font-black text-gray-900 mb-4 uppercase tracking-tight">Enquiry Sent!</h3>
-                                <p className="text-gray-500 font-medium mb-8">
-                                    Thank you for reaching out. Our expert will contact you within 24 hours.
+                                <h3 className="text-3xl font-bold text-gray-900 mb-4">Request Sent!</h3>
+                                <p className="text-gray-500 font-medium mb-8 max-w-md mx-auto">
+                                    Thank you for reaching out. A VedicTravel expert will contact you within 24 hours to help plan your {yatraName} journey.
                                 </p>
                                 <button
                                     onClick={() => setSuccess(false)}
-                                    className="px-8 py-3 bg-saffron text-white rounded-2xl font-black uppercase tracking-widest shadow-lg hover:bg-saffron-dark transition-all"
+                                    className="px-10 py-4 bg-[#003580] text-white rounded-xl font-bold uppercase tracking-wider hover:bg-[#002860] transition-all shadow-lg"
                                 >
                                     Send Another
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="animate-fade-in">
+                                <div className="mb-8">
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Get an Instant Call Back From Our Holiday Expert</h3>
+                                    <div className="inline-flex items-center px-3 py-1 bg-blue-50 text-[#003580] text-sm font-bold rounded-full">
+                                        Planning: {yatraName}
+                                    </div>
+                                </div>
+
+                                <form onSubmit={handleSubmit} className="space-y-5">
                                     <div className="relative">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <input
                                             type="text"
-                                            name="name"
                                             required
                                             value={formData.name}
-                                            onChange={handleChange}
-                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-saffron outline-none transition-all font-bold"
-                                            placeholder="Your Full Name"
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-100 focus:border-[#003580] focus:ring-4 focus:ring-blue-50 outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400"
+                                            placeholder="Full Name*"
                                         />
                                     </div>
+
+                                    <div className="flex gap-3">
+                                        <div className="w-20 hidden sm:flex items-center justify-center bg-gray-50 border-2 border-gray-100 rounded-xl font-bold text-gray-500">
+                                            +91
+                                        </div>
+                                        <div className="flex-1 relative">
+                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="tel"
+                                                required
+                                                value={formData.mobile}
+                                                onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                                                className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-100 focus:border-[#003580] focus:ring-4 focus:ring-blue-50 outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400"
+                                                placeholder="Mobile Number*"
+                                            />
+                                        </div>
+                                    </div>
+
                                     <div className="relative">
-                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <input
-                                            type="tel"
-                                            name="mobile"
+                                            type="email"
                                             required
-                                            value={formData.mobile}
-                                            onChange={handleChange}
-                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-saffron outline-none transition-all font-bold"
-                                            placeholder="Mobile Number"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-100 focus:border-[#003580] focus:ring-4 focus:ring-blue-50 outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400"
+                                            placeholder="Email ID*"
                                         />
                                     </div>
-                                </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block ml-2">Adults (12+)</label>
+                                    <div className="flex items-start gap-3 py-2">
                                         <input
-                                            type="number"
-                                            name="adults"
-                                            min="1"
-                                            value={formData.adults}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-saffron outline-none transition-all font-bold"
+                                            type="checkbox"
+                                            id="custom-privacy"
+                                            required
+                                            className="mt-1 w-5 h-5 text-[#003580] rounded border-gray-300 focus:ring-[#003580]"
+                                            checked={formData.acceptedPrivacy}
+                                            onChange={(e) => setFormData({ ...formData, acceptedPrivacy: e.target.checked })}
                                         />
+                                        <label htmlFor="custom-privacy" className="text-sm text-gray-500 leading-snug">
+                                            I accept the <span className="text-blue-600 underline font-medium cursor-pointer">Privacy Policy</span> and authorize VedicTravel to contact me with details.
+                                        </label>
                                     </div>
-                                    <div>
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block ml-2">Children (2-12)</label>
-                                        <input
-                                            type="number"
-                                            name="children"
-                                            min="0"
-                                            value={formData.children}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-saffron outline-none transition-all font-bold"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block ml-2">Infants (0-2)</label>
-                                        <input
-                                            type="number"
-                                            name="infants"
-                                            min="0"
-                                            value={formData.infants}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-saffron outline-none transition-all font-bold"
-                                        />
-                                    </div>
-                                </div>
 
-                                <div className="relative">
-                                    <textarea
-                                        name="message"
-                                        rows={4}
-                                        value={formData.message}
-                                        onChange={handleChange}
-                                        className="w-full p-6 rounded-2xl border-2 border-gray-100 focus:border-saffron outline-none transition-all font-bold"
-                                        placeholder="Tell us about your trip requirements..."
-                                    ></textarea>
-                                </div>
+                                    <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
 
-                                <ReCaptcha onChange={(token) => setRecaptchaToken(token)} />
-
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full py-5 bg-saffron text-white rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-saffron-dark transition-all disabled:opacity-50"
-                                >
-                                    {loading ? 'Sending...' : 'Get Personalized Quote'}
-                                </button>
-                            </form>
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full py-5 bg-[#003580] text-white rounded-xl font-bold uppercase tracking-widest shadow-xl hover:bg-[#002860] transition-all disabled:opacity-50 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0"
+                                    >
+                                        {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Enquire Now'}
+                                    </button>
+                                </form>
+                            </div>
                         )}
                     </div>
                 </div>

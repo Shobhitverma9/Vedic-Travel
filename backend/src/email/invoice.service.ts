@@ -19,7 +19,7 @@ export class InvoiceService {
     /**
      * Generates a premium PDF invoice using Puppeteer
      */
-    async generateInvoicePdf(booking: any): Promise<Buffer> {
+    async generateInvoicePdf(booking: any, paidAmount?: number): Promise<Buffer> {
         this.logger.log(`Generating PDF invoice for booking: ${booking.bookingReference}`);
         
         let browser;
@@ -41,7 +41,7 @@ export class InvoiceService {
             });
 
             const page = await browser.newPage();
-            const html = this.getInvoiceHtml(booking);
+            const html = this.getInvoiceHtml(booking, paidAmount);
             await page.setContent(html, { waitUntil: 'networkidle0' });
             
             // Critical fix: Ensure all web fonts (Inter) are fully loaded before PDF generation
@@ -99,7 +99,7 @@ export class InvoiceService {
         });
     }
 
-    private getInvoiceHtml(booking: any): string {
+    private getInvoiceHtml(booking: any, paidAmount?: number): string {
         const date = new Date().toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'short',
@@ -108,15 +108,20 @@ export class InvoiceService {
 
         const travelerName = booking.user?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
         const tourTitle = booking.tour?.title || 'Religious/Spiritual Travel Service';
-        const totalAmount = booking.totalAmount || 0;
         
-        // Reverse calculation for 5% GST (Inclusive)
-        const basePrice = Math.round(totalAmount / 1.05);
-        const gstAmount = totalAmount - basePrice;
+        const totalPackageCost = booking.totalAmount || 0;
+        const totalAmountForInvoice = paidAmount !== undefined ? paidAmount : totalPackageCost;
+        const balanceDue = Math.max(0, totalPackageCost - totalAmountForInvoice);
         
-        const amountStr = totalAmount.toLocaleString('en-IN');
+        // Reverse calculation for 5% GST (Inclusive) for this transaction
+        const basePrice = Math.round(totalAmountForInvoice / 1.05);
+        const gstAmount = totalAmountForInvoice - basePrice;
+        
+        const packageCostStr = totalPackageCost.toLocaleString('en-IN');
+        const amountStr = totalAmountForInvoice.toLocaleString('en-IN');
         const basePriceStr = basePrice.toLocaleString('en-IN');
         const gstAmountStr = gstAmount.toLocaleString('en-IN');
+        const balanceDueStr = balanceDue.toLocaleString('en-IN');
         
         const placeOfSupply = booking.billingAddress?.state || 'Uttar Pradesh';
         const frontendUrl = this.configService.get('FRONTEND_URL') || 'http://localhost:3000';
@@ -281,7 +286,11 @@ export class InvoiceService {
             </thead>
             <tbody>
                 <tr>
-                    <td>Package Cost (${booking.numberOfTravelers} Pax)</td>
+                    <td>Package Cost (${booking.numberOfTravelers} Pax) - Full Value</td>
+                    <td style="text-align: right;">${packageCostStr}</td>
+                </tr>
+                <tr>
+                    <td>Amount being invoiced (Transaction Basis)</td>
                     <td style="text-align: right;">${basePriceStr}</td>
                 </tr>
                 <tr>
@@ -298,8 +307,8 @@ export class InvoiceService {
         <!-- Payment Status -->
         <div class="section" style="margin-top: 30px;">
             <div class="section-title">Payment Status</div>
-            <div class="detail-row"><strong>Amount Paid:</strong> ₹${amountStr}</div>
-            <div class="detail-row"><strong>Balance:</strong> ₹0</div>
+            <div class="detail-row"><strong>Amount Paid in this Transaction:</strong> ₹${amountStr}</div>
+            <div class="detail-row"><strong>Remaining Balance:</strong> ₹${balanceDueStr}</div>
             <div class="detail-row"><strong>Payment Date:</strong> ${date}</div>
         </div>
 

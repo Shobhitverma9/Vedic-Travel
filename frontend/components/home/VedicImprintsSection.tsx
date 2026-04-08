@@ -30,7 +30,7 @@ export default function VedicImprintsSection() {
                 const response = await yatrasService.getAllYatras({ isActive: true, isVedicImprint: true });
                 setYatras(response || []);
             } catch (error) {
-                console.error('Error fetching Vedic Imprints:', error);
+                console.error('Error fetching Vedic Imprints (International):', error);
             } finally {
                 setLoading(false);
             }
@@ -61,7 +61,7 @@ export default function VedicImprintsSection() {
                 <div className="flex justify-between items-center mb-10 px-2">
                     <div>
                         <h2 className="font-sans text-4xl md:text-5xl font-bold text-deepBlue mb-2">
-                            Vedic Imprints
+                            Vedic Imprints (International)
                         </h2>
                         <div className="h-1.5 w-24 bg-saffron rounded-full"></div>
                     </div>

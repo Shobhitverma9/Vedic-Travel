@@ -5,7 +5,7 @@ import { useTours } from '@/hooks/useTours';
 import TourCard from '@/components/shared/TourCard';
 
 export default function TrendingDestinations() {
-    const { data, isLoading: loading } = useTours({ isTrending: true, limit: 10 });
+    const { data, isLoading: loading } = useTours({ isTrending: true, limit: 10, sortBy: 'trendingRank', order: 'asc' });
     const tours = data?.tours || [];
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -116,6 +116,7 @@ export default function TrendingDestinations() {
                             </div>
 
                             <div
+                                id="trending-tours-carousel"
                                 ref={scrollContainerRef}
                                 className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide"
                                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}

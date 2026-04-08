@@ -335,7 +335,7 @@ export class PaymentsService {
 
                     // 1.5 Generate Invoice and Send Multi-Channel Notifications
                     try {
-                        const pdfBuffer = await this.invoiceService.generateInvoicePdf(updatedBooking);
+                        const pdfBuffer = await this.invoiceService.generateInvoicePdf(updatedBooking, parseFloat(amount));
                         const fileName = `invoice-${(updatedBooking as any).bookingReference}`;
                         const invoiceUrl = await this.invoiceService.uploadToCloudinary(pdfBuffer, fileName);
 

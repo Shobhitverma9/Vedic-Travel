@@ -51,11 +51,19 @@ export default function AdminInquiriesPage() {
                                         <div className="text-sm text-gray-500">{inquiry.mobile}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="text-sm font-medium text-gray-900">{inquiry.tourName}</div>
-                                        <div className="text-xs text-gray-400">ID: {inquiry.tourId}</div>
+                                        {inquiry.tourName ? (
+                                            <div className="flex flex-col">
+                                                <div className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-50 text-[#003580] border border-blue-100 mb-1">
+                                                    {inquiry.tourName}
+                                                </div>
+                                                <span className="text-[10px] text-gray-400 font-mono">ID: {inquiry.tourId}</span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-sm text-gray-400 italic">General Inquiry</span>
+                                        )}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${inquiry.status === 'new' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${inquiry.status === 'new' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-800 border border-gray-200'
                                             }`}>
                                             {inquiry.status.toUpperCase()}
                                         </span>

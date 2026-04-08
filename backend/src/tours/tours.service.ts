@@ -41,8 +41,8 @@ export class ToursService {
             category,
             minPrice,
             maxPrice,
-            sortBy = 'createdAt',
-            order = 'desc',
+            sortBy = isTrending === 'true' ? 'trendingRank' : 'createdAt',
+            order = isTrending === 'true' ? 'asc' : 'desc',
             isTrending,
             isActive,
             ids,
@@ -104,8 +104,11 @@ export class ToursService {
         const [tours, total] = await Promise.all([
             this.tourModel
                 .find(filter)
-                .select('title slug price priceOriginal images duration locations highlights.temples isTrending rating reviewsCount favoriteSize')
-                .sort({ [sortBy]: sortOrder })
+                .select('title slug price priceOriginal images duration locations highlights.temples isTrending trendingRank rating reviewsCount favoriteSize')
+                .sort(sortBy === 'trendingRank' 
+                    ? { [sortBy]: sortOrder, createdAt: -1 } // Secondary sort by latest if ranks same
+                    : { [sortBy]: sortOrder }
+                )
                 .skip(skip)
                 .limit(Number(limit)),
             this.tourModel.countDocuments(filter),

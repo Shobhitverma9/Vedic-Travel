@@ -83,8 +83,22 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
     const [hasAutoTriggered, setHasAutoTriggered] = useState(false);
     const inclusionsRef = useRef<HTMLDivElement>(null);
 
+    // Auto-open modal after 15 seconds
+    useEffect(() => {
+        if (loading || !tour || hasAutoTriggered) return;
+
+        const timer = setTimeout(() => {
+            if (!hasAutoTriggered) {
+                setIsEnquiryModalOpen(true);
+                setHasAutoTriggered(true);
+            }
+        }, 15000); // 15 seconds
+
+        return () => clearTimeout(timer);
+    }, [loading, tour, hasAutoTriggered]);
 
     // Intersection Observer for Inclusions section
+    /*
     useEffect(() => {
         if (loading || !tour || hasAutoTriggered) return;
 
@@ -109,6 +123,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
             }
         };
     }, [loading, tour, hasAutoTriggered]);
+    */
 
     useEffect(() => {
         const fetchTour = async () => {
@@ -170,11 +185,12 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
     // Mock data for wireframe specific fields
     const originalPrice = tour.priceOriginal || Math.round(tour.price * 1.25);
     const nights = tour.duration - 1;
+    const defaultCity = tour.departureCities?.find((c: any) => c.isDefault)?.city || tour.departureCities?.[0]?.city || 'Joining Direct';
 
     return (
         <div className="min-h-screen bg-white pb-20 font-sans">
             {/* 1. New Hero Section */}
-            <div className="container mx-auto px-4 py-6 pt-24 md:pt-36">
+            <div className="max-w-7xl mx-auto px-4 py-6 pt-24 md:pt-36">
 
                 {/* 1. Header Section (Title + Subheader) */}
                 <div className="mb-6 border-b pb-4">
@@ -214,7 +230,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
 
                         {/* 3. Compact Info Strip */}
                         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:divide-x divide-gray-200">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:divide-x divide-gray-200">
                                 {/* Duration */}
                                 <div className="flex items-center gap-4 px-2 md:px-4 group">
                                     <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0 group-hover:bg-orange-100 transition-colors">
@@ -228,6 +244,17 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                     </div>
                                 </div>
 
+                                {/* Ex-City */}
+                                <div className="flex items-center gap-4 px-2 md:px-4 group">
+                                    <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-100 transition-colors">
+                                        <Plane className="w-6 h-6 text-purple-500" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Joining From</p>
+                                        <p className="font-bold text-gray-900 text-base">Ex: {defaultCity}</p>
+                                    </div>
+                                </div>
+
                                 {/* Places */}
                                 <div className="flex items-center gap-4 px-2 md:px-4 group">
                                     <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
@@ -238,7 +265,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Places to Visit</p>
-                                        <p className="font-bold text-gray-900 text-sm truncate" title={tour.placesToVisit || tour.locations?.join(' / ') || 'Multiple Cities'}>
+                                        <p className="font-bold text-gray-900 text-sm leading-tight" title={tour.placesToVisit || tour.locations?.join(' / ') || 'Multiple Cities'}>
                                             {tour.placesToVisit || tour.locations?.join(' / ') || 'Multiple Cities'}
                                         </p>
                                     </div>
@@ -253,10 +280,11 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-1">Package Includes</p>
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-3">
                                             {(tour.packageIncludes && tour.packageIncludes.length > 0 ? tour.packageIncludes : ['Hotel', 'Sightseeing', 'Transfer', 'Meals']).slice(0, 5).map((item: string) => (
-                                                <div key={item} title={item} className="hover:scale-110 transition-transform">
+                                                <div key={item} title={item} className="flex flex-col items-center gap-1 hover:scale-110 transition-transform">
                                                     {getIconForInclude(item)}
+                                                    <span className="text-[9px] font-bold text-gray-600 uppercase tracking-tighter">{item}</span>
                                                 </div>
                                             ))}
                                             {(tour.packageIncludes?.length > 5) && (
@@ -474,7 +502,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
             {/* 11. "Others are also choosing" Section */}
             {otherTours.length > 0 && (
                 <div className="bg-gray-50/50 py-16 border-t border-gray-100">
-                    <div className="container mx-auto px-4">
+                    <div className="max-w-7xl mx-auto px-4">
                         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                             <div>
                                 <h2 className="text-3xl md:text-4xl font-display font-bold text-deepBlue mb-2">Others are also choosing..</h2>
