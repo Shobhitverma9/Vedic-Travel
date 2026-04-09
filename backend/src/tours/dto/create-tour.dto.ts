@@ -236,6 +236,11 @@ export class CreateTourDto {
     @ApiProperty({ required: false, default: false })
     @IsBoolean()
     @IsOptional()
+    showInHero?: boolean;
+
+    @ApiProperty({ required: false, default: false })
+    @IsBoolean()
+    @IsOptional()
     isTrending?: boolean;
 
     @ApiProperty({ required: false, default: 0 })

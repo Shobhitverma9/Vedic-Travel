@@ -136,6 +136,9 @@ export class Tour {
     @Prop({ default: true })
     isActive: boolean;
 
+    @Prop({ default: false })
+    showInHero: boolean;
+
     @Prop({ default: 0 })
     totalBookings: number;
 

@@ -1,9 +1,6 @@
-'use client';
+import { useTours } from '@/hooks/useTours';
 
-import Link from 'next/link';
-
-
-const cards = [
+const fallbackCards = [
     {
         title: 'Char Dham Yatra by Helicopter',
         duration: '6D/5N',
@@ -55,9 +52,33 @@ const cards = [
     },
 ];
 
-
-
 export default function HeroCardsAnimation() {
+    const { data, isLoading } = useTours({ showInHero: true, isActive: true });
+
+    // Map backend tours to card format
+    const dynamicCards = data?.tours?.map((tour: any) => ({
+        title: tour.title,
+        duration: `${tour.duration}D/${tour.duration - 1}N`, // Approximation if not explicit
+        price: `₹${tour.price?.toLocaleString('en-IN')}`,
+        image: tour.images?.[0] || '/placeholder.png',
+        link: `/package/${tour.slug}`,
+    })) || [];
+
+    // Use dynamic cards if available, otherwise fallback to curated list
+    const cards = dynamicCards.length > 0 ? dynamicCards : fallbackCards;
+
+    if (isLoading) {
+        return (
+            <div className="relative mt-8 overflow-hidden mx-auto w-full max-w-[1240px] h-64 flex items-center justify-center">
+                <div className="flex gap-4 animate-pulse">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="w-44 h-60 bg-white/10 rounded-lg shrink-0" />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
             <style jsx>{`
@@ -66,7 +87,7 @@ export default function HeroCardsAnimation() {
                     100% { transform: translateX(-50%); }
                 }
                 .animate-marquee-scroll {
-                    animation: marquee-scroll 20s linear infinite;
+                    animation: marquee-scroll 30s linear infinite;
                     width: max-content; 
                 }
                 .animate-marquee-scroll:hover {
@@ -77,7 +98,7 @@ export default function HeroCardsAnimation() {
             <div
                 className="relative mt-8 overflow-hidden select-none mx-auto w-full"
                 style={{
-                    maxWidth: '1240px', // Wider on high screen resolution
+                    maxWidth: '1240px',
                     maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
                     WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
                 }}
@@ -102,7 +123,6 @@ export default function HeroCardsAnimation() {
 }
 
 function Card({ card, index }: { card: any; index: number }) {
-    // Subtle tilt
     const rotation = index % 2 === 0 ? 'rotate-[-1deg]' : 'rotate-[1deg]';
     const margin = index % 2 === 0 ? 'mt-0' : 'mt-4';
 
@@ -124,10 +144,10 @@ function Card({ card, index }: { card: any; index: number }) {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
                 <div className="p-2.5 bg-white relative h-full">
-                    <h3 className="font-sans font-bold text-sm text-deepBlue leading-tight mb-1 truncate">{card.title}</h3>
+                    <h3 className="font-sans font-bold text-sm text-deepBlue leading-tight mb-1 line-clamp-2">{card.title}</h3>
                     <p className="text-gray-500 text-[10px] mb-2">{card.duration}</p>
 
-                    <div className="flex justify-between items-end border-t border-dashed border-gray-100 pt-1.5">
+                    <div className="flex justify-between items-end border-t border-dashed border-gray-100 pt-1.5 absolute bottom-2.5 left-2.5 right-2.5 bg-white">
                         <div>
                             <p className="text-[8px] text-gray-400 uppercase font-semibold">From</p>
                             <p className="text-saffron font-bold text-sm">{card.price}</p>
@@ -142,5 +162,4 @@ function Card({ card, index }: { card: any; index: number }) {
             </div>
         </Link>
     );
-
 }

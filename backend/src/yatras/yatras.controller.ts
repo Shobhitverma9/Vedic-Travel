@@ -1,14 +1,20 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors } from '@nestjs/common';
-import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors, Inject } from '@nestjs/common';
+import { CacheInterceptor, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { YatrasService } from './yatras.service';
 
 @Controller('yatras')
 export class YatrasController {
-    constructor(private readonly yatrasService: YatrasService) { }
+    constructor(
+        private readonly yatrasService: YatrasService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
+    ) { }
 
     @Post()
-    create(@Body() createYatraDto: any) {
-        return this.yatrasService.create(createYatraDto);
+    async create(@Body() createYatraDto: any) {
+        const yatra = await this.yatrasService.create(createYatraDto);
+        await this.cacheManager.reset();
+        return yatra;
     }
 
     @Get()
@@ -30,12 +36,16 @@ export class YatrasController {
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() updateYatraDto: any) {
-        return this.yatrasService.update(id, updateYatraDto);
+    async update(@Param('id') id: string, @Body() updateYatraDto: any) {
+        const yatra = await this.yatrasService.update(id, updateYatraDto);
+        await this.cacheManager.reset();
+        return yatra;
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.yatrasService.remove(id);
+    async remove(@Param('id') id: string) {
+        const result = await this.yatrasService.remove(id);
+        await this.cacheManager.reset();
+        return result;
     }
 }

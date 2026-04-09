@@ -10,9 +10,11 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
-import { CacheInterceptor } from '@nestjs/cache-manager';
+import { CacheInterceptor, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Cache } from 'cache-manager';
+import { Inject } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { CreateTourDto } from './dto/create-tour.dto';
 import { UpdateTourDto } from './dto/update-tour.dto';
@@ -23,7 +25,10 @@ import { UserRole } from '../users/schemas/user.schema';
 @ApiTags('Tours')
 @Controller('tours')
 export class ToursController {
-    constructor(private toursService: ToursService) { }
+    constructor(
+        private toursService: ToursService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
+    ) { }
 
     @Get()
     @UseInterceptors(CacheInterceptor)
@@ -52,7 +57,9 @@ export class ToursController {
     // @ApiBearerAuth()
     @ApiOperation({ summary: 'Create new tour (Admin only)' })
     async create(@Body() createTourDto: CreateTourDto) {
-        return this.toursService.create(createTourDto);
+        const tour = await this.toursService.create(createTourDto);
+        await this.cacheManager.reset(); // Invalidate all cache to be safe
+        return tour;
     }
 
     @Put(':id')
@@ -61,7 +68,9 @@ export class ToursController {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Update tour (Admin only)' })
     async update(@Param('id') id: string, @Body() updateTourDto: UpdateTourDto) {
-        return this.toursService.update(id, updateTourDto);
+        const tour = await this.toursService.update(id, updateTourDto);
+        await this.cacheManager.reset(); // Invalidate all cache
+        return tour;
     }
 
     @Delete(':id')
@@ -70,6 +79,8 @@ export class ToursController {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Delete tour (Admin only)' })
     async remove(@Param('id') id: string) {
-        return this.toursService.remove(id);
+        const result = await this.toursService.remove(id);
+        await this.cacheManager.reset(); // Invalidate all cache
+        return result;
     }
 }

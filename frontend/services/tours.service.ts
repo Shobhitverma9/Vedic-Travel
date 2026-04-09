@@ -63,6 +63,7 @@ export interface Tour {
     hasEasyVisa?: boolean;
     hasHighSeason?: boolean;
     hasTravelValidity?: boolean;
+    showInHero?: boolean;
     customBlocks?: any[];
     seo?: {
         title?: string;

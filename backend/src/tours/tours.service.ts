@@ -45,6 +45,7 @@ export class ToursService {
             sortBy = isTrending === 'true' ? 'trendingRank' : 'createdAt',
             order = isTrending === 'true' ? 'asc' : 'desc',
             isActive,
+            showInHero,
             ids,
         } = query;
 
@@ -92,6 +93,10 @@ export class ToursService {
         if (query.isFavorite) {
             filter.isFavorite = query.isFavorite === 'true';
         }
+
+        if (showInHero) {
+            filter.showInHero = showInHero === 'true';
+        }
  
         if (ids) {
             const idArray = Array.isArray(ids) ? ids : ids.split(',');
@@ -104,7 +109,7 @@ export class ToursService {
         const [tours, total] = await Promise.all([
             this.tourModel
                 .find(filter)
-                .select('title slug price priceOriginal images duration locations highlights.temples isTrending trendingRank rating reviewsCount favoriteSize isActive category destination')
+                .select('title slug price priceOriginal images duration locations highlights.temples isTrending trendingRank rating reviewsCount favoriteSize isActive category destination showInHero')
                 .sort(sortBy === 'trendingRank' 
                     ? { [sortBy]: sortOrder, createdAt: -1 } // Secondary sort by latest if ranks same
                     : { [sortBy]: sortOrder }

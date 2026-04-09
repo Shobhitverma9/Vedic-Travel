@@ -60,6 +60,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         termsAndConditions: '',
         paymentTerms: '',
         isActive: true,
+        showInHero: false,
         isFavorite: false,
         favoriteSize: 'standard',
         isTrending: false,
@@ -187,6 +188,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 hasTravelValidity: (tour as any).hasTravelValidity || false,
                 customBlocks: (tour as any).customBlocks || [],
                 isActive: tour.isActive,
+                showInHero: (tour as any).showInHero || false,
                 isFavorite: tour.isFavorite || false,
                 favoriteSize: tour.favoriteSize || 'standard',
                 isTrending: tour.isTrending || false,
@@ -1219,6 +1221,13 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" name="isTrending" checked={formData.isTrending} onChange={handleChange} className="w-5 h-5 text-saffron rounded" />
                             <span className="font-medium">Trending</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer border-l pl-8 ml-4">
+                            <input type="checkbox" name="showInHero" checked={formData.showInHero} onChange={handleChange} className="w-5 h-5 text-deepBlue rounded" />
+                            <div className="flex flex-col">
+                                <span className="font-bold text-deepBlue">Show in Hero Slider</span>
+                                <span className="text-[10px] text-gray-400">Display this package in the homepage hero cards section</span>
+                            </div>
                         </label>
                         {formData.isTrending && (
                             <input type="number" name="trendingRank" value={formData.trendingRank} onChange={handleChange} className="input-field w-24" placeholder="Rank" />
