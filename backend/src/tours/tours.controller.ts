@@ -58,7 +58,7 @@ export class ToursController {
     @ApiOperation({ summary: 'Create new tour (Admin only)' })
     async create(@Body() createTourDto: CreateTourDto) {
         const tour = await this.toursService.create(createTourDto);
-        await this.cacheManager.reset(); // Invalidate all cache to be safe
+        await this.cacheManager.clear(); // Invalidate all cache to be safe
         return tour;
     }
 
@@ -69,7 +69,7 @@ export class ToursController {
     @ApiOperation({ summary: 'Update tour (Admin only)' })
     async update(@Param('id') id: string, @Body() updateTourDto: UpdateTourDto) {
         const tour = await this.toursService.update(id, updateTourDto);
-        await this.cacheManager.reset(); // Invalidate all cache
+        await this.cacheManager.clear(); // Invalidate all cache
         return tour;
     }
 
@@ -80,7 +80,7 @@ export class ToursController {
     @ApiOperation({ summary: 'Delete tour (Admin only)' })
     async remove(@Param('id') id: string) {
         const result = await this.toursService.remove(id);
-        await this.cacheManager.reset(); // Invalidate all cache
+        await this.cacheManager.clear(); // Invalidate all cache
         return result;
     }
 }

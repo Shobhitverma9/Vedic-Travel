@@ -13,7 +13,7 @@ export class YatrasController {
     @Post()
     async create(@Body() createYatraDto: any) {
         const yatra = await this.yatrasService.create(createYatraDto);
-        await this.cacheManager.reset();
+        await this.cacheManager.clear();
         return yatra;
     }
 
@@ -38,14 +38,14 @@ export class YatrasController {
     @Put(':id')
     async update(@Param('id') id: string, @Body() updateYatraDto: any) {
         const yatra = await this.yatrasService.update(id, updateYatraDto);
-        await this.cacheManager.reset();
+        await this.cacheManager.clear();
         return yatra;
     }
 
     @Delete(':id')
     async remove(@Param('id') id: string) {
         const result = await this.yatrasService.remove(id);
-        await this.cacheManager.reset();
+        await this.cacheManager.clear();
         return result;
     }
 }

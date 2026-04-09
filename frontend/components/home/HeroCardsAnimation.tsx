@@ -71,13 +71,13 @@ export default function HeroCardsAnimation() {
                 <div className="flex animate-marquee-scroll">
                     {/* First Set */}
                     <div className="flex shrink-0">
-                        {cards.map((card, index) => (
+                        {cards.map((card: any, index: number) => (
                             <Card key={`card1-${index}`} card={card} index={index} />
                         ))}
                     </div>
                     {/* Duplicate Set for Seamless Loop */}
                     <div className="flex shrink-0">
-                        {cards.map((card, index) => (
+                        {cards.map((card: any, index: number) => (
                             <Card key={`card2-${index}`} card={card} index={index} />
                         ))}
                     </div>
