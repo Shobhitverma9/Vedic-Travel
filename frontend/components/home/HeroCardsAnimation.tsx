@@ -1,71 +1,34 @@
 import { useTours } from '@/hooks/useTours';
-
-const fallbackCards = [
-    {
-        title: 'Char Dham Yatra by Helicopter',
-        duration: '6D/5N',
-        price: '₹2,30,000',
-        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1774947420/vedic-travel/uploads/nb2yzcyu1fis6tt3bspa.webp',
-        link: '/package/char-dham-yatra-by-helicopter-2026',
-    },
-    {
-        title: 'Do Dham by Road Ex-Delhi',
-        duration: '8D/7N',
-        price: '₹30,000',
-        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775201222/vedic-travel/uploads/fd4jfpdmocg5w3fy6alm.jpg',
-        link: '/package/dodham-yatra-by-road-ex-delhi-2026',
-    },
-    {
-        title: 'Kailash Mansarovar By Helicopter',
-        duration: '9D/8N',
-        price: '₹2,80,000',
-        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1774947374/vedic-travel/uploads/kkmz0rbto4ljjf3djjfh.jpg',
-        link: '/package/kailash-mansarovar-helicopter-yatra-2026',
-    },
-    {
-        title: 'Vietnam Signature Journey',
-        duration: '6D/5N',
-        price: '₹59,999',
-        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775288558/vedic-travel/uploads/aucdlxz9orfgjdptjvnn.webp',
-        link: '/package/vietnam-signature-journey-2026',
-    },
-    {
-        title: 'Spiritual Heritage Expedition',
-        duration: '5D/4N',
-        price: '₹21,000',
-        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775308500/vedic-travel/uploads/fz3ysnzeupmmy96tyqzj.webp',
-        link: '/package/spiritual-heritage-varanasi-prayagraj-ayodhya-2026',
-    },
-    {
-        title: 'Heavenly Kashmir – Luxe Escape',
-        duration: '6D/5N',
-        price: '₹39,999',
-        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775481135/vedic-travel/uploads/o0buxlvnzswoummjkqwi.jpg',
-        link: '/package/heavenly-kashmir-curated-2026',
-    },
-    {
-        title: 'Temple & Tides – Luxe Trail',
-        duration: '5D/4N',
-        price: '₹42,000',
-        image: 'https://res.cloudinary.com/duuedlbxa/image/upload/v1775468943/vedic-travel/uploads/uqunu1uztyno8w4alaoc.jpg',
-        link: '/package/temples-tides-rameshwarm-madurai-kanyakumari-2026',
-    },
-];
+import Link from 'next/link';
 
 export default function HeroCardsAnimation() {
-    const { data, isLoading } = useTours({ showInHero: true, isActive: true });
+    // 1. Fetch specifically selected Hero tours
+    const { data: heroData, isLoading: heroLoading } = useTours({ showInHero: true, isActive: true });
+    
+    // 2. Fetch Trending tours as a dynamic fallback (always filtered by isActive)
+    const { data: trendingData, isLoading: trendingLoading } = useTours({ 
+        isTrending: true, 
+        isActive: true, 
+        limit: 10,
+        sortBy: 'trendingRank',
+        order: 'asc'
+    });
+
+    const isLoading = heroLoading || trendingLoading;
+
+    // Determine which tours to show: Prefer showInHero, fallback to Trending
+    const rawTours = (heroData?.tours?.length > 0) 
+        ? heroData.tours 
+        : (trendingData?.tours || []);
 
     // Map backend tours to card format
-    const dynamicCards = data?.tours?.map((tour: any) => ({
+    const cards = rawTours.map((tour: any) => ({
         title: tour.title,
-        duration: `${tour.duration}D/${tour.duration - 1}N`, // Approximation if not explicit
+        duration: tour.duration ? `${tour.duration}D/${tour.duration - 1}N` : 'Curated Trip',
         price: `₹${tour.price?.toLocaleString('en-IN')}`,
         image: tour.images?.[0] || '/placeholder.png',
         link: `/package/${tour.slug}`,
-    })) || [];
-
-    // Use dynamic cards if available, otherwise fallback to curated list
-    const cards = dynamicCards.length > 0 ? dynamicCards : fallbackCards;
+    }));
 
     if (isLoading) {
         return (
@@ -79,6 +42,8 @@ export default function HeroCardsAnimation() {
         );
     }
 
+    if (cards.length === 0) return null;
+
     return (
         <>
             <style jsx>{`
@@ -87,7 +52,7 @@ export default function HeroCardsAnimation() {
                     100% { transform: translateX(-50%); }
                 }
                 .animate-marquee-scroll {
-                    animation: marquee-scroll 30s linear infinite;
+                    animation: marquee-scroll 40s linear infinite;
                     width: max-content; 
                 }
                 .animate-marquee-scroll:hover {
