@@ -124,7 +124,7 @@ export default function TestimonialsSection() {
 
                 <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-end">
                     {/* Left Side: Single Marquee Carousel */}
-                    <div className="w-full lg:w-2/3 overflow-hidden flex flex-col justify-end relative">
+                    <div className="w-full overflow-hidden flex flex-col justify-end relative">
                         {/* Slim edge fades */}
                         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#005555] to-transparent z-10 pointer-events-none"></div>
                         <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#005555] to-transparent z-10 pointer-events-none"></div>
@@ -147,10 +147,9 @@ export default function TestimonialsSection() {
                         </div>
                     </div>
 
+                    {/* Video Testimonial - Commented out for now
                     <div className="w-full lg:w-1/3 relative h-[360px] md:h-[440px] flex items-center mt-4 lg:mt-0">
                         <div className="w-full h-[90%] lg:h-full rounded-2xl overflow-hidden shadow-xl border border-cyan-800/50 group/video relative">
-                            {/* No full-area overlay - only bottom gradient for text */}
-
                             <video
                                 className="w-full h-full object-cover"
                                 autoPlay
@@ -183,6 +182,7 @@ export default function TestimonialsSection() {
                             </button>
                         </div>
                     </div>
+                    */}
                 </div>
             </div>
 

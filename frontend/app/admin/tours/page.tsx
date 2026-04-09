@@ -15,7 +15,7 @@ export default function AdminToursList() {
     const fetchTours = async () => {
         try {
             setLoading(true);
-            const response = await toursService.getAllTours({ limit: 100 }); // Fetch all
+            const response = await toursService.getAllTours({ limit: 100, isActive: 'all' }); // Fetch all including hidden
             setTours(response.tours || []);
         } catch (error) {
             console.error('Error fetching tours:', error);
@@ -36,7 +36,18 @@ export default function AdminToursList() {
         }
     };
 
-    const handleDuplicate = async (tour: any) => {
+    const handleToggleVisibility = async (tour: any) => {
+        try {
+            const newStatus = !tour.isActive;
+            await toursService.updateTour(tour._id, { isActive: newStatus });
+            setTours(tours.map((t: any) => 
+                t._id === tour._id ? { ...t, isActive: newStatus } : t
+            ));
+        } catch (error) {
+            console.error('Toggle visibility failed:', error);
+            alert('Failed to update visibility');
+        }
+    };
         if (!confirm(`Are you sure you want to duplicate "${tour.title}"?`)) return;
 
         try {
@@ -121,6 +132,7 @@ export default function AdminToursList() {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visibility</th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -156,6 +168,21 @@ export default function AdminToursList() {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {tour.duration} Days
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <button
+                                        onClick={() => handleToggleVisibility(tour)}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${tour.isActive ? 'bg-green-500' : 'bg-gray-300'
+                                            }`}
+                                    >
+                                        <span
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${tour.isActive ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                        />
+                                    </button>
+                                    <span className="ml-2 text-xs font-medium text-gray-600">
+                                        {tour.isActive ? 'Visible' : 'Hidden'}
+                                    </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <Link href={`/admin/tours/${tour._id}`} className="text-deepBlue hover:text-saffron mr-4">

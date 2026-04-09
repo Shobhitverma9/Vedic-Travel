@@ -6,8 +6,8 @@ export const yatrasService = {
         return response.data;
     },
 
-    getYatraById: async (id: string) => {
-        const response = await apiClient.get(`/yatras/${id}`);
+    getYatraById: async (id: string, params: any = {}) => {
+        const response = await apiClient.get(`/yatras/${id}`, { params });
         return response.data;
     },
 

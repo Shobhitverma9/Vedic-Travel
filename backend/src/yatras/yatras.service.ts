@@ -32,8 +32,13 @@ export class YatrasService {
         const { isActive, search } = query;
         const filter: any = {};
 
-        if (isActive !== undefined) {
+        if (isActive === 'all') {
+            // No isActive filter
+        } else if (isActive !== undefined) {
             filter.isActive = isActive === 'true';
+        } else {
+            // Default: only show active yatras
+            filter.isActive = true;
         }
 
         if (search) {
@@ -59,10 +64,15 @@ export class YatrasService {
 
         // If isTrending=true, only return yatras that have at least one trending package
         if (query.isTrending === 'true') {
+            const populationOptions: any = { path: 'packages' };
+            if (isActive !== 'all') {
+                populationOptions.match = { isActive: true };
+            }
+
             const allYatras = await this.yatraModel
                 .find(filter)
                 .sort({ rank: 1 })
-                .populate('packages')
+                .populate(populationOptions)
                 .exec();
 
             return allYatras.filter((yatra: any) =>
@@ -70,15 +80,26 @@ export class YatrasService {
             );
         }
 
+        const populationOptions: any = { path: 'packages' };
+        if (isActive !== 'all') {
+            populationOptions.match = { isActive: true };
+        }
+
         return this.yatraModel
             .find(filter)
             .sort({ rank: 1 })
-            .populate('packages')
+            .populate(populationOptions)
             .exec();
     }
 
-    async findOne(id: string): Promise<Yatra> {
-        const yatra = await this.yatraModel.findById(id).populate('packages').exec();
+    async findOne(id: string, query: any = {}): Promise<Yatra> {
+        const { isActive } = query;
+        const populationOptions: any = { path: 'packages' };
+        if (isActive !== 'all') {
+            populationOptions.match = { isActive: true };
+        }
+
+        const yatra = await this.yatraModel.findById(id).populate(populationOptions).exec();
         if (!yatra) {
             throw new NotFoundException(`Yatra with ID ${id} not found`);
         }
@@ -86,7 +107,13 @@ export class YatrasService {
     }
 
     async findBySlug(slug: string): Promise<Yatra> {
-        const yatra = await this.yatraModel.findOne({ slug }).populate('packages').exec();
+        const yatra = await this.yatraModel
+            .findOne({ slug, isActive: true })
+            .populate({
+                path: 'packages',
+                match: { isActive: true }
+            })
+            .exec();
         if (!yatra) {
             throw new NotFoundException(`Yatra with slug ${slug} not found`);
         }

@@ -82,8 +82,8 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
     ];
 
     const modalContent = (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative animate-slide-up overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 py-8 sm:py-12 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative animate-slide-up">
                 {/* Compact Header Section */}
                 <div className="bg-gradient-to-br from-[#003580] to-[#0052cc] p-4 text-white relative">
                     <button
@@ -191,15 +191,15 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                     </form>
 
                     {/* Compact Assistance Section */}
-                    <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between">
-                        <div className="flex flex-col">
-                            <span className="text-[9px] uppercase font-bold text-gray-400 tracking-widest">Support</span>
-                            <a href="tel:18002099100" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
+                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[9px] uppercase font-bold text-gray-400 tracking-widest whitespace-nowrap">Support</span>
+                            <a href="tel:18002099100" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 whitespace-nowrap">
                                 <Phone className="w-3 h-3" />
                                 1800-2099-100
                             </a>
                         </div>
-                        <div className="px-3 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] font-bold text-gray-500 uppercase">
+                        <div className="px-2 py-0.5 bg-gray-50 border border-gray-200 rounded text-[9px] font-bold text-gray-500 uppercase whitespace-nowrap">
                             Assistance
                         </div>
                     </div>

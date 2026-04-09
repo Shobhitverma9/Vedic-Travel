@@ -52,7 +52,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
 
                 if (resolvedParams.slug !== 'new') {
                     setIsEditMode(true);
-                    const yatra = await yatrasService.getYatraById(resolvedParams.slug);
+                    const yatra = await yatrasService.getYatraById(resolvedParams.slug, { isActive: 'all' });
                     setFormData({
                         title: yatra.title,
                         slug: yatra.slug || '',

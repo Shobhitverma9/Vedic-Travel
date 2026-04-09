@@ -10,7 +10,7 @@ interface ReCaptchaProps {
 
 export default function ReCaptcha({ onChange, theme = 'light' }: ReCaptchaProps) {
     const recaptchaRef = useRef<ReCAPTCHA>(null);
-    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '';
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Lfc36osAAAAADFb7YjfPw_ZBrgUQ6xcJsFJ4msP';
 
     // If no site key is provided, show a warning in development
     useEffect(() => {

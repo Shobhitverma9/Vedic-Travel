@@ -19,8 +19,8 @@ export class YatrasController {
 
     @Get(':id')
     @UseInterceptors(CacheInterceptor)
-    findOne(@Param('id') id: string) {
-        return this.yatrasService.findOne(id);
+    findOne(@Param('id') id: string, @Query() query: any) {
+        return this.yatrasService.findOne(id, query);
     }
 
     @Get('slug/:slug')

@@ -14,7 +14,7 @@ export default function AdminYatrasPage() {
 
     const fetchYatras = async () => {
         try {
-            const data = await yatrasService.getAllYatras(); // Fetch all yatras (no isActive filter)
+            const data = await yatrasService.getAllYatras({ isActive: 'all' }); // Fetch all including hidden
             setYatras(data);
         } catch (error) {
             console.error('Error fetching yatras:', error);
@@ -23,7 +23,18 @@ export default function AdminYatrasPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleToggleVisibility = async (yatra: any) => {
+        try {
+            const newStatus = !yatra.isActive;
+            await yatrasService.updateYatra(yatra._id, { isActive: newStatus });
+            setYatras(yatras.map((y: any) => 
+                y._id === yatra._id ? { ...y, isActive: newStatus } : y
+            ));
+        } catch (error) {
+            console.error('Toggle visibility failed:', error);
+            alert('Failed to update visibility');
+        }
+    };
         if (!confirm('Are you sure you want to delete this Yatra?')) return;
         try {
             await yatrasService.deleteYatra(id);
@@ -58,7 +69,7 @@ export default function AdminYatrasPage() {
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Packages</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visibility</th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -75,10 +86,21 @@ export default function AdminYatrasPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${yatra.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                            }`}>
-                                            {yatra.isActive ? 'Active' : 'Inactive'}
-                                        </span>
+                                        <div className="flex items-center">
+                                            <button
+                                                onClick={() => handleToggleVisibility(yatra)}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${yatra.isActive ? 'bg-green-500' : 'bg-gray-300'
+                                                    }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${yatra.isActive ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
+                                                />
+                                            </button>
+                                            <span className="ml-2 text-xs font-medium text-gray-600">
+                                                {yatra.isActive ? 'Visible' : 'Hidden'}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link
