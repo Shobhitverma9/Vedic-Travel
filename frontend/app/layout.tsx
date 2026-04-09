@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   description: "India's #1 Cultural & Spiritual Tourism Company. Experience mesmerizing spiritual tours across ancient Bharat.",
   keywords: "spiritual tours, India tourism, cultural tours, temple tours, pilgrimage, Char Dham, Varanasi",
   icons: {
-    icon: "/vt-icon.png",
+    icon: "/vt-icon.png?v=1",
   },
 };
 
