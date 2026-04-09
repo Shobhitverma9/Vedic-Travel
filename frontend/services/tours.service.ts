@@ -58,6 +58,12 @@ export interface Tour {
         amount: number;
         paymentType: string;
     };
+    joiningFrom?: string;
+    hasEasyCancellation?: boolean;
+    hasEasyVisa?: boolean;
+    hasHighSeason?: boolean;
+    hasTravelValidity?: boolean;
+    customBlocks?: any[];
     seo?: {
         title?: string;
         description?: string;

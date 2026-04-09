@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { yatrasService } from '@/services/yatras.service';
 
 export default function AdminYatrasPage() {
-    const [yatras, setYatras] = useState([]);
+    const [yatras, setYatras] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -35,6 +35,8 @@ export default function AdminYatrasPage() {
             alert('Failed to update visibility');
         }
     };
+    
+    const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this Yatra?')) return;
         try {
             await yatrasService.deleteYatra(id);

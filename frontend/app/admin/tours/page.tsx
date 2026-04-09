@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { toursService } from '@/services/tours.service';
 
 export default function AdminToursList() {
-    const [tours, setTours] = useState([]);
+    const [tours, setTours] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -48,6 +48,8 @@ export default function AdminToursList() {
             alert('Failed to update visibility');
         }
     };
+    
+    const handleDuplicate = async (tour: any) => {
         if (!confirm(`Are you sure you want to duplicate "${tour.title}"?`)) return;
 
         try {

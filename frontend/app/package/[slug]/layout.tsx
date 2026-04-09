@@ -24,6 +24,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             title: seo.title || `${tour.title} | Vedic Travel`,
             description: seo.description || tour.description?.slice(0, 160) || `Book the best ${tour.title} package with Vedic Travel.`,
             keywords: seo.keywords || `${tour.title}, vedic travel, tour package, vacation`,
+            icons: {
+                icon: "/vt-icon.png",
+            },
             openGraph: {
                 title: seo.title || tour.title,
                 description: seo.description || tour.description?.slice(0, 160),

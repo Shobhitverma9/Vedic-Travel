@@ -35,6 +35,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         packageType: 'Land Only',
         placesHighlights: [] as string[],
         placesToVisit: '',
+        joiningFrom: 'Joining Direct',
         packageIncludes: [] as string[], // Categories
         hotels: [] as { name: string; image: string; description: string; rating: number }[],
         itinerary: [] as {

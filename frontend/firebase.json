@@ -5,6 +5,12 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ]
+    ],
+    "frameworksBackend": {
+      "environmentVariables": {
+        "NEXT_PUBLIC_RECAPTCHA_SITE_KEY": "6Lfc36osAAAAADFb7YjfPw_ZBrgUQ6xcJsFJ4msP",
+        "NEXT_PUBLIC_API_URL": "https://vedic-travel.onrender.com/api/v1"
+      }
+    }
   }
 }
