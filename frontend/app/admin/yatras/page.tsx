@@ -91,16 +91,16 @@ export default function AdminYatrasPage() {
                                         <div className="flex items-center">
                                             <button
                                                 onClick={() => handleToggleVisibility(yatra)}
-                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${yatra.isActive ? 'bg-green-500' : 'bg-gray-300'
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${(yatra.isActive !== false) ? 'bg-green-500' : 'bg-gray-300'
                                                     }`}
                                             >
                                                 <span
-                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${yatra.isActive ? 'translate-x-6' : 'translate-x-1'
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${(yatra.isActive !== false) ? 'translate-x-6' : 'translate-x-1'
                                                         }`}
                                                 />
                                             </button>
                                             <span className="ml-2 text-xs font-medium text-gray-600">
-                                                {yatra.isActive ? 'Visible' : 'Hidden'}
+                                                {(yatra.isActive !== false) ? 'Visible' : 'Hidden'}
                                             </span>
                                         </div>
                                     </td>

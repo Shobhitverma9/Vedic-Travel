@@ -174,16 +174,16 @@ export default function AdminToursList() {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <button
                                         onClick={() => handleToggleVisibility(tour)}
-                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${tour.isActive ? 'bg-green-500' : 'bg-gray-300'
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${(tour.isActive !== false) ? 'bg-green-500' : 'bg-gray-300'
                                             }`}
                                     >
                                         <span
-                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${tour.isActive ? 'translate-x-6' : 'translate-x-1'
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${(tour.isActive !== false) ? 'translate-x-6' : 'translate-x-1'
                                                 }`}
                                         />
                                     </button>
                                     <span className="ml-2 text-xs font-medium text-gray-600">
-                                        {tour.isActive ? 'Visible' : 'Hidden'}
+                                        {(tour.isActive !== false) ? 'Visible' : 'Hidden'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

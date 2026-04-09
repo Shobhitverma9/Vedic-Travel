@@ -104,7 +104,7 @@ export class ToursService {
         const [tours, total] = await Promise.all([
             this.tourModel
                 .find(filter)
-                .select('title slug price priceOriginal images duration locations highlights.temples isTrending trendingRank rating reviewsCount favoriteSize')
+                .select('title slug price priceOriginal images duration locations highlights.temples isTrending trendingRank rating reviewsCount favoriteSize isActive category destination')
                 .sort(sortBy === 'trendingRank' 
                     ? { [sortBy]: sortOrder, createdAt: -1 } // Secondary sort by latest if ranks same
                     : { [sortBy]: sortOrder }
