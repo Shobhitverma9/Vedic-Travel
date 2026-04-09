@@ -53,9 +53,11 @@ async function bootstrap() {
         await emailService.sendBookingConfirmationEmail(testEmail, testName, {
             bookingReference: dummyBooking.bookingReference,
             tourName: dummyBooking.tour.title,
-            travelDate: dummyBooking.travelDate.toLocaleDateString(),
+            travelDate: dummyBooking.travelDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
             numberOfTravelers: dummyBooking.numberOfTravelers,
-            totalAmount: dummyBooking.totalAmount
+            totalAmount: dummyBooking.totalAmount,
+            paidAmount: 5000,
+            paymentMethod: 'UPI'
         });
 
         // 4. Test Booking Cancellation
@@ -63,7 +65,7 @@ async function bootstrap() {
         await emailService.sendBookingCancellationEmail(testEmail, testName, {
             bookingReference: dummyBooking.bookingReference,
             tourName: dummyBooking.tour.title,
-            travelDate: dummyBooking.travelDate.toLocaleDateString(),
+            travelDate: dummyBooking.travelDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
             numberOfTravelers: dummyBooking.numberOfTravelers,
             totalAmount: dummyBooking.totalAmount,
             cancellationReason: 'Test cancellation requested by user.'
@@ -93,7 +95,7 @@ async function bootstrap() {
         await emailService.sendTripReminderEmail(testEmail, testName, {
             bookingReference: dummyBooking.bookingReference,
             tourName: dummyBooking.tour.title,
-            travelDate: dummyBooking.travelDate.toLocaleDateString(),
+            travelDate: dummyBooking.travelDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
             numberOfTravelers: dummyBooking.numberOfTravelers
         });
 

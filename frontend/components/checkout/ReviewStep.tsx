@@ -142,7 +142,7 @@ export default function ReviewStep({ bookingDetails, paidAmount, onContinue }: R
                 </div>
 
                 {/* Rewards Badge */}
-                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-4">
+                {/* <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-4">
                     <div className="text-xs font-bold text-amber-800 mb-1 uppercase tracking-wide">Your Rewards</div>
                     <div className="text-xs text-amber-700 mb-2">Here's what you'll earn for this booking</div>
                     <div className="flex items-center gap-2 bg-white border border-amber-200 rounded-lg px-3 py-2">
@@ -154,7 +154,7 @@ export default function ReviewStep({ bookingDetails, paidAmount, onContinue }: R
                     <p className="text-[10px] text-amber-600 mt-2 leading-snug">
                         Points credited within 60 days of checkout
                     </p>
-                </div>
+                </div> */}
 
                 {/* CTA */}
                 <button

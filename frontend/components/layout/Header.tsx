@@ -7,6 +7,7 @@ import { Heart, ChevronDown, ChevronRight } from 'lucide-react';
 import CartIcon from '@/components/layout/CartIcon';
 import { menuItems, MenuItem } from '@/data/menu';
 import { yatrasService } from '@/services/yatras.service';
+import { settingsService } from '@/services/settings.service';
 
 export default function Header({ isEmbedded = false }: { isEmbedded?: boolean }) {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -14,23 +15,30 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [expandedMobileItems, setExpandedMobileItems] = useState<string[]>([]);
     const [yatras, setYatras] = useState<any[]>([]);
+    const [dynamicMenu, setDynamicMenu] = useState<MenuItem[]>(menuItems);
     const pathname = usePathname();
     const isAuthPage = pathname?.startsWith('/auth');
 
     useEffect(() => {
-        const fetchYatras = async () => {
+        const fetchHeaderData = async () => {
             try {
                 // Fetch active yatras for dynamic menu injection
-                const data = await yatrasService.getAllYatras({ isActive: true });
-                if (data) {
-                    setYatras(data);
+                const yatrasData = await yatrasService.getAllYatras({ isActive: true });
+                if (yatrasData) {
+                    setYatras(yatrasData);
+                }
+
+                // Fetch dynamic menu from settings
+                const settingsData = await settingsService.getSetting('header_navigation');
+                if (settingsData && Array.isArray(settingsData.value)) {
+                    setDynamicMenu(settingsData.value);
                 }
             } catch (err) {
-                console.error("Failed to fetch yatras for header menu:", err);
+                console.error("Failed to fetch header data:", err);
             }
         };
 
-        fetchYatras();
+        fetchHeaderData();
     }, []);
 
     useEffect(() => {
@@ -119,7 +127,7 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
     // Merge Yatras into MenuItems dynamically
     const getDynamicMenuItems = () => {
         // Deep copy menu items so we don't mutate the original array
-        const dynamicMenu = JSON.parse(JSON.stringify(menuItems)) as MenuItem[];
+        const baseMenu = JSON.parse(JSON.stringify(dynamicMenu)) as MenuItem[];
 
         // Find "Tours & Packages" main menu item
         const toursMenu = dynamicMenu.find(item => item.label === 'Tours & Packages');
@@ -142,10 +150,10 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
             }
         });
 
-        return dynamicMenu;
+        return baseMenu;
     };
 
-    const currentMenuItems = yatras.length > 0 ? getDynamicMenuItems() : menuItems;
+    const currentMenuItems = getDynamicMenuItems();
 
     // Recursive helper for Desktop Dropdowns
     const renderDesktopMenuItem = (item: MenuItem) => {
