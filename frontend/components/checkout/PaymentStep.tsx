@@ -45,9 +45,7 @@ export default function PaymentStep({
         try {
             const mappedTravelers = travelerDetails.map((t: any) => ({
                 name: `${t.title ? t.title + ' ' : ''}${t.firstName} ${t.lastName}`.trim(),
-                age: t.dob
-                    ? Math.floor((Date.now() - new Date(t.dob).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
-                    : 25,
+                age: parseInt(t.age) || 25,
                 gender: t.title === 'Mrs' || t.title === 'Ms' ? 'Female' : 'Male',
                 idProof: 'Passport',
             }));

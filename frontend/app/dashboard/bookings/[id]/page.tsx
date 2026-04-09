@@ -42,6 +42,7 @@ interface BookingDetails {
     paymentStatus: string;
     numberOfTravelers: number;
     totalAmount: number;
+    paidAmount: number;
     travelerDetails: {
         name: string;
         age: number;
@@ -51,6 +52,12 @@ interface BookingDetails {
     cancelledAt?: string;
     cancellationReason?: string;
     paymentId?: string;
+    paymentMethod?: string;
+    emiDetails?: {
+        bank: string;
+        tenure: number;
+        monthlyAmount: number;
+    };
     createdAt: string;
 }
 
@@ -130,6 +137,7 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
         switch (status.toLowerCase()) {
             case 'confirmed': return 'bg-green-100 text-green-800 border-green-200';
             case 'pending': return 'bg-orange-100 text-orange-800 border-orange-200';
+            case 'partial': return 'bg-blue-100 text-blue-800 border-blue-200';
             case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
             default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
@@ -216,7 +224,7 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
                         </div>
                         <div className="p-4 flex flex-col">
                             <span className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">Payment Status</span>
-                            <span className={`font-semibold capitalize ${booking.paymentStatus === 'success' ? 'text-green-600' : 'text-orange-500'}`}>
+                             <span className={`font-semibold capitalize ${booking.paymentStatus === 'success' ? 'text-green-600' : booking.paymentStatus === 'partial' ? 'text-blue-600' : 'text-orange-500'}`}>
                                 {booking.paymentStatus}
                             </span>
                         </div>
@@ -328,10 +336,34 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
                                         <span className="font-medium font-mono text-gray-900">{booking.paymentId}</span>
                                     </div>
                                 )}
-                                <div className="flex justify-between text-gray-600 pt-3 border-t border-gray-100">
-                                    <span>Total Amount Paid</span>
-                                    <span className="font-bold text-gray-900">₹{booking.totalAmount?.toLocaleString('en-IN')}</span>
+                                {booking.paymentMethod && (
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Payment Method</span>
+                                        <span className="font-medium capitalize text-gray-900">{booking.paymentMethod}</span>
+                                    </div>
+                                )}
+                                {booking.emiDetails && (
+                                    <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-100 flex flex-col gap-1">
+                                        <div className="flex justify-between text-[11px] text-blue-800">
+                                            <span>EMI Plan</span>
+                                            <span className="font-bold">{booking.emiDetails.bank} - {booking.emiDetails.tenure} Months</span>
+                                        </div>
+                                        <div className="flex justify-between text-[11px] text-blue-800">
+                                            <span>Monthly Installment</span>
+                                            <span className="font-bold">₹{booking.emiDetails.monthlyAmount.toLocaleString('en-IN')}</span>
+                                        </div>
+                                    </div>
+                                )}
+                                 <div className="flex justify-between text-gray-600 pt-3 border-t border-gray-100">
+                                    <span>Cumulative Paid</span>
+                                    <span className="font-bold text-gray-900">₹{(booking.paidAmount || 0)?.toLocaleString('en-IN')}</span>
                                 </div>
+                                {booking.totalAmount > (booking.paidAmount || 0) && (
+                                    <div className="flex justify-between text-orange-600 font-medium">
+                                        <span>Balance Due</span>
+                                        <span>₹{(booking.totalAmount - (booking.paidAmount || 0))?.toLocaleString('en-IN')}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

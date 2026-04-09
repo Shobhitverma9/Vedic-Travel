@@ -12,6 +12,7 @@ export enum BookingStatus {
 
 export enum PaymentStatus {
     PENDING = 'pending',
+    PARTIAL = 'partial',
     SUCCESS = 'success',
     FAILED = 'failed',
     REFUNDED = 'refunded',
@@ -33,8 +34,10 @@ export class Booking {
 
     @Prop({ required: true })
     totalAmount: number;
- 
-    @Prop()
+
+    @Prop({ default: 0 })
+    paidAmount: number;
+
     departureCity: string;
  
     @Prop({ default: 0 })
@@ -85,6 +88,16 @@ export class Booking {
 
     @Prop({ default: false })
     isGuest: boolean;
+
+    @Prop()
+    paymentMethod: string;
+
+    @Prop({ type: Object })
+    emiDetails?: {
+        bank: string;
+        tenure: number;
+        monthlyAmount: number;
+    };
 
     @Prop()
     bookingReference: string;

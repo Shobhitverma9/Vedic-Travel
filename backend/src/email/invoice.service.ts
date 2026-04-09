@@ -104,6 +104,7 @@ export class InvoiceService {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
+            timeZone: 'Asia/Kolkata',
         });
 
         const travelerName = booking.user?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
@@ -196,12 +197,7 @@ export class InvoiceService {
                 </div>
                 <div class="tax-col" style="width: 34%;">
                     <div class="logo-center">
-                        <img src="${frontendUrl}/vt-logo-retina-black.png" alt="VedicTravel Logo">
-                        <table class="ids-table">
-                            <tr><td class="ids-col">PAN: <span>AAMCT0974F</span></td></tr>
-                            <tr><td class="ids-col">CIN: <span>U79110UP2025PTC228487</span></td></tr>
-                            <tr><td class="ids-col">GSTIN: <span>09AAMCT0974F1Z0</span></td></tr>
-                        </table>
+                        <img src="${frontendUrl}/vt-logo-retina-black.png" alt="Vedic Travel Logo">
                     </div>
                 </div>
                 <div class="tax-col" style="width: 33%;">
@@ -210,6 +206,11 @@ export class InvoiceService {
                         <div>193/4, 2nd Floor, Sector 4, Aditya World City,<br>Bamheta, Ghaziabad, Uttar Pradesh, 201002</div>
                         <div style="margin-top: 5px;"><strong>Email:</strong> info@vedictravel.com</div>
                         <div><strong>Phone:</strong> +91 84474 70062</div>
+                        <div style="margin-top: 10px; font-size: 10px;">
+                            <div><strong>PAN:</strong> AAMCT0974F</div>
+                            <div><strong>CIN:</strong> U79110UP2025PTC228487</div>
+                            <div><strong>GSTIN:</strong> 09AAMCT0974F1Z0</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -250,31 +251,11 @@ export class InvoiceService {
         <div class="section">
             <div class="section-title">Package Details</div>
             <div class="detail-row"><strong>Package:</strong> ${tourTitle}</div>
-            <div class="detail-row"><strong>Yatra Date:</strong> ${new Date(booking.travelDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+            <div class="detail-row"><strong>Yatra Date:</strong> ${new Date(booking.travelDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}</div>
             <div class="detail-row"><strong>Travellers:</strong> ${booking.numberOfTravelers} Adult(s)</div>
             <div class="detail-row"><strong>Type:</strong> Spiritual Pilgrimage / Guided Service</div>
         </div>
 
-        <!-- Inclusions & Exclusions -->
-        <div class="section" style="margin-top: 25px;">
-            <div class="section-title">Inclusions</div>
-            <div class="points-list">
-                <span>Coordination of Sacred Rituals</span>
-                <span>Spiritual Guidance</span>
-                <span>Hotel/Dharamshala Coordination</span>
-                <span>Local Transfers</span>
-                <span>Assistance at Holy Shrines</span>
-            </div>
-            
-            <div class="section-title" style="margin-top: 15px;">Exclusions</div>
-            <div class="points-list">
-                <span>Personal Offerings (Dakshina)</span>
-                <span>Private Poojas</span>
-                <span>Travel Insurance</span>
-                <span>Personal Medical Expenses</span>
-                <span>Extra Meals</span>
-            </div>
-        </div>
 
         <!-- Financial Breakdown -->
         <table class="finance-table">
@@ -307,8 +288,10 @@ export class InvoiceService {
         <!-- Payment Status -->
         <div class="section" style="margin-top: 30px;">
             <div class="section-title">Payment Status</div>
+            <div class="detail-row"><strong>Payment Method:</strong> ${(booking.paymentMethod || 'Online').toUpperCase()}</div>
             <div class="detail-row"><strong>Amount Paid in this Transaction:</strong> ₹${amountStr}</div>
-            <div class="detail-row"><strong>Remaining Balance:</strong> ₹${balanceDueStr}</div>
+            <div class="detail-row"><strong>Cumulative Amount Paid:</strong> ₹${(booking.paidAmount || totalAmountForInvoice).toLocaleString('en-IN')}</div>
+            <div class="detail-row"><strong>Remaining Balance:</strong> ₹${Math.max(0, totalPackageCost - (booking.paidAmount || totalAmountForInvoice)).toLocaleString('en-IN')}</div>
             <div class="detail-row"><strong>Payment Date:</strong> ${date}</div>
         </div>
 

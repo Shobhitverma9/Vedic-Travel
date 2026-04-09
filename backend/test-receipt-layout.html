@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: A4; margin: 0; }
+        body { font-family: 'Inter', sans-serif; color: #1A2332; margin: 0; padding: 0; background: #fff; -webkit-print-color-adjust: exact; }
+        .page-container { padding: 40px; position: relative; min-height: 29.7cm; box-sizing: border-box; }
+        
+        /* ─── Header Section ─── */
+        .tax-header { width: 100%; border-bottom: 2px solid #000; padding-bottom: 25px; margin-bottom: 20px; }
+        .tax-columns { display: table; width: 100%; table-layout: fixed; }
+        .tax-col { display: table-cell; vertical-align: top; }
+        
+        .title-h1 { margin: 0 0 15px 0; font-size: 24px; font-weight: 700; color: #000; text-transform: uppercase; }
+        .logo-center { text-align: center; }
+        .logo-center img { max-width: 150px; height: auto; margin-bottom: 10px; }
+        
+        .ids-table { width: 100%; font-size: 10px; line-height: 1.4; color: #333; }
+        .ids-col { text-align: left; padding-bottom: 3px; }
+        .ids-col span { font-weight: 700; color: #000; display: block; font-size: 11px; }
+
+        .company-info { text-align: right; font-size: 10px; color: #333; line-height: 1.5; }
+        .company-name { font-size: 12px; font-weight: 700; color: #000; margin-bottom: 5px; text-transform: uppercase; }
+        .qr-placeholder { margin-top: 10px; text-align: right; }
+        .qr-placeholder img { width: 80px; height: 80px; border: 1px solid #EEE; padding: 5px; border-radius: 4px; }
+
+        /* ─── Metadata Summary Table ─── */
+        .summary-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1px solid #CCC; }
+        .summary-table th { background: #E0E0E0; border: 1px solid #CCC; padding: 8px 12px; font-size: 11px; font-weight: 700; text-align: left; width: 25%; }
+        .summary-table td { border: 1px solid #CCC; padding: 8px 12px; font-size: 11px; width: 25%; }
+
+        /* ─── Detail Sections ─── */
+        .section { margin-bottom: 20px; }
+        .section-title { font-size: 13px; font-weight: 700; color: #000; margin-bottom: 8px; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 2px; }
+        .detail-row { font-size: 12px; line-height: 1.6; color: #333; margin-bottom: 4px; }
+        .detail-row strong { color: #000; width: 120px; display: inline-block; }
+
+        /* ─── Points (Inclusions/Exclusions) ─── */
+        .points-list { font-size: 11px; color: #444; line-height: 1.4; margin: 5px 0; }
+        .points-list span { display: inline-block; margin-right: 15px; position: relative; padding-left: 10px; }
+        .points-list span:before { content: '•'; position: absolute; left: 0; color: #000; font-weight: bold; }
+
+        /* ─── Financial Table ─── */
+        .finance-table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid #000; }
+        .finance-table th { background: #CCC; border: 1px solid #000; padding: 10px 15px; font-size: 12px; font-weight: 700; text-align: left; }
+        .finance-table td { border: 1px solid #CCC; padding: 10px 15px; font-size: 12px; }
+        .finance-table tr.grand { background: #EEE; font-weight: 700; }
+
+        /* ─── Fixed Footer ─── */
+        .page-footer { position: absolute; bottom: 40px; left: 40px; right: 40px; border-top: 1px solid #EEE; padding-top: 20px; display: table; width: 100%; }
+        .footer-left { display: table-cell; vertical-align: top; font-size: 9px; color: #999; }
+        .footer-right { display: table-cell; vertical-align: bottom; text-align: right; font-size: 10px; font-weight: 600; }
+        .page-number:after { content: 'Page 1 of 1'; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Main Header (MakeMyTrip Style) -->
+        <div class="tax-header">
+            <div class="tax-columns">
+                <div class="tax-col" style="width: 33%;">
+                    <h1 class="title-h1">TAX INVOICE</h1>
+                    <div style="font-size: 10px; color: #666; text-transform: uppercase;">Place of Supply</div>
+                    <div style="font-size: 12px; font-weight: 700; color: #000;">Uttar Pradesh</div>
+                </div>
+                <div class="tax-col" style="width: 34%;">
+                    <div class="logo-center">
+                        <img src="http://localhost:3000/vt-logo-retina-black.png" alt="Vedic Travel Logo">
+                    </div>
+                </div>
+                <div class="tax-col" style="width: 33%;">
+                    <div class="company-info">
+                        <div class="company-name">Travergetic Innovations PVT LTD</div>
+                        <div>193/4, 2nd Floor, Sector 4, Aditya World City,<br>Bamheta, Ghaziabad, Uttar Pradesh, 201002</div>
+                        <div style="margin-top: 5px;"><strong>Email:</strong> info@vedictravel.com</div>
+                        <div><strong>Phone:</strong> +91 84474 70062</div>
+                        <div style="margin-top: 10px; font-size: 10px;">
+                            <div><strong>PAN:</strong> AAMCT0974F</div>
+                            <div><strong>CIN:</strong> U79110UP2025PTC228487</div>
+                            <div><strong>GSTIN:</strong> 09AAMCT0974F1Z0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metadata Summary Table -->
+        <table class="summary-table">
+            <tr>
+                <th>Invoice No.</th>
+                <td>VT/TEST-LAYOUT-V2</td>
+                <th>Invoice Date</th>
+                <td>9 Apr 2026</td>
+            </tr>
+            <tr>
+                <th>Booking ID</th>
+                <td>TEST-LAYOUT-V2</td>
+                <th>Payment Mode</th>
+                <td>UPI / Online</td>
+            </tr>
+            <tr>
+                <th>Transaction ID</th>
+                <td>N/A</td>
+                <th>Place of Supply</th>
+                <td>Uttar Pradesh</td>
+            </tr>
+        </table>
+
+        <!-- Customer Details -->
+        <div class="section">
+            <div class="section-title">Customer Details</div>
+            <div class="detail-row"><strong>Name:</strong> Test User</div>
+            <div class="detail-row"><strong>Phone:</strong> N/A</div>
+            <div class="detail-row"><strong>Email:</strong> N/A</div>
+            <div class="detail-row"><strong>Address:</strong> Ghaziabad, Uttar Pradesh, India</div>
+        </div>
+
+        <!-- Package Details -->
+        <div class="section">
+            <div class="section-title">Package Details</div>
+            <div class="detail-row"><strong>Package:</strong> Religious/Spiritual Travel Service</div>
+            <div class="detail-row"><strong>Yatra Date:</strong> 09 Apr 2026</div>
+            <div class="detail-row"><strong>Travellers:</strong> 2 Adult(s)</div>
+            <div class="detail-row"><strong>Type:</strong> Spiritual Pilgrimage / Guided Service</div>
+        </div>
+
+
+        <!-- Financial Breakdown -->
+        <table class="finance-table">
+            <thead>
+                <tr>
+                    <th style="width: 75%">Description</th>
+                    <th style="width: 25%; text-align: right;">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Package Cost (2 Pax) - Full Value</td>
+                    <td style="text-align: right;">18,500</td>
+                </tr>
+                <tr>
+                    <td>Amount being invoiced (Transaction Basis)</td>
+                    <td style="text-align: right;">17,619</td>
+                </tr>
+                <tr>
+                    <td>GST @ 5%</td>
+                    <td style="text-align: right;">881</td>
+                </tr>
+                <tr class="grand">
+                    <td style="border: 1px solid #000;">Total Amount</td>
+                    <td style="text-align: right; border: 1px solid #000;">₹18,500</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Payment Status -->
+        <div class="section" style="margin-top: 30px;">
+            <div class="section-title">Payment Status</div>
+            <div class="detail-row"><strong>Amount Paid in this Transaction:</strong> ₹18,500</div>
+            <div class="detail-row"><strong>Cumulative Amount Paid:</strong> ₹18,500</div>
+            <div class="detail-row"><strong>Remaining Balance:</strong> ₹0</div>
+            <div class="detail-row"><strong>Payment Date:</strong> 9 Apr 2026</div>
+        </div>
+
+        <!-- Page Footer -->
+        <div class="page-footer">
+            <div class="footer-left">
+                <strong>Registered Office:</strong> 193/4, 2nd Floor, Sector 4, Aditya World City, Bamheta, Ghaziabad, Uttar Pradesh, INDIA - 201002
+                <br>Terms & Conditions apply. This is a computer-generated receipt and requires no physical signature.
+            </div>
+            <div class="footer-right">
+                <div style="color: #666; margin-bottom: 2px;">Invoice No. VT/TEST-LAYOUT-V2</div>
+                <div class="page-number"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+        

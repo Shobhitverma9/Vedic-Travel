@@ -21,25 +21,25 @@ export class EmailService {
     }
 
     async sendOTPEmail(email: string, otp: string, name: string): Promise<void> {
-        const subject = 'Verify Your VedicTravel Account';
+        const subject = 'Verify Your Vedic Travel Account';
         const htmlBody = this.getOTPEmailTemplate(otp, name);
-        const textBody = `Hello ${name},\n\nYour OTP code is: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Hello ${name},\n\nYour OTP code is: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.\n\nBest regards,\nVedic Travel Team`;
 
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
     async sendLoginOTPEmail(email: string, otp: string, name: string): Promise<void> {
-        const subject = 'Your VedicTravel Login Code';
+        const subject = 'Your Vedic Travel Login Code';
         const htmlBody = this.getLoginOTPEmailTemplate(otp, name);
-        const textBody = `Hello ${name},\n\nYour login OTP code is: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please secure your account immediately.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Hello ${name},\n\nYour login OTP code is: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please secure your account immediately.\n\nBest regards,\nVedic Travel Team`;
 
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
     async sendWelcomeEmail(email: string, name: string): Promise<void> {
-        const subject = 'Welcome to VedicTravel - Your Spiritual Journey Begins';
+        const subject = 'Welcome to Vedic Travel - Your Spiritual Journey Begins';
         const htmlBody = this.getWelcomeEmailTemplate(name);
-        const textBody = `Welcome to VedicTravel, ${name}!\n\nThank you for joining us on your spiritual journey. We're excited to help you explore sacred destinations and meaningful experiences.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Welcome to Vedic Travel, ${name}!\n\nThank you for joining us on your spiritual journey. We're excited to help you explore sacred destinations and meaningful experiences.\n\nBest regards,\nVedic Travel Team`;
 
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
@@ -53,12 +53,15 @@ export class EmailService {
             travelDate: string;
             numberOfTravelers: number;
             totalAmount: number;
+            paidAmount: number;
+            paymentMethod?: string;
             phone?: string;
         }
     ): Promise<void> {
-        const subject = `Booking Confirmed 🎉 - ${details.bookingReference} | VedicTravel`;
-        const htmlBody = this.getBookingConfirmationTemplate(name, details);
-        const textBody = `Dear ${name},\n\nYour booking is confirmed!\n\nBooking Reference: ${details.bookingReference}\nTour: ${details.tourName}\nTravel Date: ${details.travelDate}\nTravellers: ${details.numberOfTravelers}\nTotal Amount: ₹${details.totalAmount.toLocaleString('en-IN')}\n\nThank you for booking with VedicTravel. We look forward to being a part of your spiritual journey.\n\nBest regards,\nVedicTravel Team`;
+        const balanceAmount = Math.max(0, details.totalAmount - (details.paidAmount || 0));
+        const subject = `Booking Confirmed 🎉 - ${details.bookingReference} | Vedic Travel`;
+        const htmlBody = this.getBookingConfirmationTemplate(name, { ...details, balanceAmount });
+        const textBody = `Dear ${name},\n\nYour booking is confirmed!\n\nBooking Reference: ${details.bookingReference}\nTour: ${details.tourName}\nTravel Date: ${details.travelDate}\nTravellers: ${details.numberOfTravelers}\nTotal Package Amount: ₹${details.totalAmount.toLocaleString('en-IN')}\nAmount Paid: ₹${(details.paidAmount || 0).toLocaleString('en-IN')}${balanceAmount > 0 ? `\nPending Balance: ₹${balanceAmount.toLocaleString('en-IN')}` : ''}\nPayment Method: ${details.paymentMethod || 'Online'}\n\nThank you for booking with Vedic Travel. We look forward to being a part of your spiritual journey.\n\nBest regards,\nVedic Travel Team`;
 
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
@@ -75,9 +78,9 @@ export class EmailService {
             cancellationReason?: string;
         }
     ): Promise<void> {
-        const subject = `Booking Cancelled - ${details.bookingReference} | VedicTravel`;
+        const subject = `Booking Cancelled - ${details.bookingReference} | Vedic Travel`;
         const htmlBody = this.getBookingCancellationTemplate(name, details);
-        const textBody = `Dear ${name},\n\nYour booking ${details.bookingReference} for ${details.tourName} has been cancelled.\n\nIf you have any questions, please contact us.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Dear ${name},\n\nYour booking ${details.bookingReference} for ${details.tourName} has been cancelled.\n\nIf you have any questions, please contact us.\n\nBest regards,\nVedic Travel Team`;
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
@@ -93,9 +96,9 @@ export class EmailService {
             message?: string;
         }
     ): Promise<void> {
-        const subject = `We Received Your Inquiry 🙏 | VedicTravel`;
+        const subject = `We Received Your Inquiry 🙏 | Vedic Travel`;
         const htmlBody = this.getInquiryAcknowledgementTemplate(name, details);
-        const textBody = `Dear ${name},\n\nThank you for your inquiry. We have received it and our team will reach out to you within 24 hours.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Dear ${name},\n\nThank you for your inquiry. We have received it and our team will reach out to you within 24 hours.\n\nBest regards,\nVedic Travel Team`;
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
@@ -113,7 +116,7 @@ export class EmailService {
             message?: string;
         }
     ): Promise<void> {
-        const subject = `🔔 New Inquiry from ${details.name} | VedicTravel Admin`;
+        const subject = `🔔 New Inquiry from ${details.name} | Vedic Travel Admin`;
         const htmlBody = this.getAdminInquiryNotificationTemplate(details);
         const textBody = `New inquiry from ${details.name} (${details.email}, ${details.mobile}).\n\nTour: ${details.tourName || details.yatraName || 'General'}\nMessage: ${details.message || 'None'}\n\nPlease respond within 24 hours.`;
         await this.sendEmail(adminEmail, subject, htmlBody, textBody);
@@ -129,9 +132,9 @@ export class EmailService {
             transactionId?: string;
         }
     ): Promise<void> {
-        const subject = `Payment Failed - Action Required | VedicTravel`;
+        const subject = `Payment Failed - Action Required | Vedic Travel`;
         const htmlBody = this.getPaymentFailureTemplate(name, details);
-        const textBody = `Dear ${name},\n\nUnfortunately your payment for booking ${details.bookingReference} (${details.tourName}) of ₹${details.totalAmount.toLocaleString('en-IN')} could not be processed.\n\nPlease try again or contact us for help.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Dear ${name},\n\nUnfortunately your payment for booking ${details.bookingReference} (${details.tourName}) of ₹${details.totalAmount.toLocaleString('en-IN')} could not be processed.\n\nPlease try again or contact us for help.\n\nBest regards,\nVedic Travel Team`;
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
@@ -146,12 +149,15 @@ export class EmailService {
             travelDate: string;
             numberOfTravelers: number;
             totalAmount: number;
+            paidAmount: number;
+            paymentMethod?: string;
             paymentId?: string;
         }
     ): Promise<void> {
-        const subject = `🎉 New Booking Confirmed - ${details.bookingReference} | VedicTravel`;
-        const htmlBody = this.getAdminNewBookingTemplate(details);
-        const textBody = `New booking confirmed!\n\nRef: ${details.bookingReference}\nCustomer: ${details.customerName} (${details.customerEmail})\nTour: ${details.tourName}\nDate: ${details.travelDate}\nTravellers: ${details.numberOfTravelers}\nAmount: ₹${details.totalAmount.toLocaleString('en-IN')}`;
+        const subject = `🎉 New Booking Confirmed - ${details.bookingReference} | Vedic Travel`;
+        const balanceAmount = Math.max(0, details.totalAmount - (details.paidAmount || 0));
+        const htmlBody = this.getAdminNewBookingTemplate({ ...details, balanceAmount });
+        const textBody = `New booking confirmed!\n\nRef: ${details.bookingReference}\nCustomer: ${details.customerName} (${details.customerEmail})\nTour: ${details.tourName}\nDate: ${details.travelDate}\nTravellers: ${details.numberOfTravelers}\nTotal Package Amount: ₹${details.totalAmount.toLocaleString('en-IN')}\nAmount Paid: ₹${(details.paidAmount || 0).toLocaleString('en-IN')}${balanceAmount > 0 ? `\nPending Balance: ₹${balanceAmount.toLocaleString('en-IN')}` : ''}`;
         await this.sendEmail(adminEmail, subject, htmlBody, textBody);
     }
 
@@ -165,9 +171,9 @@ export class EmailService {
             numberOfTravelers: number;
         }
     ): Promise<void> {
-        const subject = `Your Sacred Journey Begins Soon! 🕉️ | VedicTravel`;
+        const subject = `Your Sacred Journey Begins Soon! 🕉️ | Vedic Travel`;
         const htmlBody = this.getTripReminderTemplate(name, details);
-        const textBody = `Namaste ${name},\n\nYour trip to ${details.tourName} is just 3 days away! We're excited to have you join us. Please ensure you have all your travel documents ready.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Namaste ${name},\n\nYour trip to ${details.tourName} is just 3 days away! We're excited to have you join us. Please ensure you have all your travel documents ready.\n\nBest regards,\nVedic Travel Team`;
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
@@ -180,9 +186,9 @@ export class EmailService {
             totalAmount: number;
         }
     ): Promise<void> {
-        const subject = `Don't Miss Your Spot! ⏳ | VedicTravel`;
+        const subject = `Don't Miss Your Spot! ⏳ | Vedic Travel`;
         const htmlBody = this.getPendingPaymentTemplate(name, details);
-        const textBody = `Namaste ${name},\n\nWe noticed you didn't finish your booking for ${details.tourName}. Your spot is only held for a limited time. Please complete your payment to secure your pilgrimage.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Namaste ${name},\n\nWe noticed you didn't finish your booking for ${details.tourName}. Your spot is only held for a limited time. Please complete your payment to secure your pilgrimage.\n\nBest regards,\nVedic Travel Team`;
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
@@ -194,9 +200,9 @@ export class EmailService {
             tourName: string;
         }
     ): Promise<void> {
-        const subject = `How was your Journey? 🙏 | VedicTravel`;
+        const subject = `How was your Journey? 🙏 | Vedic Travel`;
         const htmlBody = this.getFeedbackRequestTemplate(name, details);
-        const textBody = `Namaste ${name},\n\nWe hope you had a meaningful spiritual journey on your trip to ${details.tourName}. We'd love to hear your feedback to help us serve you better.\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Namaste ${name},\n\nWe hope you had a meaningful spiritual journey on your trip to ${details.tourName}. We'd love to hear your feedback to help us serve you better.\n\nBest regards,\nVedic Travel Team`;
         await this.sendEmail(email, subject, htmlBody, textBody);
     }
 
@@ -213,7 +219,7 @@ export class EmailService {
     ): Promise<void> {
         const subject = `Invoice for Your Sacred Journey 📄 - ${details.bookingReference}`;
         const htmlBody = this.getInvoiceEmailTemplate(name, details);
-        const textBody = `Namaste ${name},\n\nPlease find attached the official receipt for your booking ${details.bookingReference} (${details.tourName}) of ₹${details.totalAmount.toLocaleString('en-IN')}.\n\nYou can also view it online here: ${details.invoiceUrl}\n\nBest regards,\nVedicTravel Team`;
+        const textBody = `Namaste ${name},\n\nPlease find attached the official receipt for your booking ${details.bookingReference} (${details.tourName}) of ₹${details.totalAmount.toLocaleString('en-IN')}.\n\nYou can also view it online here: ${details.invoiceUrl}\n\nBest regards,\nVedic Travel Team`;
 
         const attachments = [
             {
@@ -311,7 +317,7 @@ export class EmailService {
         ${this.getEmailHeader('Login Verification', 'Your Secure Access Code')}
         <div class="content">
             <div class="greeting">Namaste ${name},</div>
-            <p class="message">Someone requested a login code for your VedicTravel account. Use the code below to sign in safely:</p>
+            <p class="message">Someone requested a login code for your Vedic Travel account. Use the code below to sign in safely:</p>
             
             <div class="otp-box" style="background: linear-gradient(135deg, #F3E8FF 0%, #FFE8E0 100%); border-color: #7B2CBF;">
                 <div class="otp-label">Your Login Code</div>
@@ -410,6 +416,8 @@ export class EmailService {
         travelDate: string;
         numberOfTravelers: number;
         totalAmount: number;
+        paidAmount: number;
+        balanceAmount: number;
     }): string {
         return `
 <!DOCTYPE html>
@@ -433,7 +441,9 @@ export class EmailService {
                 <tr><td class="label">Tour / Yatra</td><td class="value">${details.tourName}</td></tr>
                 <tr><td class="label">Travel Date</td><td class="value">${details.travelDate}</td></tr>
                 <tr><td class="label">Travellers</td><td class="value">${details.numberOfTravelers} Person(s)</td></tr>
-                <tr><td class="label">Total Paid</td><td class="value" style="color: #2E7D32;">₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
+                <tr><td class="label">Package Value</td><td class="value">₹${details.totalAmount.toLocaleString('en-IN')}</td></tr>
+                <tr><td class="label">Amount Paid</td><td class="value" style="color: #2E7D32; font-weight: 700;">₹${details.paidAmount.toLocaleString('en-IN')}</td></tr>
+                ${details.balanceAmount > 0 ? `<tr><td class="label">Pending Balance</td><td class="value" style="color: #E53935; font-weight: 700;">₹${details.balanceAmount.toLocaleString('en-IN')}</td></tr>` : ''}
             </table>
 
             <div style="background: #F8FAFC; border-radius: 12px; padding: 25px; margin: 30px 0; border: 1px solid #EDF2F7;">
@@ -456,7 +466,7 @@ export class EmailService {
             </center>
 
             <p style="text-align: center; color: #718096; font-size: 13px;">
-                Have questions? Reply to this email or call our 24/7 dedicated helpline at <strong>+91 98765 43210</strong>.
+                Have questions? Reply to this email or call our 24/7 dedicated helpline at <strong>+91 84474 70062</strong>.
             </p>
         </div>
         ${this.getEmailFooter()}
@@ -584,8 +594,9 @@ export class EmailService {
       <!-- Footer -->
       <tr>
         <td style="background:#1A2332;padding:28px 40px;text-align:center;">
-          <p style="margin:0 0 4px;color:#ffffff;font-size:16px;font-weight:700;">🕉️ VedicTravel</p>
-          <p style="margin:0 0 12px;color:rgba(255,255,255,0.5);font-size:12px;">Connecting souls to sacred destinations</p>
+          <p style="margin:0 0 4px;color:#ffffff;font-size:16px;font-weight:700;">🕉️ Vedic Travel PVT</p>
+          <p style="margin:0 0 6px;color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;">Travergetic Innovations PVT LTD</p>
+          <p style="margin:0 0 12px;color:rgba(255,255,255,0.5);font-size:11px;line-height:1.5;">193/4, 2nd Floor, Sector 4, Aditya World City,<br>Bamheta, Ghaziabad, Uttar Pradesh, 201002</p>
           <p style="margin:0;color:rgba(255,255,255,0.35);font-size:11px;">© ${new Date().getFullYear()} VedicTravel. All rights reserved.</p>
         </td>
       </tr>
@@ -793,7 +804,7 @@ export class EmailService {
       <!-- Footer -->
       <tr>
         <td style="background:#0F1923;padding:20px 40px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
-          <p style="margin:0;color:rgba(255,255,255,0.3);font-size:11px;">This is an automated admin notification from VedicTravel backend. Please respond within 24 hours.</p>
+          <p style="margin:0;color:rgba(255,255,255,0.3);font-size:11px;">This is an automated admin notification from Vedic Travel backend. Please respond within 24 hours.</p>
         </td>
       </tr>
     </table>
@@ -866,6 +877,8 @@ export class EmailService {
         travelDate: string;
         numberOfTravelers: number;
         totalAmount: number;
+        paidAmount: number;
+        balanceAmount: number;
         paymentId?: string;
     }): string {
         const now = new Date().toLocaleString('en-IN', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
@@ -887,7 +900,7 @@ export class EmailService {
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td valign="middle">
-                <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:2px;">VedicTravel Admin</span>
+                <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:2px;">Vedic Travel Admin</span>
                 <h1 style="color:#ffffff;margin:6px 0 0;font-size:22px;font-weight:700;">🎉 New Booking Confirmed!</h1>
               </td>
               <td align="right" valign="middle">
@@ -915,8 +928,10 @@ export class EmailService {
         <td style="padding:32px 40px 0;">
           <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(135deg,#1B5E20 0%,#2E7D32 100%);border-radius:12px;">
             <tr><td style="padding:24px;text-align:center;">
-              <p style="margin:0 0 4px;font-size:12px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1.5px;">Revenue Collected</p>
-              <p style="margin:0;font-size:36px;font-weight:800;color:#ffffff;">₹${details.totalAmount.toLocaleString('en-IN')}</p>
+              <p style="margin:0 0 4px;font-size:12px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1.5px;">Amount Collected</p>
+              <p style="margin:0;font-size:36px;font-weight:800;color:#ffffff;">₹${details.paidAmount.toLocaleString('en-IN')}</p>
+              <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.5);">of ₹${details.totalAmount.toLocaleString('en-IN')} (Total)</p>
+              ${details.balanceAmount > 0 ? `<p style="margin:8px 0 0;font-size:13px;color:#FFD54F;font-weight:700;">Pending Balance: ₹${details.balanceAmount.toLocaleString('en-IN')}</p>` : ''}
               ${details.paymentId ? `<p style="margin:8px 0 0;font-size:11px;color:rgba(255,255,255,0.4);font-family:monospace;">Payment ID: ${details.paymentId}</p>` : ''}
             </td></tr>
           </table>
@@ -1016,7 +1031,7 @@ export class EmailService {
       <!-- Footer -->
       <tr>
         <td style="background:#0F1923;padding:20px 40px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
-          <p style="margin:0;color:rgba(255,255,255,0.3);font-size:11px;">Automated admin notification — VedicTravel Backend System</p>
+          <p style="margin:0;color:rgba(255,255,255,0.3);font-size:11px;">Automated admin notification — Vedic Travel Backend System</p>
         </td>
       </tr>
     </table>
@@ -1128,7 +1143,7 @@ export class EmailService {
             <div style="text-align: center; background: #f8f9fa; padding: 20px; border-radius: 12px;">
                 <p style="margin: 0; font-size: 14px; color: #4A5568;">
                     <strong>Need Help?</strong> Having trouble with payment or have more questions? 
-                    <br>Just reply to this email or WhatsApp us at <strong>+91 98765 43210</strong>.
+                    <br>Just reply to this email or WhatsApp us at <strong>+91 84474 70062</strong>.
                 </p>
             </div>
         </div>
@@ -1286,7 +1301,7 @@ export class EmailService {
     private getEmailFooter(): string {
         return `
             <div class="footer">
-                <div style="font-size: 20px; font-weight: 800; color: #FF5722; margin-bottom: 10px;">VedicTravel</div>
+                <div style="font-size: 20px; font-weight: 800; color: #FF5722; margin-bottom: 10px;">Vedic Travel PVT</div>
                 <div style="font-size: 13px; color: #A0AEC0; margin-bottom: 25px;">Connecting souls to sacred destinations</div>
                 
                 <div class="footer-links">
@@ -1303,11 +1318,12 @@ export class EmailService {
                 </div>
                 
                 <div class="footer-address">
-                    <p><strong>VedicTravel PVT LTD</strong><br>
-                    Haridwar, Uttarakhand - 249401, India</p>
+                    <p><strong>Vedic Travel PVT</strong><br>
+                    Travergetic Innovations PVT LTD<br>
+                    193/4, 2nd Floor, Sector 4, Aditya World City, Bamheta, Ghaziabad, Uttar Pradesh, 201002</p>
                     <p style="margin-top: 10px; font-size: 10px; color: #4A5568;">
                         You are receiving this email because you registered on vedictravel.in.<br>
-                        © ${new Date().getFullYear()} VedicTravel. All rights reserved.
+                        © ${new Date().getFullYear()} Vedic Travel. All rights reserved.
                     </p>
                 </div>
             </div>

@@ -31,7 +31,7 @@ export class PaymentsService {
         this.successUrl = this.configService.get<string>('PAYU_SUCCESS_URL');
         this.failureUrl = this.configService.get<string>('PAYU_FAILURE_URL');
 
-        // Debug logging for production deployment issues
+        // Debug logging and validation for production deployment
         if (process.env.NODE_ENV === 'production' || !this.payuBaseUrl) {
             console.log(`[PaymentsService] Configuration check:
                 PAYU_BASE_URL: ${this.payuBaseUrl ? 'SET' : 'MISSING'} (${this.payuBaseUrl?.substring(0, 10)}${this.payuBaseUrl ? '...' : ''})
@@ -39,6 +39,13 @@ export class PaymentsService {
                 PAYU_SUCCESS_URL: ${this.successUrl ? 'SET' : 'MISSING'}
                 PAYU_FAILURE_URL: ${this.failureUrl ? 'SET' : 'MISSING'}
             `);
+
+            if (process.env.NODE_ENV === 'production' && this.payuBaseUrl?.includes('test')) {
+                console.warn('⚠️ WARNING: PayU is configured to TEST environment in PRODUCTION mode!');
+            }
+            if (process.env.NODE_ENV === 'production' && (!this.merchantKey || this.merchantKey === 'your-payu-key')) {
+                console.error('❌ ERROR: PayU Merchant Key is missing or placeholder value in production!');
+            }
         }
     }
 
@@ -283,6 +290,8 @@ export class PaymentsService {
             firstname,
             email,
             mihpayid,
+            mode,
+            pg,
             udf1: bookingId,
             hash: receivedHash,
         } = paymentData;
@@ -303,6 +312,25 @@ export class PaymentsService {
             throw new BadRequestException('Invalid payment hash');
         }
 
+        // Fetch current booking to check if already processed
+        const booking = await this.bookingModel.findById(bookingId);
+        if (!booking) {
+            throw new BadRequestException('Booking not found');
+        }
+
+        // If already success and we received success, just return to avoid duplicate notifications
+        // Note: Success can happen from standard redirect OR webhook
+        if (status === 'success' && booking.paymentStatus === PaymentStatus.SUCCESS) {
+            console.log(`[PaymentsService] Booking ${bookingId} already marked as success. Skipping notifications.`);
+            return {
+                success: true,
+                bookingId,
+                transactionId: txnid,
+                paymentId: mihpayid,
+                alreadyProcessed: true
+            };
+        }
+
         // Update booking payment status
         if (status === 'success') {
             const updatedBooking = await this.bookingsService.updatePaymentStatus(
@@ -310,6 +338,8 @@ export class PaymentsService {
                 PaymentStatus.SUCCESS,
                 mihpayid,
                 txnid,
+                parseFloat(amount),
+                mode,
             );
 
             // Send booking confirmation email
@@ -327,9 +357,10 @@ export class PaymentsService {
                         {
                             bookingReference: (updatedBooking as any).bookingReference,
                             tourName: tour?.title || 'Your Yatra',
-                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
                             numberOfTravelers: (updatedBooking as any).numberOfTravelers,
                             totalAmount: (updatedBooking as any).totalAmount,
+                            paidAmount: (updatedBooking as any).paidAmount,
                         },
                     );
 
@@ -378,9 +409,11 @@ export class PaymentsService {
                             customerEmail: recipientEmail,
                             customerPhone: recipientPhone,
                             tourName: tour?.title || 'Your Yatra',
-                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
                             numberOfTravelers: (updatedBooking as any).numberOfTravelers,
                             totalAmount: (updatedBooking as any).totalAmount,
+                            paidAmount: (updatedBooking as any).paidAmount,
+                            paymentMethod: (updatedBooking as any).paymentMethod,
                             paymentId: mihpayid,
                         },
                     );

@@ -49,7 +49,7 @@ export class EmailSchedulerService {
                         {
                             bookingReference: booking.bookingReference,
                             tourName: (booking.tour as any)?.title || 'Your Yatra',
-                            travelDate: new Date(booking.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                            travelDate: new Date(booking.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
                             numberOfTravelers: booking.numberOfTravelers,
                         }
                     );

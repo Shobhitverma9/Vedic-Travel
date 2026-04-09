@@ -97,29 +97,47 @@ export class BookingsService {
         paymentStatus: PaymentStatus,
         paymentId?: string,
         payuTransactionId?: string,
+        amountPaid?: number,
+        paymentMethod?: string,
+        emiDetails?: any,
     ) {
         const booking = await this.bookingModel.findById(bookingId);
         if (!booking) {
             throw new NotFoundException('Booking not found');
         }
 
-        // Idempotency check: if already successful, don't re-process logic that should run once
-        if (booking.paymentStatus === PaymentStatus.SUCCESS && paymentStatus === PaymentStatus.SUCCESS) {
-            return booking;
+        // Update amounts
+        if (amountPaid) {
+            booking.paidAmount = (booking.paidAmount || 0) + amountPaid;
         }
 
-        booking.paymentStatus = paymentStatus;
+        // Determine actual status based on total amount paid
+        let finalStatus = paymentStatus;
+        if (paymentStatus === PaymentStatus.SUCCESS || paymentStatus === PaymentStatus.PARTIAL) {
+            if (booking.paidAmount >= booking.totalAmount - 1) { // -1 to handle small rounding diffs
+                finalStatus = PaymentStatus.SUCCESS;
+            } else {
+                finalStatus = PaymentStatus.PARTIAL;
+            }
+        }
+
+        booking.paymentStatus = finalStatus;
         if (paymentId) booking.paymentId = paymentId;
         if (payuTransactionId) booking.payuTransactionId = payuTransactionId;
+        if (paymentMethod) booking.paymentMethod = paymentMethod;
+        if (emiDetails) booking.emiDetails = emiDetails;
 
         // Update booking status based on payment
-        if (paymentStatus === PaymentStatus.SUCCESS) {
-            booking.bookingStatus = BookingStatus.CONFIRMED;
+        if (finalStatus === PaymentStatus.SUCCESS || finalStatus === PaymentStatus.PARTIAL) {
+            // Only confirm if not already confirmed
+            if (booking.bookingStatus !== BookingStatus.CONFIRMED) {
+                booking.bookingStatus = BookingStatus.CONFIRMED;
 
-            // Update tour booking count
-            await this.tourModel.findByIdAndUpdate(booking.tour, {
-                $inc: { totalBookings: 1 },
-            });
+                // Update tour booking count
+                await this.tourModel.findByIdAndUpdate(booking.tour, {
+                    $inc: { totalBookings: 1 },
+                });
+            }
         }
 
         await booking.save();
@@ -159,7 +177,7 @@ export class BookingsService {
                     {
                         bookingReference: populatedBooking.bookingReference,
                         tourName: (populatedBooking.tour as any)?.title || 'Your Yatra',
-                        travelDate: new Date(populatedBooking.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                        travelDate: new Date(populatedBooking.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
                         numberOfTravelers: populatedBooking.numberOfTravelers,
                         totalAmount: populatedBooking.totalAmount,
                         cancellationReason: reason,

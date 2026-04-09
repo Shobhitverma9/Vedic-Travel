@@ -31,6 +31,7 @@ function getInvoiceHtml(booking) {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
+        timeZone: 'Asia/Kolkata'
     });
 
     const travelerName = booking.travelerDetails?.[0]?.name || 'Valued Guest';

@@ -32,6 +32,7 @@ async function runStandaloneTest() {
   const dummyBooking = {
     bookingReference: 'VT-TEST-2024-888',
     totalAmount: 18500,
+    paidAmount: 5000,
     numberOfTravelers: 2,
     travelDate: new Date('2024-12-25'),
     payuTransactionId: 'PAYU_TEST_99999',
@@ -63,7 +64,8 @@ async function runStandaloneTest() {
         tourName: dummyBooking.tour.title,
         travelDate: dummyBooking.travelDate.toLocaleDateString('en-IN'),
         numberOfTravelers: dummyBooking.numberOfTravelers,
-        totalAmount: dummyBooking.totalAmount
+        totalAmount: dummyBooking.totalAmount,
+        paidAmount: dummyBooking.paidAmount
     });
 
     // 4. Payment Failure / Cancellation

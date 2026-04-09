@@ -8,7 +8,7 @@ export interface Traveler {
     title: string;
     firstName: string;
     lastName: string;
-    dob: string;
+    age: number | string;
     mealPreference: string;
     isPayer: boolean;
 }
@@ -50,7 +50,7 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
             title: '',
             firstName: '',
             lastName: '',
-            dob: '',
+            age: '',
             mealPreference: '',
             isPayer: false
         }))
@@ -117,7 +117,9 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
             title: saved.title || '',
             firstName: saved.firstName || '',
             lastName: saved.lastName || '',
-            dob: saved.dateOfBirth ? new Date(saved.dateOfBirth).toISOString().split('T')[0] : '',
+            age: saved.dateOfBirth 
+                ? Math.floor((Date.now() - new Date(saved.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+                : '',
             mealPreference: saved.mealPreference || '',
         };
         setTravelers(newTravelers);
@@ -212,13 +214,16 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
                                         </div>
                                         <div>
                                             <label className="block text-[11px] font-medium text-gray-400 mb-1 uppercase tracking-wide flex items-center gap-1">
-                                                <Calendar size={10} /> Date of Birth
+                                                <Calendar size={10} /> Age
                                             </label>
                                             <input
-                                                type="date"
+                                                type="number"
                                                 required
-                                                value={traveler.dob}
-                                                onChange={(e) => handleTravelerChange(index, 'dob', e.target.value)}
+                                                min="0"
+                                                max="120"
+                                                placeholder="Age"
+                                                value={traveler.age}
+                                                onChange={(e) => handleTravelerChange(index, 'age', e.target.value)}
                                                 className={inputClass}
                                             />
                                         </div>
