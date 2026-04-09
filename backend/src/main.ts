@@ -4,6 +4,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { HttpAdapterHost } from '@nestjs/core';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
@@ -27,6 +29,11 @@ async function bootstrap() {
             res.status(200).send('VedicTravel Backend: OK');
         });
         console.log('✅ Root health check configured.');
+
+    // Global exception filter for 500 error diagnostics
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new AllExceptionsFilter({ httpAdapter } as any));
+    console.log('✅ Global exception filter registered.');
 
     // Global interceptors
     app.useGlobalInterceptors(new LoggerInterceptor());
@@ -61,36 +68,44 @@ async function bootstrap() {
 
     const allowedOrigins = [
         (process.env.FRONTEND_URL || 'http://localhost:3000').trim(),
+        'https://vedictravel.in',
+        'https://www.vedictravel.in',
         'http://localhost:3000',
         'http://localhost:3001',
         'https://test.payu.in',
         'https://secure.payu.in',
         'https://api.payu.in',
         ...envOrigins,
-    ].filter(Boolean);
+    ]
+    .filter(Boolean)
+    .map(o => o.toLowerCase().replace(/\/$/, '')); // Normalize: lowercase and remove trailing slash
 
-    console.log('CORS Allowed Origins:', allowedOrigins);
+    console.log('CORS Allowed Origins (Normalized):', allowedOrigins);
 
     app.enableCors({
         origin: (origin, callback) => {
             // Allow requests with no origin (curl, Postman, server-to-server)
             if (!origin) return callback(null, true);
             
-            if (allowedOrigins.includes(origin)) {
+            const normalizedOrigin = origin.toLowerCase().replace(/\/$/, '');
+            
+            if (allowedOrigins.includes(normalizedOrigin)) {
                 return callback(null, true);
             }
             
             // Allow any *.vercel.app or *.web.app subdomain for previews
-            if (origin.endsWith('.vercel.app') || origin.endsWith('.web.app') || origin.endsWith('.run.app')) {
+            if (normalizedOrigin.endsWith('.vercel.app') || normalizedOrigin.endsWith('.web.app') || normalizedOrigin.endsWith('.run.app')) {
                 return callback(null, true);
             }
             
             // Allow any PayU domain explicitly via regex as a fallback
-            if (origin.match(/^https?:\/\/([a-z0-9-]+\.)*payu\.in$/i)) {
+            if (normalizedOrigin.match(/^https?:\/\/([a-z0-9-]+\.)*payu\.in$/i)) {
                 return callback(null, true);
             }
 
-            console.error(`CORS Blocked Origin: ${origin}`);
+            console.error(`❌ CORS Blocked Origin: ${origin} (Normalized: ${normalizedOrigin})`);
+            console.log(`Current Allowed Origins: ${JSON.stringify(allowedOrigins)}`);
+            
             return callback(new Error(`CORS: Origin ${origin} not allowed`));
         },
         credentials: true,
