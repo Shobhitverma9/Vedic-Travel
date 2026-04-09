@@ -9,6 +9,7 @@ import ReviewStep from '@/components/checkout/ReviewStep';
 import AuthStep from '@/components/checkout/AuthStep';
 import TravellerStep, { Traveler, Address } from '@/components/checkout/TravellerStep';
 import PaymentStep from '@/components/checkout/PaymentStep';
+import Preloader from '@/components/shared/Preloader';
 
 function CheckoutContent() {
     const searchParams = useSearchParams();
@@ -180,11 +181,7 @@ function CheckoutContent() {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF5722]"></div>
-            </div>
-        );
+        return <Preloader />;
     }
 
     if (error) {
@@ -255,7 +252,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <Suspense fallback={<Preloader />}>
             <CheckoutContent />
         </Suspense>
     );

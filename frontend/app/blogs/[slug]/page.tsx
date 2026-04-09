@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { blogsService, Blog } from '@/services/blogs.service';
 import { useRouter } from 'next/navigation';
+import Preloader from '@/components/shared/Preloader';
 
 const BlogContentRenderer = dynamic(
     () => import('@/components/blog/blog-content-renderer'),
@@ -39,11 +40,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-            </div>
-        );
+        return <Preloader />;
     }
 
     if (!blog) {

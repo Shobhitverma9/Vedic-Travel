@@ -12,6 +12,7 @@ import { Luggage, BedDouble, Utensils, Binoculars, Plane, FileCheck, Car, CheckC
 import CalculatePriceContainer from '@/components/tours/CalculatePrice/CalculatePriceContainer';
 import TourPolicies from '@/components/tours/TourPolicies';
 import TourCard from '@/components/shared/TourCard';
+import Preloader from '@/components/shared/Preloader';
 
 const getIconForInclude = (include: string) => {
     const lower = include.toLowerCase();
@@ -180,11 +181,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
     }, [params]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-            </div>
-        );
+        return <Preloader />;
     }
 
     if (!tour) return notFound();

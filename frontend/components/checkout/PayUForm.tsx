@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Preloader from '@/components/shared/Preloader';
 
 interface PayUFormProps {
     action: string;
@@ -33,11 +34,12 @@ export default function PayUForm({ action, params }: PayUFormProps) {
     }, []);
 
     return (
-        <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex items-center justify-center p-6 text-center">
+        <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+            <div className="w-full h-48 relative mb-6">
+                <Preloader fullScreen={false} />
+            </div>
+            
             <div className="max-w-md w-full space-y-6">
-                <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto animate-pulse">
-                    <div className="w-12 h-12 border-4 border-[#FF5722] border-t-transparent rounded-full animate-spin" />
-                </div>
                 
                 <div className="space-y-2">
                     <h2 className="text-2xl font-bold text-[#1A2332]">Redirecting to Secure Payment</h2>

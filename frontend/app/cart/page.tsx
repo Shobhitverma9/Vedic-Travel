@@ -6,6 +6,7 @@ import { ShoppingBag, ArrowRight, PackageOpen } from 'lucide-react';
 import { cartService, Cart as CartType } from '@/services/cart.service';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
+import Preloader from '@/components/shared/Preloader';
 
 export default function CartPage() {
     const [cart, setCart] = useState<CartType | null>(null);
@@ -62,11 +63,7 @@ export default function CartPage() {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF5722]"></div>
-            </div>
-        );
+        return <Preloader />;
     }
 
     if (!cart || cart.items.length === 0) {

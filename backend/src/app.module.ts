@@ -30,6 +30,9 @@ import { CartModule } from './cart/cart.module';
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
                 uri: configService.get<string>('MONGODB_URI'),
+                // Fail fast if connection is blocked
+                serverSelectionTimeoutMS: 10000, 
+                connectTimeoutMS: 10000,
             }),
             inject: [ConfigService],
         }),

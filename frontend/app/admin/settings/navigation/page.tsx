@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, ChevronRight, ChevronDown, MoveUp, MoveDown, Save, RefreshCcw, ExternalLink } from 'lucide-react';
 import { settingsService } from '@/services/settings.service';
+import Preloader from '@/components/shared/Preloader';
 import { MenuItem } from '@/data/menu';
 
 export default function NavigationEditorPage() {
@@ -227,11 +228,8 @@ export default function NavigationEditorPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-20 bg-white rounded-xl shadow-sm border border-gray-100">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-saffron"></div>
-                    <p className="text-gray-500 font-medium">Loading navigation structure...</p>
-                </div>
+            <div className="p-20 bg-white rounded-xl shadow-sm border border-gray-100">
+                <Preloader fullScreen={false} />
             </div>
         );
     }

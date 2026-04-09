@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { yatrasService } from '@/services/yatras.service';
+import Preloader from '@/components/shared/Preloader';
 
 function YatrasContent() {
     const searchParams = useSearchParams();
@@ -68,8 +69,8 @@ function YatrasContent() {
             <section className="py-16 px-4">
                 <div className="max-w-7xl mx-auto">
                     {loading ? (
-                        <div className="text-center py-12 min-h-[300px] flex items-center justify-center">
-                            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
+                        <div className="py-12 min-h-[400px]">
+                            <Preloader fullScreen={false} />
                         </div>
                     ) : yatras.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -130,11 +131,7 @@ function YatrasContent() {
 
 export default function YatrasPage() {
     return (
-        <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-            </div>
-        }>
+        <Suspense fallback={<Preloader />}>
             <YatrasContent />
         </Suspense>
     );

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { instagramService } from '@/services/instagram.service';
 import Image from 'next/image';
+import Preloader from '@/components/shared/Preloader';
 
 export default function InstagramPostsPage() {
     const [posts, setPosts] = useState([]);
@@ -36,11 +37,7 @@ export default function InstagramPostsPage() {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-            </div>
-        );
+        return <Preloader fullScreen={false} />;
     }
 
     return (

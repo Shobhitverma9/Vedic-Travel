@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, ArrowRight, Download } from 'lucide-react';
 import Link from 'next/link';
+import Preloader from '@/components/shared/Preloader';
 
 function PaymentSuccessContent() {
     const searchParams = useSearchParams();
@@ -99,11 +100,7 @@ function PaymentSuccessContent() {
 
 export default function PaymentSuccessPage() {
     return (
-        <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF5722]"></div>
-            </div>
-        }>
+        <Suspense fallback={<Preloader />}>
             <PaymentSuccessContent />
         </Suspense>
     );

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { authService } from '@/services/auth.service';
+import Preloader from '@/components/shared/Preloader';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -40,11 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }, [router, pathname, isLoginPage]);
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-            </div>
-        );
+        return <Preloader />;
     }
 
     // If on login page, just render children without sidebar

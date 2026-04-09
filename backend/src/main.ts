@@ -12,11 +12,21 @@ import { json, urlencoded, Request, Response, NextFunction } from 'express';
 // Trigger rebuild
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    console.log('🏁 Starting VedicTravel Backend Bootstrap...');
+    
+    try {
+        const app = await NestFactory.create(AppModule);
+        console.log('✅ NestJS Application instance created.');
 
-    // Trust proxy for Cloud Run/Load Balancer
-    const expressApp = app.getHttpAdapter().getInstance();
-    expressApp.set('trust proxy', 1);
+        // Trust proxy for Cloud Run/Load Balancer
+        const expressApp = app.getHttpAdapter().getInstance();
+        expressApp.set('trust proxy', 1);
+
+        // Simple root health check - Must be before global prefix to be at /
+        expressApp.get('/', (req, res) => {
+            res.status(200).send('VedicTravel Backend: OK');
+        });
+        console.log('✅ Root health check configured.');
 
     // Global interceptors
     app.useGlobalInterceptors(new LoggerInterceptor());
@@ -111,9 +121,16 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/docs', app, document);
 
-    const port = process.env.PORT || 8080;
+    const port = Number(process.env.PORT) || 8080;
+    console.log(`🔌 Attempting to listen on port: ${port}`);
+    
     await app.listen(port, '0.0.0.0');
     console.log(`🚀 VedicTravel Backend running on: http://localhost:${port}`);
     console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
+    } catch (error) {
+        console.error('❌ FATAL ERROR DURING BOOTSTRAP:');
+        console.error(error);
+        process.exit(1);
+    }
 }
 bootstrap();

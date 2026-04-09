@@ -9,6 +9,7 @@ import YatraDetails from '@/components/yatras/YatraDetails';
 import YatraFaqs from '@/components/yatras/YatraFaqs';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import CustomEnquiryForm from '@/components/yatras/CustomEnquiryForm';
+import Preloader from '@/components/shared/Preloader';
 import { destinationsData } from '@/data/destinations';
 
 export default function DestinationPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -43,9 +44,8 @@ export default function DestinationPage({ params }: { params: Promise<{ slug: st
             <YatraHero title={destinationInfo.title} image={destinationInfo.heroImage} />
 
             {loading ? (
-                <div className="py-20 text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron mx-auto mb-4"></div>
-                    <p className="text-gray-500">Loading packages...</p>
+                <div className="py-20 min-h-[400px]">
+                    <Preloader fullScreen={false} />
                 </div>
             ) : (
                 <YatraPackages packages={packages} title={destinationInfo.title} />

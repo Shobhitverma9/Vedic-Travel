@@ -12,6 +12,7 @@ import Sidebar from '@/components/dashboard/Sidebar';
 import ProfileSection from '@/components/dashboard/ProfileSection';
 import TravellersSection from '@/components/dashboard/TravellersSection';
 import OverviewSection from '@/components/dashboard/OverviewSection';
+import Preloader from '@/components/shared/Preloader';
 
 interface Booking {
     _id: string;
@@ -96,11 +97,7 @@ export default function DashboardPage() {
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-orange-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-            </div>
-        );
+        return <Preloader />;
     }
 
     if (!user) return null;

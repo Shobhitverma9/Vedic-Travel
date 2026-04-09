@@ -8,6 +8,7 @@ import YatraDetails from '@/components/yatras/YatraDetails';
 import YatraFaqs from '@/components/yatras/YatraFaqs';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import CustomEnquiryForm from '@/components/yatras/CustomEnquiryForm';
+import Preloader from '@/components/shared/Preloader';
 
 export default function YatraPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
@@ -46,11 +47,7 @@ export default function YatraPage({ params }: { params: Promise<{ slug: string }
         if (slug) fetchYatra();
     }, [slug]);
 
-    if (loading) return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-        </div>
-    );
+    if (loading) return <Preloader />;
 
     if (!yatra) return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
