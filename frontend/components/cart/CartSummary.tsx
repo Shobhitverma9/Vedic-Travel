@@ -76,7 +76,7 @@ export default function CartSummary({ cart }: CartSummaryProps) {
                     </div>
 
                     <p className="text-center text-sm text-gray-600 mb-4">Verify with Google for faster checkout</p>
-                    <GoogleLoginButton />
+                    <GoogleLoginButton returnUrl="/checkout" />
                 </>
             )}
 

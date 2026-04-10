@@ -2,13 +2,18 @@
 
 import { useState } from 'react';
 
-export default function GoogleLoginButton() {
+interface GoogleLoginButtonProps {
+    returnUrl?: string;
+}
+
+export default function GoogleLoginButton({ returnUrl }: GoogleLoginButtonProps = {}) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleGoogleLogin = () => {
         setIsLoading(true);
         // Store current URL to return to after login
-        localStorage.setItem('auth_return_url', window.location.pathname + window.location.search);
+        const urlToReturn = returnUrl || (window.location.pathname + window.location.search);
+        localStorage.setItem('auth_return_url', urlToReturn);
 
         const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
         window.location.href = `${backendUrl}/auth/google`;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { authService, type SendOTPData, type VerifyOTPData } from '@/services/auth.service';
 import { toast } from 'sonner';
 import OTPInput from '@/components/auth/OTPInput';
@@ -11,8 +11,10 @@ import Slideshow from '@/components/auth/Slideshow';
 
 type Step = 'details' | 'verify';
 
-export default function SignUpPage() {
+function SignUpContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl');
     const [step, setStep] = useState<Step>('details');
     const [formData, setFormData] = useState<SendOTPData>({
         name: '',
@@ -32,9 +34,9 @@ export default function SignUpPage() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            router.replace('/dashboard');
+            router.replace(callbackUrl || '/dashboard');
         }
-    }, [router]);
+    }, [router, callbackUrl]);
 
     const handleDetailsSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,7 +86,7 @@ export default function SignUpPage() {
 
             await authService.verifyOTP(verifyData);
             toast.success('Account created successfully');
-            router.push('/dashboard');
+            router.push(callbackUrl || '/dashboard');
         } catch (err: any) {
             const msg = err.response?.data?.message || 'Verification failed. Please try again.';
             setError(msg);
@@ -113,6 +115,11 @@ export default function SignUpPage() {
     };
 
     const handleGoogleSignup = () => {
+        if (callbackUrl) {
+            localStorage.setItem('auth_return_url', callbackUrl);
+        } else {
+            localStorage.setItem('auth_return_url', '/dashboard');
+        }
         window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
     };
 
@@ -347,3 +354,15 @@ export default function SignUpPage() {
         </div>
     );
 }
+
+import { Suspense } from 'react';
+import Preloader from '@/components/shared/Preloader';
+
+export default function SignUpPage() {
+    return (
+        <Suspense fallback={<Preloader />}>
+            <SignUpContent />
+        </Suspense>
+    );
+}
+

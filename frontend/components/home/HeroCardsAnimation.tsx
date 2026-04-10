@@ -35,7 +35,7 @@ export default function HeroCardsAnimation() {
             <div className="relative mt-8 overflow-hidden mx-auto w-full max-w-[1240px] h-64 flex items-center justify-center">
                 <div className="flex gap-4 animate-pulse">
                     {[1, 2, 3, 4, 5].map((i) => (
-                        <div key={i} className="w-44 h-60 bg-white/10 rounded-lg shrink-0" />
+                        <div key={i} className="w-44 h-52 md:h-60 bg-white/10 rounded-lg shrink-0" />
                     ))}
                 </div>
             </div>
@@ -95,12 +95,12 @@ function Card({ card, index }: { card: any; index: number }) {
         <Link href={card.link || '#'}>
             <div
                 className={`
-                    relative flex-shrink-0 w-44 h-60 bg-white rounded-lg shadow-lg border-2 border-white overflow-hidden 
+                    relative flex-shrink-0 w-44 h-52 md:h-60 bg-white rounded-lg shadow-lg border-2 border-white overflow-hidden 
                     transform transition-all duration-300 hover:scale-105 hover:z-20 hover:shadow-2xl
                     ${rotation} ${margin} mx-2.5 cursor-pointer group
                 `}
             >
-                <div className="h-36 w-full relative overflow-hidden">
+                <div className="h-28 md:h-36 w-full relative overflow-hidden">
                     <img
                         src={card.image}
                         alt={card.title}

@@ -125,6 +125,11 @@ function SignInContent() {
     };
 
     const handleGoogleLogin = () => {
+        if (callbackUrl) {
+            localStorage.setItem('auth_return_url', callbackUrl);
+        } else {
+            localStorage.setItem('auth_return_url', '/dashboard');
+        }
         window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
     };
 
