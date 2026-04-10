@@ -8,43 +8,66 @@ import Image from 'next/image';
 const testimonials = [
     {
         id: 1,
-        name: 'Priya Sharma',
-        location: 'Mumbai, India',
+        name: 'Rajesh Mehta',
+        location: 'Mumbai',
+        role: 'Business Owner',
         rating: 5,
-        text: 'The Char Dham Yatra with VedicTravel was life-changing. The attention to detail and spiritual guidance made it truly special.',
-        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces',
+        text: 'My Chardham Yatra with Vedic Travel was nothing short of divine. Everything was so well-organized—from helicopter transfers to VIP darshan—that I could truly focus on my spiritual journey without any stress. Their team ensured comfort even in high-altitude conditions. Highly recommended for anyone seeking a premium pilgrimage experience.',
+        image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=faces',
     },
     {
         id: 2,
-        name: 'Rajesh Kumar',
-        location: 'Delhi, India',
+        name: 'Dr. Ananya Sharma',
+        location: 'Delhi',
+        role: 'Cardiologist',
         rating: 5,
-        text: 'Exceptional service and authentic experiences. Our family tour to Varanasi exceeded all expectations.',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces',
+        text: 'I booked the Golden Triangle with Varanasi, Prayagraj, and Ayodhya tour, and it was beautifully curated. The blend of heritage and spirituality was perfect. Witnessing Ganga Aarti in Varanasi and visiting Ram Janmabhoomi in Ayodhya felt deeply fulfilling. Vedic Travel’s attention to detail is exceptional.',
+        image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=faces',
     },
     {
         id: 3,
-        name: 'Anita Patel',
-        location: 'Ahmedabad, India',
+        name: 'Vikram Singh',
+        location: 'Bengaluru',
+        role: 'Senior IT Consultant',
         rating: 5,
-        text: 'Professional, knowledgeable guides and seamless arrangements. Highly recommend VedicTravel for spiritual tours.',
-        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=faces',
-    },
-    {
-        id: 4,
-        name: 'Michael Chen',
-        location: 'Singapore',
-        rating: 5,
-        text: 'Seeing the Ganga Aarti in person was a dream come true. VedicTravel made the logistics so easy.',
+        text: 'Traveling to Bali with Vedic Travel was a refreshing escape from my hectic corporate life. The itinerary perfectly balanced relaxation, culture, and nature. From serene temples to scenic landscapes, everything was thoughtfully planned. It truly felt like a rejuvenating retreat.',
         image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces',
     },
     {
-        id: 5,
-        name: 'Sarah Thompson',
-        location: 'London, UK',
+        id: 4,
+        name: 'Sunita Verma',
+        location: 'Jaipur',
+        role: 'Homemaker',
         rating: 5,
-        text: 'A deeply spiritual journey. The guides were not just tour guides but true storytellers of history and culture.',
+        text: 'Our Rameshwaram trip was incredibly smooth and spiritually enriching. Vedic Travel took care of everything, including temple rituals and local guidance. It gave us peace of mind and allowed us to fully immerse in devotion. A heartfelt thank you to the entire team.',
         image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=faces',
+    },
+    {
+        id: 5,
+        name: 'Amitabh Gupta',
+        location: 'Kolkata',
+        role: 'Chartered Accountant',
+        rating: 5,
+        text: 'Chardham Yatra had always been a dream, and Vedic Travel made it come true in the most comfortable way possible. The accommodations, food, and assistance at every step were top-notch. Their professionalism and dedication truly stand out.',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=faces',
+    },
+    {
+        id: 6,
+        name: 'Neha Kapoor',
+        location: 'Chandigarh',
+        role: 'Entrepreneur',
+        rating: 5,
+        text: 'I explored Varanasi, Prayagraj, and Ayodhya with Vedic Travel, and it was an unforgettable experience. The guides were knowledgeable, and the arrangements were seamless. The spiritual energy of these places, combined with their premium service, made it truly special.',
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces',
+    },
+    {
+        id: 7,
+        name: 'Rohan Desai',
+        location: 'Pune',
+        role: 'Marketing Head',
+        rating: 5,
+        text: 'Our Bali trip with Vedic Travel was beyond expectations. Every detail—from luxury stays to temple visits—was perfectly handled. It felt like a personalized experience crafted just for us. I came back refreshed, both mentally and spiritually.',
+        image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=faces',
     },
 ];
 
@@ -82,6 +105,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] 
             </div>
             <div>
                 <h3 className="font-bold text-base text-deepBlue">{testimonial.name}</h3>
+                <p className="text-[10px] text-saffron font-medium uppercase tracking-wider">{testimonial.role}</p>
                 <div className="flex items-center text-gray-400 text-xs mt-0.5">
                     <MapPin className="w-3 h-3 mr-1" />
                     {testimonial.location}
