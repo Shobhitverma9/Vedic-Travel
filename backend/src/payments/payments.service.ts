@@ -312,26 +312,39 @@ export class PaymentsService {
             throw new BadRequestException('Invalid payment hash');
         }
 
-        // Fetch current booking to check if already processed
-        const booking = await this.bookingModel.findById(bookingId);
-        if (!booking) {
-            throw new BadRequestException('Booking not found');
+        // ── Atomic idempotency guard ─────────────────────────────────────────────
+        // Both /verify (redirect) and /webhook hit this method at nearly the same
+        // time after PayU confirms payment. To prevent duplicate notifications we
+        // use a single atomic findOneAndUpdate that only succeeds when the booking
+        // is NOT already marked SUCCESS. Whichever concurrent call wins the DB
+        // write proceeds; the loser gets null back and short-circuits silently.
+        if (status === 'success') {
+            const claimed = await this.bookingModel.findOneAndUpdate(
+                { _id: bookingId, paymentStatus: { $ne: PaymentStatus.SUCCESS } },
+                { $set: { paymentStatus: PaymentStatus.SUCCESS } },
+                { new: false }, // return the OLD doc so we know what we changed
+            );
+
+            if (!claimed) {
+                // Another request already processed this payment → skip everything
+                console.log(`[PaymentsService] Booking ${bookingId} already processed (atomic guard). Skipping duplicate notifications.`);
+                return {
+                    success: true,
+                    bookingId,
+                    transactionId: txnid,
+                    paymentId: mihpayid,
+                    alreadyProcessed: true,
+                };
+            }
+        } else {
+            // For non-success, just verify the booking exists
+            const booking = await this.bookingModel.findById(bookingId);
+            if (!booking) {
+                throw new BadRequestException('Booking not found');
+            }
         }
 
-        // If already success and we received success, just return to avoid duplicate notifications
-        // Note: Success can happen from standard redirect OR webhook
-        if (status === 'success' && booking.paymentStatus === PaymentStatus.SUCCESS) {
-            console.log(`[PaymentsService] Booking ${bookingId} already marked as success. Skipping notifications.`);
-            return {
-                success: true,
-                bookingId,
-                transactionId: txnid,
-                paymentId: mihpayid,
-                alreadyProcessed: true
-            };
-        }
-
-        // Update booking payment status
+        // Update booking payment status (full update via service for non-idempotent fields)
         if (status === 'success') {
             const updatedBooking = await this.bookingsService.updatePaymentStatus(
                 bookingId,
