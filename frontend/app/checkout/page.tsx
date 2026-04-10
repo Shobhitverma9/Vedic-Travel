@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { toursService } from '@/services/tours.service';
 import { authService } from '@/services/auth.service';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
@@ -14,6 +14,7 @@ import Preloader from '@/components/shared/Preloader';
 function CheckoutContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const pathname = usePathname();
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -128,7 +129,8 @@ function CheckoutContent() {
         if (savedDraft) {
             try {
                 const parsed = JSON.parse(savedDraft);
-                if (parsed.currentStep) setCurrentStep(parsed.currentStep);
+                // We no longer restore currentStep from localStorage to avoid jumping users 
+                // between different versions of the checkout flow. They should always start at Review.
                 if (parsed.userEmail) setUserEmail(parsed.userEmail);
                 if (parsed.isGuest !== undefined) setIsGuest(parsed.isGuest);
                 if (parsed.travelerDetails) setTravelerDetails(parsed.travelerDetails);
@@ -224,13 +226,26 @@ function CheckoutContent() {
                         userEmail={userEmail}
                     />
                 )}
+
+                {/* Catch-all for invalid steps causing blank page */}
+                {!isLoading && currentStep > 3 && (
+                    <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl shadow-sm">
+                        <p className="text-gray-500 mb-4">Something went wrong with the checkout configuration.</p>
+                        <button 
+                            onClick={() => setCurrentStep(1)}
+                            className="bg-[#FF5722] text-white px-6 py-2 rounded-lg font-bold"
+                        >
+                            Reset Checkout
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Auth Modal overlay for when direct links bypass upstream auth checks */}
             <BookingAuthModal 
                 isOpen={isAuthModalOpen} 
                 onClose={() => router.push('/')} 
-                returnUrl={typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/checkout'}
+                returnUrl={`${pathname}?${searchParams.toString()}`}
                 onSuccess={() => {
                     setIsAuthModalOpen(false);
                     // Rerun checkAuth to populate user detail state natively
