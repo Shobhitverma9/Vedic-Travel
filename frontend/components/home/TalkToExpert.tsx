@@ -30,7 +30,7 @@ export default function TalkToExpert() {
         try {
             await inquiriesService.createInquiry({
                 name: 'Guest User',
-                email: 'guest@example.com',
+                email: 'support@vedictravel.com',
                 mobile: `${dialCode}-${mobile}`,
                 message: 'Requesting callback from expert',
                 tourId: 'general-inquiry',

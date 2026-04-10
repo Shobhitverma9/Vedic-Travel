@@ -143,7 +143,7 @@ export default function AuthStep({ onContinue }: AuthStepProps) {
                                 required
                                 value={guestEmail}
                                 onChange={(e) => setGuestEmail(e.target.value)}
-                                placeholder="name@example.com"
+                                placeholder="name@vedictravel.com"
                                 className={inputClass}
                             />
                             <p className="text-xs text-gray-400 flex items-center gap-1.5 pb-1">

@@ -409,7 +409,7 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
                                     <p className="text-xs text-gray-500 mb-2">Need to change your plans?</p>
                                     <button
                                         onClick={() => {
-                                            alert("Contact support at info@vedictravels.com or +91 999 000 0000 to initiate cancellation.");
+                                            alert("Contact support at support@vedictravel.com or +91 84474 70062 to initiate cancellation.");
                                         }}
                                         className="w-full py-2 px-4 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors">
                                         Request Cancellation
@@ -423,10 +423,10 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
                             <h3 className="font-bold text-gray-900 mb-2">Need Help?</h3>
                             <p className="text-sm text-gray-600 mb-4">Contact our travel experts for assistance with this booking.</p>
                             <div className="space-y-2 text-sm font-medium">
-                                <a href="tel:+918800880088" className="flex items-center text-orange-600 hover:text-orange-700">
-                                    📞 +91 8800 8800 88
+                                <a href="tel:+918447470062" className="flex items-center text-orange-600 hover:text-orange-700">
+                                    📞 +91 84474 70062
                                 </a>
-                                <a href="mailto:support@vedictravels.com" className="flex items-center text-orange-600 hover:text-orange-700">
+                                <a href="mailto:support@vedictravel.com" className="flex items-center text-orange-600 hover:text-orange-700">
                                     ✉️ support@vedictravel.com
                                 </a>
                             </div>

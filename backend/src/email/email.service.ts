@@ -585,7 +585,7 @@ export class EmailService {
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td><p style="margin:0;font-size:13px;color:#666;">Need help? Contact our support team</p></td>
-              <td align="right"><a href="mailto:support@vedictravel.in" style="font-size:13px;color:#FF5722;font-weight:600;text-decoration:none;">support@vedictravel.in</a></td>
+              <td align="right"><a href="mailto:support@vedictravel.com" style="font-size:13px;color:#FF5722;font-weight:600;text-decoration:none;">support@vedictravel.com</a></td>
             </tr>
           </table>
         </td>
@@ -1321,7 +1321,7 @@ export class EmailService {
                     Travergetic Innovations PVT LTD<br>
                     193/4, 2nd Floor, Sector 4, Aditya World City, Bamheta, Ghaziabad, Uttar Pradesh, 201002</p>
                     <p style="margin-top: 10px; font-size: 10px; color: #4A5568;">
-                        You are receiving this email because you registered on vedictravel.in.<br>
+                        You are receiving this email because you registered on vedictravel.com.<br>
                         © ${new Date().getFullYear()} Vedic Travel. All rights reserved.
                     </p>
                 </div>

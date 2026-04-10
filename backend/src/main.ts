@@ -68,6 +68,8 @@ async function bootstrap() {
 
     const allowedOrigins = [
         (process.env.FRONTEND_URL || 'http://localhost:3000').trim(),
+        'https://vedictravel.com',
+        'https://www.vedictravel.com',
         'https://vedictravel.in',
         'https://www.vedictravel.in',
         'http://localhost:3000',
