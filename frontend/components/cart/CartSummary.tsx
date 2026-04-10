@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Tag } from 'lucide-react';
 import { Cart } from '@/services/cart.service';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
+import BookingAuthModal from '../checkout/BookingAuthModal';
+import { useState, useEffect } from 'react';
 
 interface CartSummaryProps {
     cart: Cart;
@@ -11,13 +13,24 @@ interface CartSummaryProps {
 
 export default function CartSummary({ cart }: CartSummaryProps) {
     const router = useRouter();
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        setToken(localStorage.getItem('token'));
+    }, []);
 
     const subtotal = cart.total || 0;
     const gst = subtotal * 0.05; // 5% GST
     const total = subtotal + gst;
 
     const handleCheckout = () => {
-        router.push('/checkout');
+        const currentToken = localStorage.getItem('token');
+        if (!currentToken) {
+            setIsAuthModalOpen(true);
+        } else {
+            router.push('/checkout');
+        }
     };
 
     return (
@@ -67,7 +80,7 @@ export default function CartSummary({ cart }: CartSummaryProps) {
                 <ArrowRight size={20} />
             </button>
 
-            {!localStorage.getItem('token') && (
+            {!token && (
                 <>
                     <div className="flex items-center my-6">
                         <div className="flex-grow border-t border-gray-300"></div>
@@ -84,6 +97,12 @@ export default function CartSummary({ cart }: CartSummaryProps) {
                 <p>🔒 Secure checkout powered by PayU</p>
                 <p className="mt-1">Your payment information is safe and secure</p>
             </div>
+
+            <BookingAuthModal 
+                isOpen={isAuthModalOpen} 
+                onClose={() => setIsAuthModalOpen(false)} 
+                returnUrl="/checkout"
+            />
         </div>
     );
 }

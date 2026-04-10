@@ -6,7 +6,7 @@ import { toursService } from '@/services/tours.service';
 import { authService } from '@/services/auth.service';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
 import ReviewStep from '@/components/checkout/ReviewStep';
-import AuthStep from '@/components/checkout/AuthStep';
+import BookingAuthModal from '@/components/checkout/BookingAuthModal';
 import TravellerStep, { Traveler, Address } from '@/components/checkout/TravellerStep';
 import PaymentStep from '@/components/checkout/PaymentStep';
 import Preloader from '@/components/shared/Preloader';
@@ -18,6 +18,7 @@ function CheckoutContent() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     // Booking Data
     // We expect tourId, date, adults from URL
@@ -108,11 +109,11 @@ function CheckoutContent() {
                 if (user) {
                     setUserEmail(user.email);
                     setIsGuest(false);
-                    // If user is already logged in, we could potentially skip step 2
-                    // But for this flow, let's keep it to verify/confirm
+                    setIsAuthModalOpen(false);
                 }
             } catch (e) {
-                // Not logged in, that's fine
+                // Not logged in! Enforce authentication!
+                setIsAuthModalOpen(true);
             }
         };
 
@@ -152,31 +153,15 @@ function CheckoutContent() {
         localStorage.setItem(`checkout_draft_${tourId}`, JSON.stringify(draft));
     }, [currentStep, userEmail, isGuest, travelerDetails, addressDetails, tourId, isLoaded]);
 
-    // Auto-advance if user is already logged in on step 2
-    useEffect(() => {
-        if (!isGuest && currentStep === 2) {
-            setCurrentStep(3);
-        }
-    }, [isGuest, currentStep]);
-
-
     const handleReviewContinue = () => {
-        // If already logged in, skip the auth step entirely
-        setCurrentStep(isGuest ? 2 : 3);
-        window.scrollTo(0, 0);
-    };
-
-    const handleAuthContinue = (email: string, guest: boolean) => {
-        setUserEmail(email);
-        setIsGuest(guest);
-        setCurrentStep(3);
+        setCurrentStep(2);
         window.scrollTo(0, 0);
     };
 
     const handleTravellerContinue = (travelers: Traveler[], address: Address) => {
         setTravelerDetails(travelers);
         setAddressDetails(address);
-        setCurrentStep(4);
+        setCurrentStep(3);
         window.scrollTo(0, 0);
     };
 
@@ -221,12 +206,6 @@ function CheckoutContent() {
                 )}
 
                 {currentStep === 2 && (
-                    <AuthStep
-                        onContinue={handleAuthContinue}
-                    />
-                )}
-
-                {currentStep === 3 && (
                     <TravellerStep
                         adults={bookingDetails.adults}
                         initialEmail={userEmail}
@@ -234,7 +213,7 @@ function CheckoutContent() {
                     />
                 )}
 
-                {currentStep === 4 && (
+                {currentStep === 3 && (
                     <PaymentStep
                         totalAmount={grandTotal}
                         bookingDetails={bookingDetails}
@@ -246,6 +225,23 @@ function CheckoutContent() {
                     />
                 )}
             </div>
+
+            {/* Auth Modal overlay for when direct links bypass upstream auth checks */}
+            <BookingAuthModal 
+                isOpen={isAuthModalOpen} 
+                onClose={() => router.push('/')} 
+                returnUrl={typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/checkout'}
+                onSuccess={() => {
+                    setIsAuthModalOpen(false);
+                    // Rerun checkAuth to populate user detail state natively
+                    authService.getCurrentUser().then(user => {
+                        if (user) {
+                            setUserEmail(user.email);
+                            setIsGuest(false);
+                        }
+                    }).catch(console.error);
+                }}
+            />
         </div>
     );
 }

@@ -9,9 +9,8 @@ interface CheckoutStepsProps {
 export default function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
     const steps = [
         { number: 1, title: 'Review Booking' },
-        { number: 2, title: 'Sign In' },
-        { number: 3, title: 'Traveller Details' },
-        { number: 4, title: 'Payment' },
+        { number: 2, title: 'Traveller Details' },
+        { number: 3, title: 'Payment' },
     ];
 
     return (

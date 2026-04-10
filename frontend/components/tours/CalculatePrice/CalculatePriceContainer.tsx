@@ -9,6 +9,7 @@ import RoomConfiguration, { Room } from './RoomConfiguration';
 import BookingCalendar from './BookingCalendar';
 import PriceBreakup from './PriceBreakup';
 import Accordion from '../../ui/Accordion';
+import BookingAuthModal from '@/components/checkout/BookingAuthModal';
 
 interface CalculatePriceContainerProps {
     tour: any; // Type strictly later
@@ -21,6 +22,7 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
     ]);
     const [travelDate, setTravelDate] = useState<Date | null>(null);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     // Contact Details
     const [mobile, setMobile] = useState('');
@@ -103,6 +105,17 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
             return;
         }
         setShowPrice(true);
+    };
+
+    const handleContinueClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setIsAuthModalOpen(true);
+        } else {
+            // Already logged in, proceed directly to checkout
+            window.location.href = `/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}&paidAmount=${amountToPay}`;
+        }
     };
 
     const handleDateSelect = (date: Date, price: number) => {
@@ -511,12 +524,12 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
 
                         {/* Continue Button */}
                         <div className="flex items-center justify-end mt-8 pt-6 border-t border-dashed border-gray-200">
-                            <Link
-                                href={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}&paidAmount=${amountToPay}`}
+                            <button
+                                onClick={handleContinueClick}
                                 className="bg-deepBlue text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-blue-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block"
                             >
                                 Continue
-                            </Link>
+                            </button>
                         </div>
 
                     </div>
@@ -590,6 +603,13 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                 selectedDate={travelDate}
                 departureCity={selectedCity}
                 basePrice={tour.price}
+            />
+
+            {/* Auth Modal */}
+            <BookingAuthModal 
+                isOpen={isAuthModalOpen} 
+                onClose={() => setIsAuthModalOpen(false)} 
+                returnUrl={`/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}&paidAmount=${amountToPay}`}
             />
         </div>
     );
