@@ -312,167 +312,159 @@ export class PaymentsService {
             throw new BadRequestException('Invalid payment hash');
         }
 
-        // ── Atomic idempotency guard ─────────────────────────────────────────────
-        // Both /verify (redirect) and /webhook hit this method at nearly the same
-        // time after PayU confirms payment. To prevent duplicate notifications we
-        // use a single atomic findOneAndUpdate that only succeeds when the booking
-        // is NOT already marked SUCCESS. Whichever concurrent call wins the DB
-        // write proceeds; the loser gets null back and short-circuits silently.
+        // ────────────────────────────────────────────────────────────────────────
+        // GUARD 1 – Atomic payment-status + paidAmount update
+        //
+        // PayU fires TWO simultaneous requests after every payment:
+        //   (a) Browser redirect → POST /payments/verify
+        //   (b) Server webhook   → POST /payments/webhook
+        //
+        // Both call this method. We use findOneAndUpdate with $inc so that
+        // paidAmount is ONLY added once regardless of race conditions.
+        // Only the request that transitions the status from non-SUCCESS to SUCCESS
+        // gets a non-null result; the other silently returns.
+        // ────────────────────────────────────────────────────────────────────────
         if (status === 'success') {
-            const claimed = await this.bookingModel.findOneAndUpdate(
+            const step1 = await this.bookingModel.findOneAndUpdate(
                 { _id: bookingId, paymentStatus: { $ne: PaymentStatus.SUCCESS } },
-                { $set: { paymentStatus: PaymentStatus.SUCCESS } },
-                { new: false }, // return the OLD doc so we know what we changed
+                {
+                    $set: {
+                        paymentStatus: PaymentStatus.SUCCESS,
+                        bookingStatus: 'confirmed',
+                        paymentId: mihpayid || '',
+                        payuTransactionId: txnid || '',
+                        paymentMethod: mode || '',
+                    },
+                    $inc: { paidAmount: parseFloat(amount) || 0 },
+                },
+                { new: true },
             );
 
-            if (!claimed) {
-                // Another request already processed this payment → skip everything
-                console.log(`[PaymentsService] Booking ${bookingId} already processed (atomic guard). Skipping duplicate notifications.`);
-                return {
-                    success: true,
-                    bookingId,
-                    transactionId: txnid,
-                    paymentId: mihpayid,
-                    alreadyProcessed: true,
-                };
+            if (!step1) {
+                console.log(`[PaymentsService] GUARD 1 blocked duplicate for booking ${bookingId}.`);
+                return { success: true, bookingId, transactionId: txnid, paymentId: mihpayid, alreadyProcessed: true };
             }
-        } else {
-            // For non-success, just verify the booking exists
-            const booking = await this.bookingModel.findById(bookingId);
-            if (!booking) {
-                throw new BadRequestException('Booking not found');
-            }
-        }
 
-        // Update booking payment status (full update via service for non-idempotent fields)
-        if (status === 'success') {
-            const updatedBooking = await this.bookingsService.updatePaymentStatus(
-                bookingId,
-                PaymentStatus.SUCCESS,
-                mihpayid,
-                txnid,
-                parseFloat(amount),
-                mode,
+            // Note: Tour booking count increment is handled by bookingsService
+            // which has the tour model injected.
+
+            // ────────────────────────────────────────────────────────────────────
+            // GUARD 2 – Atomic notification claim via notificationsSent flag
+            //
+            // Even if Guard 1 allowed both requests through (extremely unlikely),
+            // this second atomic operation ensures notifications fire EXACTLY ONCE.
+            // ────────────────────────────────────────────────────────────────────
+            const step2 = await this.bookingModel.findOneAndUpdate(
+                { _id: bookingId, notificationsSent: { $ne: true } },
+                { $set: { notificationsSent: true } },
+                { new: false },
             );
 
-            // Send booking confirmation email
+            if (!step2) {
+                console.log(`[PaymentsService] GUARD 2 blocked duplicate notifications for booking ${bookingId}.`);
+                return { success: true, bookingId, transactionId: txnid, paymentId: mihpayid, alreadyProcessed: true };
+            }
+
+            // We exclusively own notification rights — fetch fresh populated data
+            const updatedBooking = await this.bookingModel.findById(bookingId).populate(['tour', 'user']);
+            if (!updatedBooking) {
+                return { success: true, bookingId, transactionId: txnid, paymentId: mihpayid };
+            }
+
+            // ── Send all notifications ────────────────────────────────────────
             try {
                 const tour = (updatedBooking as any).tour;
                 const recipientEmail = email || (updatedBooking as any).email || (updatedBooking as any).user?.email || '';
-                const billingName = (updatedBooking as any).billingAddress ? `${(updatedBooking as any).billingAddress.firstName} ${(updatedBooking as any).billingAddress.lastName}` : '';
-                const recipientName = billingName || firstname || (updatedBooking as any).user?.name || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+                const billingName = (updatedBooking as any).billingAddress
+                    ? `${(updatedBooking as any).billingAddress.firstName} ${(updatedBooking as any).billingAddress.lastName}`
+                    : '';
+                const recipientName = billingName || firstname || (updatedBooking as any).user?.name
+                    || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
                 const recipientPhone = (updatedBooking as any).phone || (updatedBooking as any).user?.phone || '';
+                const travelDateFormatted = new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', {
+                    day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata',
+                });
 
                 if (recipientEmail) {
-                    await this.emailService.sendBookingConfirmationEmail(
-                        recipientEmail,
-                        recipientName,
-                        {
-                            bookingReference: (updatedBooking as any).bookingReference,
-                            tourName: tour?.title || 'Your Yatra',
-                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
-                            numberOfTravelers: (updatedBooking as any).numberOfTravelers,
-                            totalAmount: (updatedBooking as any).totalAmount,
-                            paidAmount: (updatedBooking as any).paidAmount,
-                        },
-                    );
+                    // 1. Booking confirmation
+                    await this.emailService.sendBookingConfirmationEmail(recipientEmail, recipientName, {
+                        bookingReference: (updatedBooking as any).bookingReference,
+                        tourName: tour?.title || 'Your Yatra',
+                        travelDate: travelDateFormatted,
+                        numberOfTravelers: (updatedBooking as any).numberOfTravelers,
+                        totalAmount: (updatedBooking as any).totalAmount,
+                        paidAmount: (updatedBooking as any).paidAmount,
+                    });
 
-                    // 1.5 Generate Invoice and Send Multi-Channel Notifications
+                    // 2. Invoice PDF + email + WhatsApp
                     try {
                         const pdfBuffer = await this.invoiceService.generateInvoicePdf(updatedBooking, parseFloat(amount));
                         const fileName = `invoice-${(updatedBooking as any).bookingReference}`;
                         const invoiceUrl = await this.invoiceService.uploadToCloudinary(pdfBuffer, fileName);
 
-                        // Send Invoice Email with attachment
-                        await this.emailService.sendInvoiceEmail(
-                            recipientEmail,
-                            recipientName,
-                            {
-                                bookingReference: (updatedBooking as any).bookingReference,
-                                tourName: tour?.title || 'Your Yatra',
-                                totalAmount: (updatedBooking as any).totalAmount,
-                                invoiceUrl: invoiceUrl,
-                            },
-                            pdfBuffer
-                        );
+                        await this.emailService.sendInvoiceEmail(recipientEmail, recipientName, {
+                            bookingReference: (updatedBooking as any).bookingReference,
+                            tourName: tour?.title || 'Your Yatra',
+                            totalAmount: (updatedBooking as any).totalAmount,
+                            invoiceUrl,
+                        }, pdfBuffer);
 
-                        // Send WhatsApp Notification with Receipt Doc
                         if (recipientPhone) {
                             await this.whatsappService.sendBookingInvoiceDoc(
-                                recipientPhone,
-                                invoiceUrl,
-                                `${fileName}.pdf`,
-                                {
-                                    customerName: recipientName,
-                                    bookingReference: (updatedBooking as any).bookingReference,
-                                }
+                                recipientPhone, invoiceUrl, `${fileName}.pdf`,
+                                { customerName: recipientName, bookingReference: (updatedBooking as any).bookingReference },
                             );
                         }
                     } catch (invoiceErr) {
-                        console.error('Invoice generation/notification failed:', invoiceErr);
+                        console.error('[PaymentsService] Invoice error:', invoiceErr);
                     }
 
-                    // 2. Send admin notification
+                    // 3. Admin notification
                     const adminEmail = this.configService.get<string>('ADMIN_EMAIL') || 'admin@vedictravel.com';
-                    await this.emailService.sendAdminNewBookingNotificationEmail(
-                        adminEmail,
-                        {
-                            bookingReference: (updatedBooking as any).bookingReference,
-                            customerName: recipientName,
-                            customerEmail: recipientEmail,
-                            customerPhone: recipientPhone,
-                            tourName: tour?.title || 'Your Yatra',
-                            travelDate: new Date((updatedBooking as any).travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
-                            numberOfTravelers: (updatedBooking as any).numberOfTravelers,
-                            totalAmount: (updatedBooking as any).totalAmount,
-                            paidAmount: (updatedBooking as any).paidAmount,
-                            paymentMethod: (updatedBooking as any).paymentMethod,
-                            paymentId: mihpayid,
-                        },
-                    );
+                    await this.emailService.sendAdminNewBookingNotificationEmail(adminEmail, {
+                        bookingReference: (updatedBooking as any).bookingReference,
+                        customerName: recipientName,
+                        customerEmail: recipientEmail,
+                        customerPhone: recipientPhone,
+                        tourName: tour?.title || 'Your Yatra',
+                        travelDate: travelDateFormatted,
+                        numberOfTravelers: (updatedBooking as any).numberOfTravelers,
+                        totalAmount: (updatedBooking as any).totalAmount,
+                        paidAmount: (updatedBooking as any).paidAmount,
+                        paymentMethod: (updatedBooking as any).paymentMethod,
+                        paymentId: mihpayid,
+                    });
                 }
             } catch (emailErr) {
-                console.error('Failed to send booking notification emails:', emailErr);
+                console.error('[PaymentsService] Failed to send notifications:', emailErr);
             }
         } else {
+            // ── Payment failed ───────────────────────────────────────────────
             const updatedBooking = await this.bookingsService.updatePaymentStatus(
-                bookingId,
-                PaymentStatus.FAILED,
-                mihpayid,
-                txnid,
+                bookingId, PaymentStatus.FAILED, mihpayid, txnid,
             );
-
-            // Send payment failure email
             try {
                 const tour = (updatedBooking as any).tour;
                 const recipientEmail = email || (updatedBooking as any).email || (updatedBooking as any).user?.email || '';
-                const billingName = (updatedBooking as any).billingAddress ? `${(updatedBooking as any).billingAddress.firstName} ${(updatedBooking as any).billingAddress.lastName}` : '';
-                const recipientName = billingName || firstname || (updatedBooking as any).user?.name || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
-                const recipientPhone = (updatedBooking as any).phone || (updatedBooking as any).user?.phone || '';
-
+                const billingName = (updatedBooking as any).billingAddress
+                    ? `${(updatedBooking as any).billingAddress.firstName} ${(updatedBooking as any).billingAddress.lastName}`
+                    : '';
+                const recipientName = billingName || firstname || (updatedBooking as any).user?.name
+                    || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
                 if (recipientEmail) {
-                    await this.emailService.sendPaymentFailureEmail(
-                        recipientEmail,
-                        recipientName,
-                        {
-                            bookingReference: (updatedBooking as any).bookingReference,
-                            tourName: tour?.title || 'Your Yatra',
-                            totalAmount: (updatedBooking as any).totalAmount,
-                            transactionId: txnid,
-                        }
-                    );
+                    await this.emailService.sendPaymentFailureEmail(recipientEmail, recipientName, {
+                        bookingReference: (updatedBooking as any).bookingReference,
+                        tourName: tour?.title || 'Your Yatra',
+                        totalAmount: (updatedBooking as any).totalAmount,
+                        transactionId: txnid,
+                    });
                 }
             } catch (emailErr) {
-                console.error('Failed to send payment failure email:', emailErr);
+                console.error('[PaymentsService] Payment failure email error:', emailErr);
             }
         }
 
-        return {
-            success: status === 'success',
-            bookingId,
-            transactionId: txnid,
-            paymentId: mihpayid,
-        };
+        return { success: status === 'success', bookingId, transactionId: txnid, paymentId: mihpayid };
     }
 
     private generatePayUHash(

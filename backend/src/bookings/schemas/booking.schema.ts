@@ -107,6 +107,11 @@ export class Booking {
 
     @Prop()
     cancellationReason: string;
+
+    // Atomic idempotency flag — set to true exactly once when notifications/emails are sent.
+    // Prevents duplicate emails when PayU fires both a browser redirect AND a server webhook.
+    @Prop({ default: false })
+    notificationsSent: boolean;
 }
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);
