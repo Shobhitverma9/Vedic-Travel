@@ -31,10 +31,18 @@ apiClient.interceptors.response.use(
         if (error.response?.status === 401) {
             // Handle unauthorized
             localStorage.removeItem('token');
+
+            // Do not force redirect if we are simply checking the current user status
+            if (error.config?.url?.includes('/auth/me')) {
+                return Promise.reject(error);
+            }
+
             if (window.location.pathname.startsWith('/admin')) {
                 window.location.href = '/admin/login';
             } else {
-                window.location.href = '/auth/signin';
+                // Preserve the current path so the user can be redirected back after logging in
+                const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
+                window.location.href = `/auth/signin?callbackUrl=${currentPath}`;
             }
         }
         return Promise.reject(error);
