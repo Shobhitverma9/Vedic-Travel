@@ -39,7 +39,7 @@ function SingleYatraSection({ yatra }: { yatra: any }) {
     return (
         <section className="container mx-auto px-6 md:px-8">
             <div className="text-center mb-8 max-w-4xl mx-auto">
-                <h2 className="font-sans text-4xl md:text-5xl font-bold text-deepBlue mb-4">
+                <h2 className="font-sans text-4xl md:text-5xl font-bold text-deepBlue mb-4 whitespace-pre-line">
                     {yatra.title}
                 </h2>
                 <p className="text-gray-600 text-lg leading-relaxed">

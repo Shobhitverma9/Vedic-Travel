@@ -120,7 +120,7 @@ export default function VedicImprintsSection() {
                                     </div>
 
                                     <div className="absolute inset-x-0 bottom-0 z-20 p-0 flex flex-col justify-end">
-                                        <div className="bg-saffron text-white text-center py-4 font-bold text-xl uppercase tracking-widest shadow-lg">
+                                        <div className="bg-saffron text-white text-center py-4 px-4 font-bold text-lg uppercase tracking-widest shadow-lg min-h-[4.5rem] flex items-center justify-center whitespace-pre-line">
                                             {yatra.title}
                                         </div>
                                         <div className="bg-[#1A2B48] text-white flex justify-between items-center px-6 py-4">

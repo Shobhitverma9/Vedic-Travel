@@ -110,6 +110,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
     const generateSlug = (text: string) => {
         return text
             .toLowerCase()
+            .replace(/\n/g, ' ') // Replace newlines with spaces before slugifying
             .replace(/[^\w ]+/g, '')
             .replace(/ +/g, '-');
     };
@@ -286,19 +287,20 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                 <section className="space-y-4">
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Basic Information</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
+                        <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700">Title</label>
-                            <input
-                                type="text"
+                            <textarea
                                 name="title"
                                 required
+                                rows={2}
                                 value={formData.title}
                                 onChange={handleChange}
                                 className="input-field mt-1"
                                 placeholder="e.g. Char Dham Yatra"
-                            />
+                            ></textarea>
+                            <p className="text-xs text-gray-400 mt-1">Press Enter for manual line breaks on card titles.</p>
                         </div>
-                        <div>
+                        <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700">Slug (URL)</label>
                             <input
                                 type="text"
