@@ -81,18 +81,16 @@ export class OTPService {
         });
 
         // Send email based on purpose
-        try {
-            if (purpose === OTPPurpose.REGISTRATION) {
-                await this.emailService.sendOTPEmail(email, otpCode, userName || 'User');
-            } else if (purpose === OTPPurpose.LOGIN) {
-                await this.emailService.sendLoginOTPEmail(email, otpCode, userName || 'User');
-            }
-
-            this.logger.log(`OTP sent to email: ${email} for purpose: ${purpose}`);
-        } catch (error) {
-            this.logger.error(`Failed to send OTP email to ${email}:`, error);
-            // Continue anyway - OTP is saved in DB
+        if (purpose === OTPPurpose.REGISTRATION) {
+            await this.emailService.sendOTPEmail(email, otpCode, userName || 'User');
+        } else if (purpose === OTPPurpose.LOGIN) {
+            await this.emailService.sendLoginOTPEmail(email, otpCode, userName || 'User');
         }
+
+        if (process.env.NODE_ENV !== 'production') {
+            this.logger.log(`[DEBUG] OTP Code for ${email}: ${otpCode}`);
+        }
+        this.logger.log(`OTP sent to email: ${email} for purpose: ${purpose}`);
 
         return {
             success: true,

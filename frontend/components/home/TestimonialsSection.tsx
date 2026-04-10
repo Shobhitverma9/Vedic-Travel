@@ -13,7 +13,7 @@ const testimonials = [
         role: 'Business Owner',
         rating: 5,
         text: 'My Chardham Yatra with Vedic Travel was nothing short of divine. Everything was so well-organized—from helicopter transfers to VIP darshan—that I could truly focus on my spiritual journey without any stress. Their team ensured comfort even in high-altitude conditions. Highly recommended for anyone seeking a premium pilgrimage experience.',
-        image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=faces',
+        image: '/8.png',
     },
     {
         id: 2,
@@ -22,7 +22,7 @@ const testimonials = [
         role: 'Cardiologist',
         rating: 5,
         text: 'I booked the Golden Triangle with Varanasi, Prayagraj, and Ayodhya tour, and it was beautifully curated. The blend of heritage and spirituality was perfect. Witnessing Ganga Aarti in Varanasi and visiting Ram Janmabhoomi in Ayodhya felt deeply fulfilling. Vedic Travel’s attention to detail is exceptional.',
-        image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=faces',
+        image: '/11.png',
     },
     {
         id: 3,
@@ -31,7 +31,7 @@ const testimonials = [
         role: 'Senior IT Consultant',
         rating: 5,
         text: 'Traveling to Bali with Vedic Travel was a refreshing escape from my hectic corporate life. The itinerary perfectly balanced relaxation, culture, and nature. From serene temples to scenic landscapes, everything was thoughtfully planned. It truly felt like a rejuvenating retreat.',
-        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces',
+        image: '/10.png',
     },
     {
         id: 4,
@@ -40,7 +40,7 @@ const testimonials = [
         role: 'Homemaker',
         rating: 5,
         text: 'Our Rameshwaram trip was incredibly smooth and spiritually enriching. Vedic Travel took care of everything, including temple rituals and local guidance. It gave us peace of mind and allowed us to fully immerse in devotion. A heartfelt thank you to the entire team.',
-        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=faces',
+        image: '/12.png',
     },
     {
         id: 5,
@@ -49,7 +49,7 @@ const testimonials = [
         role: 'Chartered Accountant',
         rating: 5,
         text: 'Chardham Yatra had always been a dream, and Vedic Travel made it come true in the most comfortable way possible. The accommodations, food, and assistance at every step were top-notch. Their professionalism and dedication truly stand out.',
-        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=faces',
+        image: '/7.png',
     },
     {
         id: 6,
@@ -58,7 +58,7 @@ const testimonials = [
         role: 'Entrepreneur',
         rating: 5,
         text: 'I explored Varanasi, Prayagraj, and Ayodhya with Vedic Travel, and it was an unforgettable experience. The guides were knowledgeable, and the arrangements were seamless. The spiritual energy of these places, combined with their premium service, made it truly special.',
-        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces',
+        image: '/13.png',
     },
     {
         id: 7,
@@ -67,7 +67,7 @@ const testimonials = [
         role: 'Marketing Head',
         rating: 5,
         text: 'Our Bali trip with Vedic Travel was beyond expectations. Every detail—from luxury stays to temple visits—was perfectly handled. It felt like a personalized experience crafted just for us. I came back refreshed, both mentally and spiritually.',
-        image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=faces',
+        image: '/9.png',
     },
 ];
 

@@ -11,7 +11,7 @@ export class EmailService {
     constructor(private configService: ConfigService) {
         const apiKey = this.configService.get<string>('POSTMARK_API_KEY');
         const fromEmailAddress = this.configService.get<string>('POSTMARK_FROM_EMAIL') || 'noreply@vedictravel.com';
-        this.fromEmail = `Vedic Travel <${fromEmailAddress}>`;
+        this.fromEmail = fromEmailAddress; // Setting to plain email to ensure compatibility with verified signatures
 
         if (!apiKey) {
             this.logger.warn('POSTMARK_API_KEY not configured. Email sending will be logged to console only.');
@@ -241,14 +241,8 @@ export class EmailService {
     ): Promise<void> {
         try {
             if (!this.client) {
-                // Mock mode - log to console
-                this.logger.log(`[MOCK EMAIL] To: ${to}`);
-                this.logger.log(`[MOCK EMAIL] Subject: ${subject}`);
-                this.logger.log(`[MOCK EMAIL] Body: ${textBody}`);
-                if (attachments) {
-                    this.logger.log(`[MOCK EMAIL] Attachments: ${attachments.map(a => a.Name).join(', ')}`);
-                }
-                return;
+                this.logger.error(`Email sending attempted but POSTMARK_API_KEY is not configured. (To: ${to})`);
+                throw new Error('Email service is not configured. Please contact support.');
             }
 
             await this.client.sendEmail({
@@ -262,9 +256,14 @@ export class EmailService {
             });
 
             this.logger.log(`Email sent successfully to ${to}`);
-        } catch (error) {
-            this.logger.error(`Failed to send email to ${to}:`, error);
-            throw new Error('Failed to send email');
+        } catch (error: any) {
+            this.logger.error(`Failed to send email to ${to}:`, {
+                message: error.message,
+                code: error.code,
+                statusCode: error.statusCode,
+                details: error.details
+            });
+            throw new Error(`Failed to send email: ${error.message}`);
         }
     }
 
@@ -462,7 +461,7 @@ export class EmailService {
             </div>
 
             <center style="margin: 35px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button">View Full Booking Details</a>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/bookings" class="cta-button">View Full Booking Details</a>
             </center>
 
             <p style="text-align: center; color: #718096; font-size: 13px;">
@@ -854,7 +853,7 @@ export class EmailService {
             </div>
 
             <center style="margin: 35px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button" style="background: #E53E3E; box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);">Retry Payment Now</a>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/bookings" class="cta-button" style="background: #E53E3E; box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);">Retry Payment Now</a>
             </center>
 
             <p class="message" style="font-size: 14px; text-align: center; color: #718096;">
@@ -1082,7 +1081,7 @@ export class EmailService {
             </div>
 
             <center style="margin: 35px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button">View Full Itinerary</a>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/bookings" class="cta-button">View Full Itinerary</a>
             </center>
 
             <p class="message" style="font-size: 14px; text-align: center; border-top: 1px solid #EDF2F7; padding-top: 20px;">
@@ -1137,7 +1136,7 @@ export class EmailService {
             </div>
 
             <center style="margin: 35px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/bookings" class="cta-button" style="background: linear-gradient(135deg, #7B2CBF 0%, #6D28D9 100%); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">Complete My Booking Now</a>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/bookings" class="cta-button" style="background: linear-gradient(135deg, #7B2CBF 0%, #6D28D9 100%); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">Complete My Booking Now</a>
             </center>
 
             <div style="text-align: center; background: #f8f9fa; padding: 20px; border-radius: 12px;">
