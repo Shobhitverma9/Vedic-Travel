@@ -98,7 +98,7 @@ export default function TrendingDestinations() {
                     <div className="md:col-span-9 min-w-0">
                         <div className="relative group">
                             {/* Mobile Navigation Buttons overlay */}
-                            <div className="md:hidden absolute top-[72%] left-0 z-20 pointer-events-none -translate-y-1/2">
+                            <div className="md:hidden absolute top-[64%] left-0 z-20 pointer-events-none -translate-y-1/2">
                                 <button
                                     onClick={() => scroll('left')}
                                     className="pointer-events-auto bg-black/30 backdrop-blur-sm text-white p-2 rounded-r-lg"
@@ -106,7 +106,7 @@ export default function TrendingDestinations() {
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                                 </button>
                             </div>
-                            <div className="md:hidden absolute top-[72%] right-0 z-20 pointer-events-none -translate-y-1/2">
+                            <div className="md:hidden absolute top-[64%] right-0 z-20 pointer-events-none -translate-y-1/2">
                                 <button
                                     onClick={() => scroll('right')}
                                     className="pointer-events-auto bg-black/30 backdrop-blur-sm text-white p-2 rounded-l-lg"

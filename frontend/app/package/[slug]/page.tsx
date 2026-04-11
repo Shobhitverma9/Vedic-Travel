@@ -86,21 +86,38 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Function to handle opening/closing the modal and stopping any future auto-trigger
+    const handleSetEnquiryModalOpen = (open: boolean) => {
+        setIsEnquiryModalOpen(open);
+        if (open) {
+            setHasAutoTriggered(true);
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+                timerRef.current = null;
+            }
+        }
+    };
+
     // Auto-open modal after 15 seconds
     useEffect(() => {
         // Only start if not loading, tour is present, and we haven't already triggered or set a timer
         if (loading || !tour || hasAutoTriggered || timerRef.current) return;
 
+        console.log('Starting 15-second enquiry timer...');
         timerRef.current = setTimeout(() => {
             if (!hasAutoTriggered) {
+                console.log('15-second timer fired. Opening modal.');
                 setIsEnquiryModalOpen(true);
                 setHasAutoTriggered(true);
             }
+            timerRef.current = null;
         }, 15000); // 15 seconds
 
         return () => {
             if (timerRef.current) {
+                console.log('Clearing enquiry timer on cleanup.');
                 clearTimeout(timerRef.current);
+                timerRef.current = null;
             }
         };
     }, [loading, tour, hasAutoTriggered]);
@@ -132,6 +149,12 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
         };
     }, [loading, tour, hasAutoTriggered]);
     */
+
+    useEffect(() => {
+        if (!loading) {
+            window.scrollTo(0, 0);
+        }
+    }, [loading]);
 
     useEffect(() => {
         const fetchTour = async () => {
@@ -321,7 +344,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                                 </div>
                                 <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-end gap-4 w-full lg:w-auto">
                                     <button
-                                        onClick={() => setIsEnquiryModalOpen(true)}
+                                        onClick={() => handleSetEnquiryModalOpen(true)}
                                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-saffron text-white rounded-xl font-bold hover:bg-white hover:text-saffron transition-all transform hover:-translate-y-1 shadow-lg whitespace-normal break-words border-2 border-transparent hover:border-saffron"
                                     >
                                         <div className="bg-white/20 p-1 rounded-lg">
@@ -502,7 +525,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                             tour={tour} 
                             originalPrice={originalPrice} 
                             isEnquiryModalOpen={isEnquiryModalOpen}
-                            setIsEnquiryModalOpen={setIsEnquiryModalOpen}
+                            setIsEnquiryModalOpen={handleSetEnquiryModalOpen}
                         />
                     </div>
 
