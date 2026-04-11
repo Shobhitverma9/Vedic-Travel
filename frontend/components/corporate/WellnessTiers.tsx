@@ -12,7 +12,7 @@ const tiers = [
     duration: "3 Days / 2 Nights",
     description: "For high-performing professionals seeking a mindful reset. A gentle yet powerful pause from the chaos.",
     quote: "Pause now, so you don’t have to stop later.",
-    image: "/corporate/corporate-wellness-1.jpg",
+    image: "/Corporate/corporate-wellness-1.jpg",
     icon: <Heart className="w-8 h-8 text-saffron" />,
     inclusions: [
       "Rejuvenating daily Yoga sessions in the Himalayas",
@@ -33,7 +33,7 @@ const tiers = [
     duration: "4 Days / 3 Nights",
     description: "For deeper wellness, connection, and immersive experiences. A transformative journey to reconnect with nature.",
     quote: "Reconnect deeply, before you realign your path.",
-    image: "/corporate/corporate-odyssey.jpg",
+    image: "/Corporate/corporate-odyssey.jpg",
     icon: <Sparkles className="w-8 h-8 text-purple" />,
     inclusions: [
       "Daily Yoga with certified instructors",
@@ -55,7 +55,7 @@ const tiers = [
     duration: "4 Nights / 5 Days",
     description: "For leadership evolution, deep healing, and luxury. Where nature, wisdom, and luxury converge.",
     quote: "Don’t just perform—evolve into the leader you’re meant to be.",
-    image: "/corporate/corporate-kunjapuri.jpg",
+    image: "/Corporate/corporate-kunjapuri.jpg",
     icon: <Trophy className="w-8 h-8 text-gold" />,
     inclusions: [
       "Intensive leadership workshops",

@@ -5,11 +5,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const heroImages = [
-  "/corporate/corporate-hero-3.jpg",
-  "/corporate/corporate-hero-1.jpg",
-  "/corporate/corporate-hero-4.jpg",
-  "/corporate/corporate-hero-6.jpg",
-  "/corporate/corporate-hero-5.jpg",
+  "/Corporate/corporate-hero-3.jpg",
+  "/Corporate/corporate-hero-1.jpg",
+  "/Corporate/corporate-hero-4.jpg",
+  "/Corporate/corporate-hero-6.jpg",
+  "/Corporate/corporate-hero-5.jpg",
 ];
 
 export default function CorporateHero() {

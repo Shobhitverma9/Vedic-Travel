@@ -4,14 +4,14 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 const images = [
-  { src: "/corporate/corporate-ganga-1.jpg", alt: "Ganga Aarti" },
-  { src: "/corporate/corporate-retreat-2.jpg", alt: "Team Retreat" },
-  { src: "/corporate/corporate-yoga-1.jpg", alt: "Outdoor Yoga" },
-  { src: "/corporate/corporate-team-1.jpg", alt: "Team Bonding" },
-  { src: "/corporate/corporate-nature-1.jpg", alt: "Nature Meditation" },
-  { src: "/corporate/corporate-aipan-art.jpg", alt: "Apen Art" },
-  { src: "/corporate/corporate-beatles-ashram.jpg", alt: "Beatles Ashram" },
-  { src: "/corporate/corporate-waterfall.jpg", alt: "Waterfalls" },
+  { src: "/Corporate/corporate-ganga-1.jpg", alt: "Ganga Aarti" },
+  { src: "/Corporate/corporate-retreat-2.jpg", alt: "Team Retreat" },
+  { src: "/Corporate/corporate-yoga-1.jpg", alt: "Outdoor Yoga" },
+  { src: "/Corporate/corporate-team-1.jpg", alt: "Team Bonding" },
+  { src: "/Corporate/corporate-nature-1.jpg", alt: "Nature Meditation" },
+  { src: "/Corporate/corporate-aipan-art.jpg", alt: "Apen Art" },
+  { src: "/Corporate/corporate-beatles-ashram.jpg", alt: "Beatles Ashram" },
+  { src: "/Corporate/corporate-waterfall.jpg", alt: "Waterfalls" },
 ];
 
 export default function CorporateGallery() {
