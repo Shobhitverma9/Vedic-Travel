@@ -4,14 +4,14 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 const images = [
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.05.02 PM (1).jpeg", alt: "Ganga Aarti" },
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.05.00 PM.jpeg", alt: "Team Retreat" },
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.05.01 PM (1).jpeg", alt: "Outdoor Yoga" },
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.05.07 PM (1).jpeg", alt: "Team Bonding" },
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.05.08 PM (1).jpeg", alt: "Nature Meditation" },
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.20.03 PM.jpeg", alt: "Apen Art" },
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.24.58 PM.jpeg", alt: "Beatles Ashram" },
-  { src: "/corporate/WhatsApp Image 2026-04-11 at 3.05.00 PM (2).jpeg", alt: "Waterfalls" },
+  { src: "/corporate/corporate-ganga-1.jpg", alt: "Ganga Aarti" },
+  { src: "/corporate/corporate-retreat-2.jpg", alt: "Team Retreat" },
+  { src: "/corporate/corporate-yoga-1.jpg", alt: "Outdoor Yoga" },
+  { src: "/corporate/corporate-team-1.jpg", alt: "Team Bonding" },
+  { src: "/corporate/corporate-nature-1.jpg", alt: "Nature Meditation" },
+  { src: "/corporate/corporate-aipan-art.jpg", alt: "Apen Art" },
+  { src: "/corporate/corporate-beatles-ashram.jpg", alt: "Beatles Ashram" },
+  { src: "/corporate/corporate-waterfall.jpg", alt: "Waterfalls" },
 ];
 
 export default function CorporateGallery() {

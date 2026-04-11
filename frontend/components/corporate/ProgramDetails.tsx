@@ -49,7 +49,7 @@ export default function ProgramDetails() {
           >
             <div className="relative rounded-2xl overflow-hidden shadow-xl transform hover:scale-[1.02] transition-transform duration-500">
               <Image 
-                src="/corporate/WhatsApp Image 2026-04-11 at 3.05.02 PM.jpeg" 
+                src="/corporate/corporate-meditation-1.jpg" 
                 alt="Meditation Session" 
                 fill 
                 className="object-cover" 
@@ -57,7 +57,7 @@ export default function ProgramDetails() {
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-xl translate-y-8 transform hover:scale-[1.02] transition-transform duration-500">
               <Image 
-                src="/corporate/WhatsApp Image 2026-04-11 at 3.05.05 PM.jpeg" 
+                src="/corporate/corporate-activity-2.jpg" 
                 alt="Team Activity" 
                 fill 
                 className="object-cover" 
@@ -65,7 +65,7 @@ export default function ProgramDetails() {
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-xl -translate-y-4 transform hover:scale-[1.02] transition-transform duration-500">
               <Image 
-                src="/corporate/WhatsApp Image 2026-04-11 at 3.05.07 PM.jpeg" 
+                src="/corporate/corporate-team-2.jpg" 
                 alt="Ganga Aarti" 
                 fill 
                 className="object-cover" 
@@ -73,7 +73,7 @@ export default function ProgramDetails() {
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-xl translate-y-4 transform hover:scale-[1.02] transition-transform duration-500">
               <Image 
-                src="/corporate/WhatsApp Image 2026-04-11 at 3.05.08 PM.jpeg" 
+                src="/corporate/corporate-nature-2.jpg" 
                 alt="Rishikesh Scenery" 
                 fill 
                 className="object-cover" 

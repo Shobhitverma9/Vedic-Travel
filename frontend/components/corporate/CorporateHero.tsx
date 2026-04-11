@@ -5,11 +5,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const heroImages = [
-  "/corporate/WhatsApp Image 2026-04-11 at 3.05.03 PM.jpeg",
-  "/corporate/WhatsApp Image 2026-04-11 at 3.05.01 PM.jpeg",
-  "/corporate/WhatsApp Image 2026-04-11 at 3.05.04 PM.jpeg",
-  "/corporate/WhatsApp Image 2026-04-11 at 3.05.06 PM.jpeg",
-  "/corporate/00india-beatles-1-videoSixteenByNineJumbo1600.jpg.jpeg",
+  "/corporate/corporate-hero-3.jpg",
+  "/corporate/corporate-hero-1.jpg",
+  "/corporate/corporate-hero-4.jpg",
+  "/corporate/corporate-hero-6.jpg",
+  "/corporate/corporate-hero-5.jpg",
 ];
 
 export default function CorporateHero() {
