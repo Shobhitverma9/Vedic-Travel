@@ -49,6 +49,10 @@ export const menuItems: MenuItem[] = [
                 ],
             },
             {
+                label: 'Corporate Wellness Program',
+                href: '/corporate-wellness',
+            },
+            {
                 label: 'Heritage and Cultural Tours',
                 children: [
                     {
