@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 
 export class CreateInquiryDto {
     @IsString()
@@ -9,8 +9,6 @@ export class CreateInquiryDto {
     @IsNotEmpty()
     email: string;
 
-    @IsString()
-    @IsNotEmpty()
     @IsString()
     @IsNotEmpty()
     mobile: string;
@@ -26,7 +24,7 @@ export class CreateInquiryDto {
 
     @IsString()
     @IsOptional()
-    message: string;
+    message?: string;
 
     @IsString()
     @IsOptional()
@@ -35,6 +33,38 @@ export class CreateInquiryDto {
     @IsString()
     @IsOptional()
     tourName?: string;
+
+    @IsBoolean()
+    @IsOptional()
+    isCorporate?: boolean;
+
+    @IsString()
+    @IsOptional()
+    companyName?: string;
+
+    @IsString()
+    @IsOptional()
+    officeAddress?: string;
+
+    @IsString()
+    @IsOptional()
+    teamSize?: string;
+
+    @IsString()
+    @IsOptional()
+    journeyDate?: string;
+
+    @IsString()
+    @IsOptional()
+    budget?: string;
+
+    @IsBoolean()
+    @IsOptional()
+    isCustomizable?: boolean;
+
+    @IsString()
+    @IsOptional()
+    duration?: string;
 
     @IsString()
     @IsNotEmpty()

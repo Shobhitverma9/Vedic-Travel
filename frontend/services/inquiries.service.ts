@@ -14,6 +14,14 @@ export const inquiriesService = {
         yatraId?: string;
         yatraName?: string;
         destination?: string;
+        isCorporate?: boolean;
+        companyName?: string;
+        officeAddress?: string;
+        teamSize?: string;
+        journeyDate?: string;
+        budget?: string;
+        isCustomizable?: boolean;
+        duration?: string;
         recaptchaToken?: string;
     }) {
         const response = await apiClient.post('/inquiries', data);

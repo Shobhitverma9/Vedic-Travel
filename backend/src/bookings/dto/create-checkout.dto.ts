@@ -40,6 +40,10 @@ class AddressDetailDto {
 
     @IsOptional()
     @IsString()
+    companyName?: string;
+
+    @IsOptional()
+    @IsString()
     gst?: string;
 }
 

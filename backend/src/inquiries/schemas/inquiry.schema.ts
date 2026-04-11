@@ -40,6 +40,30 @@ export class Inquiry {
 
     @Prop({ default: 'new' })
     status: string;
+
+    @Prop({ default: false })
+    isCorporate: boolean;
+
+    @Prop()
+    companyName: string;
+
+    @Prop()
+    officeAddress: string;
+
+    @Prop()
+    teamSize: string;
+
+    @Prop()
+    journeyDate: string;
+
+    @Prop()
+    budget: string;
+
+    @Prop({ default: false })
+    isCustomizable: boolean;
+
+    @Prop()
+    duration: string;
 }
 
 export const InquirySchema = SchemaFactory.createForClass(Inquiry);

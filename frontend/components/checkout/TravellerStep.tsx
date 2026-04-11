@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { User, Calendar, Utensils, Shield } from 'lucide-react';
 import { authService } from '@/services/auth.service';
 
@@ -23,6 +24,7 @@ export interface Address {
     pincode: string;
     email: string;
     mobile: string;
+    companyName?: string;
     gst?: string;
 }
 
@@ -56,6 +58,12 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
         }))
     );
 
+    const searchParams = useSearchParams();
+    
+    const initialGstEnabled = searchParams.get('gstEnabled') === 'true';
+    const initialGstNumber = searchParams.get('gstNumber') || '';
+    const initialCompanyName = searchParams.get('companyName') || '';
+
     const [address, setAddress] = useState<Address>({
         title: '',
         firstName: '',
@@ -66,12 +74,20 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
         pincode: '',
         email: initialEmail,
         mobile: '',
-        gst: ''
+        companyName: initialCompanyName,
+        gst: initialGstNumber
     });
 
     const [payerIndex, setPayerIndex] = useState<number>(-1);
     const [savedTravellers, setSavedTravellers] = useState<any[]>([]);
-    const [gstEnabled, setGstEnabled] = useState(false);
+    const [gstEnabled, setGstEnabled] = useState(initialGstEnabled);
+    const [gstError, setGstError] = useState('');
+
+    const validateGST = useMemo(() => (gst: string) => {
+        const pattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        if (!gst) return true;
+        return pattern.test(gst);
+    }, []);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -131,6 +147,22 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (gstEnabled) {
+            if (!address.companyName) {
+                alert('Please enter company name for GST booking.');
+                return;
+            }
+            if (!address.gst) {
+                alert('Please enter GST number.');
+                return;
+            }
+            if (!validateGST(address.gst)) {
+                alert('Please enter a valid GST number.');
+                return;
+            }
+        }
+        
         onContinue(travelers, address);
     };
 
@@ -339,17 +371,45 @@ export default function TravellerStep({ adults, initialEmail = '', onContinue }:
                                         }}
                                         className="w-4 h-4 accent-[#FF5722] rounded"
                                     />
-                                    <span className="text-sm text-gray-600 font-medium">Use GSTIN for this booking <span className="text-gray-400 font-normal">(Optional)</span></span>
+                                    <span className="text-sm text-gray-900 font-bold">Use GSTIN for this booking <span className="text-gray-400 font-normal">(Optional)</span></span>
                                 </label>
                                 {gstEnabled && (
-                                    <div className="mt-3">
-                                        <input
-                                            type="text"
-                                            placeholder="Enter GST Number"
-                                            value={address.gst === 'YES' ? '' : address.gst || ''}
-                                            onChange={(e) => handleAddressChange('gst', e.target.value)}
-                                            className={inputClass}
-                                        />
+                                    <div className="mt-4 space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <div>
+                                            <label className="block text-[11px] font-medium text-gray-400 mb-1 uppercase tracking-wide">Company Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter Company Name"
+                                                value={address.companyName || ''}
+                                                onChange={(e) => handleAddressChange('companyName', e.target.value)}
+                                                className={inputClass}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[11px] font-medium text-gray-400 mb-1 uppercase tracking-wide">GST Number</label>
+                                            <div className="relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter GST Number"
+                                                    value={address.gst || ''}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value.toUpperCase();
+                                                        handleAddressChange('gst', val);
+                                                        if (val && !validateGST(val)) {
+                                                            setGstError('Invalid GST format');
+                                                        } else {
+                                                            setGstError('');
+                                                        }
+                                                    }}
+                                                    className={`${inputClass} ${gstError ? 'border-red-400 focus:ring-red-100' : ''}`}
+                                                />
+                                                {gstError && (
+                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-red-500 font-medium bg-white px-1">
+                                                        {gstError}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </div>

@@ -83,6 +83,7 @@ export class Booking {
         pincode: string;
         email: string;
         mobile: string;
+        companyName?: string;
         gst?: string;
     };
 

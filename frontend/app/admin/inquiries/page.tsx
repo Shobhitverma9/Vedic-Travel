@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { inquiriesService } from '@/services/inquiries.service';
+import { Mail, Phone, Building2, Users, Wallet } from 'lucide-react';
 
 export default function AdminInquiriesPage() {
     const [inquiries, setInquiries] = useState([]);
@@ -41,19 +42,49 @@ export default function AdminInquiriesPage() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {inquiries.map((inquiry: any) => (
-                                <tr key={inquiry._id} className="hover:bg-gray-50">
+                                <tr key={inquiry._id} className={`hover:bg-gray-50 ${inquiry.isCorporate ? 'bg-orange-50/30' : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {new Date(inquiry.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="text-sm font-medium text-gray-900">{inquiry.name}</div>
-                                        <div className="text-sm text-gray-500">{inquiry.email}</div>
-                                        <div className="text-sm text-gray-500">{inquiry.mobile}</div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <div className="text-sm font-bold text-gray-900">{inquiry.name}</div>
+                                            {inquiry.isCorporate && (
+                                                <span className="px-2 py-0.5 bg-saffron text-white text-[10px] font-bold rounded uppercase tracking-tighter shadow-sm">
+                                                    Corporate
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="text-sm text-gray-600 flex items-center gap-1">
+                                            <Mail size={12} className="text-gray-400" /> {inquiry.email}
+                                        </div>
+                                        <div className="text-sm text-gray-600 flex items-center gap-1">
+                                            <Phone size={12} className="text-gray-400" /> {inquiry.mobile}
+                                        </div>
+                                        
+                                        {inquiry.isCorporate && (
+                                            <div className="mt-3 p-3 bg-white border border-orange-100 rounded-lg shadow-sm space-y-1">
+                                                <div className="text-xs font-bold text-deepBlue uppercase tracking-widest flex items-center gap-1">
+                                                   <Building2 size={12} className="text-saffron" /> {inquiry.companyName}
+                                                </div>
+                                                <div className="text-[11px] text-gray-500 flex items-center gap-1">
+                                                   <Users size={12} /> Team: {inquiry.teamSize}
+                                                </div>
+                                                <div className="text-[11px] text-gray-500 flex items-center gap-1">
+                                                   <Wallet size={12} /> Budget: {inquiry.isCustomizable ? 'Flexible' : `₹${inquiry.budget}`}
+                                                </div>
+                                                <div className="text-[10px] text-gray-400 italic mt-1 line-clamp-1">
+                                                   {inquiry.officeAddress}
+                                                </div>
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4">
                                         {inquiry.tourName ? (
                                             <div className="flex flex-col">
-                                                <div className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-50 text-[#003580] border border-blue-100 mb-1">
+                                                <div className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold border mb-1 ${
+                                                    inquiry.isCorporate ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-blue-50 text-[#003580] border-blue-100'
+                                                }`}>
                                                     {inquiry.tourName}
                                                 </div>
                                                 <span className="text-[10px] text-gray-400 font-mono">ID: {inquiry.tourId}</span>

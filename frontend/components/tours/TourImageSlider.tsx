@@ -34,7 +34,7 @@ export default function TourImageSlider({ images, title, locations }: TourImageS
             {/* Main Image Slider */}
             <div className="relative">
                 <div className="relative h-[300px] md:h-[400px] w-full rounded-tr-[3rem] rounded-bl-[3rem] overflow-hidden border-4 border-white shadow-lg group">
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence>
                         <motion.img
                             key={currentIndex}
                             src={images[currentIndex]}
@@ -43,7 +43,7 @@ export default function TourImageSlider({ images, title, locations }: TourImageS
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: 0.4 }}
                         />
                     </AnimatePresence>
 

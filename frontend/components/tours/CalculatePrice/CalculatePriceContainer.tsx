@@ -29,6 +29,10 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
     const [email, setEmail] = useState('');
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [requestGroupDiscount, setRequestGroupDiscount] = useState(false);
+    const [gstEnabled, setGstEnabled] = useState(false);
+    const [gstNumber, setGstNumber] = useState('');
+    const [companyName, setCompanyName] = useState('');
+    const [gstError, setGstError] = useState('');
 
     // Pricing
     const [pricePerPerson, setPricePerPerson] = useState(tour.price);
@@ -58,6 +62,9 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                 if (parsed.showPrice) setShowPrice(parsed.showPrice);
                 if (parsed.acceptedTerms) setAcceptedTerms(parsed.acceptedTerms);
                 if (parsed.pricePerPerson) setPricePerPerson(parsed.pricePerPerson);
+                if (parsed.gstEnabled) setGstEnabled(parsed.gstEnabled);
+                if (parsed.gstNumber) setGstNumber(parsed.gstNumber);
+                if (parsed.companyName) setCompanyName(parsed.companyName);
             } catch (e) {
                 console.error("Failed to load draft", e);
             }
@@ -78,10 +85,13 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
             customAmount,
             showPrice,
             acceptedTerms,
-            pricePerPerson
+            pricePerPerson,
+            gstEnabled,
+            gstNumber,
+            companyName
         };
         localStorage.setItem(`calc_price_draft_${tour._id}`, JSON.stringify(draft));
-    }, [selectedCity, rooms, travelDate, mobile, email, paymentOption, customAmount, showPrice, acceptedTerms, pricePerPerson, tour._id, isLoaded]);
+    }, [selectedCity, rooms, travelDate, mobile, email, paymentOption, customAmount, showPrice, acceptedTerms, pricePerPerson, gstEnabled, gstNumber, companyName, tour._id, isLoaded]);
 
     // Initial city setup (only if not loaded from draft)
     useEffect(() => {
@@ -99,11 +109,33 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
         }
     }, [totalTravelers]);
 
+    const validateGST = (gst: string) => {
+        const pattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        if (!gst) return true; // Optional
+        return pattern.test(gst);
+    };
+
     const handleCalculatePrice = () => {
         if (!selectedCity || !travelDate || !mobile || !email || !acceptedTerms) {
             alert('Please fill in all details to calculate price.');
             return;
         }
+        
+        if (gstEnabled) {
+            if (!companyName) {
+                alert('Please enter company name for GST booking.');
+                return;
+            }
+            if (!gstNumber) {
+                alert('Please enter GST number.');
+                return;
+            }
+            if (!validateGST(gstNumber)) {
+                alert('Please enter a valid GST number.');
+                return;
+            }
+        }
+        
         setShowPrice(true);
     };
 
@@ -114,7 +146,8 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
             setIsAuthModalOpen(true);
         } else {
             // Already logged in, proceed directly to checkout
-            window.location.href = `/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}&paidAmount=${amountToPay}`;
+            const corporateParams = gstEnabled ? `&gstEnabled=true&gstNumber=${gstNumber}&companyName=${encodeURIComponent(companyName)}` : '';
+            window.location.href = `/checkout?tourId=${tour._id}${travelDate ? `&date=${travelDate.toISOString()}` : ''}&adults=${totalTravelers}${requestGroupDiscount ? '&groupDiscount=true' : ''}&departureCity=${selectedCity?.city || 'Joining Direct'}&citySurcharge=${selectedCity?.surcharge || 0}&paidAmount=${amountToPay}${corporateParams}`;
         }
     };
 
@@ -341,6 +374,64 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({ tour 
                         </div>
 
                         <div className="pt-2">
+                            {/* GST Toggle and Fields */}
+                            <div className="mb-4 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
+                                <label className="flex items-center gap-2 cursor-pointer select-none mb-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={gstEnabled}
+                                        onChange={(e) => {
+                                            setGstEnabled(e.target.checked);
+                                            if (!e.target.checked) {
+                                                setGstNumber('');
+                                                setCompanyName('');
+                                                setGstError('');
+                                            }
+                                        }}
+                                        className="w-4 h-4 accent-deepBlue rounded"
+                                    />
+                                    <span className="text-sm text-deepBlue font-bold">I have a GST number <span className="text-gray-400 font-normal">(For corporate booking)</span></span>
+                                </label>
+                                
+                                {gstEnabled && (
+                                    <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <input
+                                            type="text"
+                                            placeholder="Company Name"
+                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-deepBlue/20 focus:border-deepBlue transition-all"
+                                            value={companyName}
+                                            onChange={(e) => setCompanyName(e.target.value)}
+                                        />
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                placeholder="GST Number"
+                                                className={`w-full p-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-all ${
+                                                    gstNumber && !validateGST(gstNumber) 
+                                                        ? 'border-red-400 focus:ring-red-100' 
+                                                        : 'border-gray-300 focus:ring-deepBlue/20 focus:border-deepBlue'
+                                                }`}
+                                                value={gstNumber}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.toUpperCase();
+                                                    setGstNumber(val);
+                                                    if (val && !validateGST(val)) {
+                                                        setGstError('Invalid GST format');
+                                                    } else {
+                                                        setGstError('');
+                                                    }
+                                                }}
+                                            />
+                                            {gstError && (
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-red-500 font-medium">
+                                                    {gstError}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             {totalTravelers > 6 && (
                                 <div className="mb-4 p-3 bg-saffron/5 rounded-lg border border-saffron/20">
                                     <label className="flex items-start gap-2 cursor-pointer group">

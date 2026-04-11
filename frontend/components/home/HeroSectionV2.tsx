@@ -60,7 +60,7 @@ export default function HeroSectionV2() {
             {bgImages.map((img, index) => (
                 <div
                     key={img}
-                    className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                    className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
                         }`}
                     style={{
                         backgroundImage: `url('${img}')`,
