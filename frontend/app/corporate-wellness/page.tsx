@@ -7,6 +7,7 @@ import CorporateGallery from "@/components/corporate/CorporateGallery";
 import WellnessTiers from "@/components/corporate/WellnessTiers";
 import AdditionalExperiences from "@/components/corporate/AdditionalExperiences";
 import CorporateInquiryForm from "@/components/corporate/CorporateInquiryForm";
+import CorporateIntroSection from "@/components/corporate/CorporateIntroSection";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 export default function CorporateWellnessPage() {
@@ -31,6 +32,7 @@ export default function CorporateWellnessPage() {
         <div className="relative">
           <ProgramDetails />
           <CorporateGallery />
+          <CorporateIntroSection />
           <WellnessTiers />
           <AdditionalExperiences />
           <CorporateInquiryForm />

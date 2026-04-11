@@ -67,9 +67,22 @@ export default function CorporateHero() {
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-display font-bold text-white mb-6 leading-tight">
             Corporate Wellness <br className="hidden md:block" /> Program
           </h1>
-          <p className="text-xl md:text-4xl font-script text-gold mb-8 opacity-90 drop-shadow-lg">
-            Deadlines to Lifelines
-          </p>
+          <div className="relative inline-block mb-10 group">
+            <motion.p 
+              className="text-2xl md:text-5xl font-script text-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.4)] relative z-10"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+            >
+              Deadlines to Lifelines
+            </motion.p>
+            <motion.div 
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: "80%", opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.8 }}
+            />
+          </div>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button 
               onClick={() => {
