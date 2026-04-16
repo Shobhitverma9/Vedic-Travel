@@ -388,6 +388,7 @@ export class PaymentsService {
                 if (recipientEmail) {
                     // 1. Booking confirmation
                     await this.emailService.sendBookingConfirmationEmail(recipientEmail, recipientName, {
+                        bookingId: (updatedBooking as any)._id.toString(),
                         bookingReference: (updatedBooking as any).bookingReference,
                         tourName: tour?.title || 'Your Yatra',
                         travelDate: travelDateFormatted,

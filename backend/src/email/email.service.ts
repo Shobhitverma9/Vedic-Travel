@@ -48,6 +48,7 @@ export class EmailService {
         email: string,
         name: string,
         details: {
+            bookingId: string;
             bookingReference: string;
             tourName: string;
             travelDate: string;
@@ -410,6 +411,7 @@ export class EmailService {
     }
 
     private getBookingConfirmationTemplate(name: string, details: {
+        bookingId: string;
         bookingReference: string;
         tourName: string;
         travelDate: string;
@@ -461,7 +463,7 @@ export class EmailService {
             </div>
 
             <center style="margin: 35px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/bookings" class="cta-button">View Full Booking Details</a>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/bookings/${details.bookingId}" class="cta-button">View Full Booking Details</a>
             </center>
 
             <p style="text-align: center; color: #718096; font-size: 13px;">
