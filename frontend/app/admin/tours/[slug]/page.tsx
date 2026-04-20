@@ -421,28 +421,85 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
 
         try {
             const payload = {
-                ...formData,
+                title: formData.title,
+                description: formData.description,
+                slug: formData.slug,
                 price: Number(formData.price) || 0,
                 priceOriginal: Number(formData.priceOriginal) || 0,
                 duration: Number(formData.duration) || 1,
                 maxGroupSize: formData.maxGroupSize && Number(formData.maxGroupSize) > 0 ? Number(formData.maxGroupSize) : 1,
-                trendingRank: Number(formData.trendingRank) || 0,
-                emiStartingFrom: Number(formData.emiStartingFrom) || 0,
-                packageType: formData.packageType,
+                category: formData.category,
+                destination: formData.destination,
                 locations: formData.locations.filter(l => l && l.trim()),
-                inclusions: formData.inclusions.filter(i => i.trim()),
-                exclusions: formData.exclusions.filter(e => e.trim()),
-                dos: formData.dos.filter(d => d.trim()),
-                donts: formData.donts.filter(d => d.trim()),
-                thingsToCarry: formData.thingsToCarry.filter(t => t.trim()),
+                images: formData.images,
+                slideshowImages: formData.slideshowImages,
+                packageType: formData.packageType,
+                placesHighlights: formData.placesHighlights,
+                placesToVisit: formData.placesToVisit,
+                joiningFrom: formData.joiningFrom,
+                packageIncludes: formData.packageIncludes,
+                itinerary: formData.itinerary.map(({ _id, ...rest }: any) => ({
+                    day: rest.day,
+                    title: rest.title,
+                    description: rest.description,
+                    items: rest.items?.map(({ _id, ...item }: any) => ({
+                        type: item.type,
+                        title: item.title,
+                        description: item.description,
+                        image: item.image,
+                        time: item.time,
+                    })) || []
+                })),
+                hotels: formData.hotels.map(({ _id, ...rest }: any) => ({
+                    name: rest.name,
+                    images: rest.images,
+                    description: rest.description,
+                    rating: rest.rating,
+                })),
+                inclusions: formData.inclusions.filter(i => i && i.trim()),
+                exclusions: formData.exclusions.filter(e => e && e.trim()),
+                dos: formData.dos.filter(d => d && d.trim()),
+                donts: formData.donts.filter(d => d && d.trim()),
+                thingsToCarry: formData.thingsToCarry.filter(t => t && t.trim()),
+                cancellationPolicy: formData.cancellationPolicy,
+                useDefaultCancellationPolicy: Boolean(formData.useDefaultCancellationPolicy),
+                termsAndConditions: formData.termsAndConditions,
+                paymentTerms: formData.paymentTerms,
+                isActive: Boolean(formData.isActive),
+                showInHero: Boolean(formData.showInHero),
+                isFavorite: Boolean(formData.isFavorite),
+                favoriteSize: formData.favoriteSize,
+                isTrending: Boolean(formData.isTrending),
+                trendingRank: Number(formData.trendingRank) || 0,
+                badge: formData.badge,
+                emiStartingFrom: Number(formData.emiStartingFrom) || 0,
+                customBlocks: (formData.customBlocks || []).map((b: any) => ({
+                    title: b.title,
+                    content: b.content,
+                    isLink: Boolean(b.isLink)
+                })),
+                hasEasyCancellation: Boolean(formData.hasEasyCancellation),
+                hasEasyVisa: Boolean(formData.hasEasyVisa),
+                hasHighSeason: Boolean(formData.hasHighSeason),
+                hasTravelValidity: Boolean(formData.hasTravelValidity),
                 departureCities: formData.departureCities
                     .filter(dc => dc.city && dc.city.trim())
-                    .map(({ _id, ...rest }: any) => rest),
-                hotels: formData.hotels.map(({ _id, ...rest }: any) => rest),
-                itinerary: formData.itinerary.map(({ _id, ...rest }: any) => ({
-                    ...rest,
-                    items: rest.items?.map(({ _id, ...item }: any) => item) || []
-                })),
+                    .map((dc: any) => ({
+                        city: dc.city,
+                        surcharge: Number(dc.surcharge) || 0,
+                        isDefault: Boolean(dc.isDefault),
+                        availabilityType: dc.availabilityType,
+                        availableDates: dc.availableDates,
+                        weeklyDays: dc.weeklyDays,
+                        monthlyDays: dc.monthlyDays,
+                        blackoutDates: dc.blackoutDates,
+                    })),
+                seo: {
+                    title: formData.seo?.title,
+                    description: formData.seo?.description,
+                    keywords: formData.seo?.keywords,
+                },
+                itineraryPdf: formData.itineraryPdf,
             };
 
             if (isEditMode) {
@@ -454,9 +511,17 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
             router.push('/admin/tours');
         } catch (error: any) {
             console.error('Full save error:', error);
-            const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+            console.log('Attempted Payload:', payload);
+            const responseData = error.response?.data;
+            const errorMessage = responseData?.message || error.message || 'Unknown error';
+            
+            // If the message is just generic "Bad Request", try to show the whole data object
+            const detailedError = responseData && JSON.stringify(responseData) !== '{}' 
+                ? JSON.stringify(responseData, null, 2)
+                : errorMessage;
+
             const displayMessage = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage;
-            alert(`Failed to save tour: ${displayMessage}`);
+            alert(`Failed to save tour: ${displayMessage}\n\nTechnical Details: ${detailedError}`);
         } finally {
             setLoading(false);
         }
@@ -468,30 +533,85 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
 
         try {
             const payload = {
-                ...formData,
                 title: `${formData.title} (Copy)`,
+                description: formData.description,
                 slug: `${formData.slug}-copy`,
                 price: Number(formData.price) || 0,
                 priceOriginal: Number(formData.priceOriginal) || 0,
                 duration: Number(formData.duration) || 1,
                 maxGroupSize: formData.maxGroupSize && Number(formData.maxGroupSize) > 0 ? Number(formData.maxGroupSize) : 1,
-                trendingRank: Number(formData.trendingRank) || 0,
-                emiStartingFrom: Number(formData.emiStartingFrom) || 0,
-                packageType: formData.packageType,
+                category: formData.category,
+                destination: formData.destination,
                 locations: formData.locations.filter(l => l && l.trim()),
-                inclusions: formData.inclusions.filter(i => i.trim()),
-                exclusions: formData.exclusions.filter(e => e.trim()),
-                dos: formData.dos.filter(d => d.trim()),
-                donts: formData.donts.filter(d => d.trim()),
-                thingsToCarry: formData.thingsToCarry.filter(t => t.trim()),
+                images: formData.images,
+                slideshowImages: formData.slideshowImages,
+                packageType: formData.packageType,
+                placesHighlights: formData.placesHighlights,
+                placesToVisit: formData.placesToVisit,
+                joiningFrom: formData.joiningFrom,
+                packageIncludes: formData.packageIncludes,
+                itinerary: formData.itinerary.map(({ _id, ...rest }: any) => ({
+                    day: rest.day,
+                    title: rest.title,
+                    description: rest.description,
+                    items: rest.items?.map(({ _id, ...item }: any) => ({
+                        type: item.type,
+                        title: item.title,
+                        description: item.description,
+                        image: item.image,
+                        time: item.time,
+                    })) || []
+                })),
+                hotels: formData.hotels.map(({ _id, ...rest }: any) => ({
+                    name: rest.name,
+                    images: rest.images,
+                    description: rest.description,
+                    rating: rest.rating,
+                })),
+                inclusions: formData.inclusions.filter(i => i && i.trim()),
+                exclusions: formData.exclusions.filter(e => e && e.trim()),
+                dos: formData.dos.filter(d => d && d.trim()),
+                donts: formData.donts.filter(d => d && d.trim()),
+                thingsToCarry: formData.thingsToCarry.filter(t => t && t.trim()),
+                cancellationPolicy: formData.cancellationPolicy,
+                useDefaultCancellationPolicy: Boolean(formData.useDefaultCancellationPolicy),
+                termsAndConditions: formData.termsAndConditions,
+                paymentTerms: formData.paymentTerms,
+                isActive: Boolean(formData.isActive),
+                showInHero: Boolean(formData.showInHero),
+                isFavorite: Boolean(formData.isFavorite),
+                favoriteSize: formData.favoriteSize,
+                isTrending: Boolean(formData.isTrending),
+                trendingRank: Number(formData.trendingRank) || 0,
+                badge: formData.badge,
+                emiStartingFrom: Number(formData.emiStartingFrom) || 0,
+                customBlocks: (formData.customBlocks || []).map((b: any) => ({
+                    title: b.title,
+                    content: b.content,
+                    isLink: Boolean(b.isLink)
+                })),
+                hasEasyCancellation: Boolean(formData.hasEasyCancellation),
+                hasEasyVisa: Boolean(formData.hasEasyVisa),
+                hasHighSeason: Boolean(formData.hasHighSeason),
+                hasTravelValidity: Boolean(formData.hasTravelValidity),
                 departureCities: formData.departureCities
                     .filter(dc => dc.city && dc.city.trim())
-                    .map(({ _id, ...rest }: any) => rest),
-                hotels: formData.hotels.map(({ _id, ...rest }: any) => rest),
-                itinerary: formData.itinerary.map(({ _id, ...rest }: any) => ({
-                    ...rest,
-                    items: rest.items?.map(({ _id, ...item }: any) => item) || []
-                })),
+                    .map((dc: any) => ({
+                        city: dc.city,
+                        surcharge: Number(dc.surcharge) || 0,
+                        isDefault: Boolean(dc.isDefault),
+                        availabilityType: dc.availabilityType,
+                        availableDates: dc.availableDates,
+                        weeklyDays: dc.weeklyDays,
+                        monthlyDays: dc.monthlyDays,
+                        blackoutDates: dc.blackoutDates,
+                    })),
+                seo: {
+                    title: formData.seo?.title,
+                    description: formData.seo?.description,
+                    keywords: formData.seo?.keywords,
+                },
+                itineraryPdf: formData.itineraryPdf,
             };
 
             await toursService.createTour(payload);
