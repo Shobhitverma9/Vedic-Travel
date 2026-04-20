@@ -22,10 +22,10 @@ export default function AdminToursList() {
             if (!aActive && bActive) return 1;
             
             // Second Priority: Trending Rank (for items with same visibility)
-            // Smaller positive rank numbers (1, 2, 3...) come first
-            // Rank 0 or undefined comes last in their section
-            const aRank = a.trendingRank && a.trendingRank > 0 ? a.trendingRank : 999999;
-            const bRank = b.trendingRank && b.trendingRank > 0 ? b.trendingRank : 999999;
+            // Smaller rank numbers (0, 1, 2, 3...) come first
+            // Undefined or null ranks come last in their section
+            const aRank = (a.trendingRank !== undefined && a.trendingRank !== null) ? a.trendingRank : 999999;
+            const bRank = (b.trendingRank !== undefined && b.trendingRank !== null) ? b.trendingRank : 999999;
             
             if (aRank !== bRank) return aRank - bRank;
             

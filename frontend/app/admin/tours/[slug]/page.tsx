@@ -424,19 +424,19 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 ...formData,
                 price: Number(formData.price) || 0,
                 priceOriginal: Number(formData.priceOriginal) || 0,
-                duration: Number(formData.duration) || 0,
-                maxGroupSize: formData.maxGroupSize ? Number(formData.maxGroupSize) : 1,
+                duration: Number(formData.duration) || 1,
+                maxGroupSize: formData.maxGroupSize && Number(formData.maxGroupSize) > 0 ? Number(formData.maxGroupSize) : 1,
                 trendingRank: Number(formData.trendingRank) || 0,
                 emiStartingFrom: Number(formData.emiStartingFrom) || 0,
                 packageType: formData.packageType,
-                locations: formData.locations.filter(l => l.trim()),
+                locations: formData.locations.filter(l => l && l.trim()),
                 inclusions: formData.inclusions.filter(i => i.trim()),
                 exclusions: formData.exclusions.filter(e => e.trim()),
                 dos: formData.dos.filter(d => d.trim()),
                 donts: formData.donts.filter(d => d.trim()),
                 thingsToCarry: formData.thingsToCarry.filter(t => t.trim()),
                 departureCities: formData.departureCities
-                    .filter(dc => dc.city.trim())
+                    .filter(dc => dc.city && dc.city.trim())
                     .map(({ _id, ...rest }: any) => rest),
                 hotels: formData.hotels.map(({ _id, ...rest }: any) => rest),
                 itinerary: formData.itinerary.map(({ _id, ...rest }: any) => ({
@@ -452,9 +452,11 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 localStorage.removeItem('tour_draft_new');
             }
             router.push('/admin/tours');
-        } catch (error) {
-            console.error('Save failed:', error);
-            alert('Failed to save tour. Please check the data.');
+        } catch (error: any) {
+            console.error('Full save error:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+            const displayMessage = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage;
+            alert(`Failed to save tour: ${displayMessage}`);
         } finally {
             setLoading(false);
         }
@@ -471,19 +473,19 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 slug: `${formData.slug}-copy`,
                 price: Number(formData.price) || 0,
                 priceOriginal: Number(formData.priceOriginal) || 0,
-                duration: Number(formData.duration) || 0,
-                maxGroupSize: formData.maxGroupSize ? Number(formData.maxGroupSize) : 1,
+                duration: Number(formData.duration) || 1,
+                maxGroupSize: formData.maxGroupSize && Number(formData.maxGroupSize) > 0 ? Number(formData.maxGroupSize) : 1,
                 trendingRank: Number(formData.trendingRank) || 0,
                 emiStartingFrom: Number(formData.emiStartingFrom) || 0,
                 packageType: formData.packageType,
-                locations: formData.locations.filter(l => l.trim()),
+                locations: formData.locations.filter(l => l && l.trim()),
                 inclusions: formData.inclusions.filter(i => i.trim()),
                 exclusions: formData.exclusions.filter(e => e.trim()),
                 dos: formData.dos.filter(d => d.trim()),
                 donts: formData.donts.filter(d => d.trim()),
                 thingsToCarry: formData.thingsToCarry.filter(t => t.trim()),
                 departureCities: formData.departureCities
-                    .filter(dc => dc.city.trim())
+                    .filter(dc => dc.city && dc.city.trim())
                     .map(({ _id, ...rest }: any) => rest),
                 hotels: formData.hotels.map(({ _id, ...rest }: any) => rest),
                 itinerary: formData.itinerary.map(({ _id, ...rest }: any) => ({
@@ -494,9 +496,12 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
 
             await toursService.createTour(payload);
             router.push('/admin/tours');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Duplicate failed:', error);
-            alert('Failed to duplicate tour. Please check the data.');
+            const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+            const displayMessage = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage;
+            alert(`Failed to duplicate tour: ${displayMessage}`);
+        } finally {
             setLoading(false);
         }
     };
