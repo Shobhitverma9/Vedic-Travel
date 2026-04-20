@@ -12,11 +12,33 @@ export default function AdminToursList() {
         fetchTours();
     }, []);
 
+    const sortTours = (toursList: any[]) => {
+        return [...toursList].sort((a, b) => {
+            const aActive = a.isActive !== false;
+            const bActive = b.isActive !== false;
+            
+            // First Priority: Visibility
+            if (aActive && !bActive) return -1;
+            if (!aActive && bActive) return 1;
+            
+            // Second Priority: Trending Rank (for items with same visibility)
+            // Smaller positive rank numbers (1, 2, 3...) come first
+            // Rank 0 or undefined comes last in their section
+            const aRank = a.trendingRank && a.trendingRank > 0 ? a.trendingRank : 999999;
+            const bRank = b.trendingRank && b.trendingRank > 0 ? b.trendingRank : 999999;
+            
+            if (aRank !== bRank) return aRank - bRank;
+            
+            // Third Priority: Alphabetical by title
+            return (a.title || '').localeCompare(b.title || '');
+        });
+    };
+
     const fetchTours = async () => {
         try {
             setLoading(true);
             const response = await toursService.getAllTours({ limit: 100, isActive: 'all' }); // Fetch all including hidden
-            setTours(response.tours || []);
+            setTours(sortTours(response.tours || []));
         } catch (error) {
             console.error('Error fetching tours:', error);
         } finally {
@@ -40,9 +62,9 @@ export default function AdminToursList() {
         try {
             const newStatus = !tour.isActive;
             await toursService.updateTour(tour._id, { isActive: newStatus });
-            setTours(tours.map((t: any) => 
+            setTours(prevTours => sortTours(prevTours.map((t: any) => 
                 t._id === tour._id ? { ...t, isActive: newStatus } : t
-            ));
+            )));
         } catch (error) {
             console.error('Toggle visibility failed:', error);
             alert('Failed to update visibility');

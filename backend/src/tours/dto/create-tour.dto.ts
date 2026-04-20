@@ -272,4 +272,9 @@ export class CreateTourDto {
         description?: string;
         keywords?: string;
     };
+
+    @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    itineraryPdf?: string;
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toursService } from '@/services/tours.service';
 import { yatrasService } from '@/services/yatras.service';
 import ImageUpload from '@/components/common/ImageUpload';
+import PDFUpload from '@/components/common/PDFUpload';
 import { Plus, Trash, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import RichTextToolbar from '@/components/admin/RichTextToolbar';
 
@@ -37,7 +38,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
         placesToVisit: '',
         joiningFrom: 'Joining Direct',
         packageIncludes: [] as string[], // Categories
-        hotels: [] as { name: string; image: string; description: string; rating: number }[],
+        hotels: [] as { name: string; images: string[]; description: string; rating: number }[],
         itinerary: [] as {
             day: number;
             title: string;
@@ -87,6 +88,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
             description: '',
             keywords: '',
         },
+        itineraryPdf: '',
     });
 
     useEffect(() => {
@@ -171,7 +173,10 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                 placesToVisit: tour.placesToVisit || '',
                 joiningFrom: tour.joiningFrom || 'Joining Direct',
                 packageIncludes: tour.packageIncludes || [],
-                hotels: tour.hotels || [],
+                hotels: tour.hotels?.map((h: any) => ({
+                    ...h,
+                    images: h.images || (h.image ? [h.image] : [])
+                })) || [],
                 itinerary: tour.itinerary || [],
                 inclusions: tour.inclusions || [''],
                 exclusions: tour.exclusions || [''],
@@ -208,6 +213,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                     description: tour.seo?.description || '',
                     keywords: tour.seo?.keywords || '',
                 },
+                itineraryPdf: (tour as any).itineraryPdf || '',
             });
         } catch (error) {
             console.error('Failed to fetch tour:', error);
@@ -257,7 +263,7 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
     const addHotel = () => {
         setFormData({
             ...formData,
-            hotels: [...formData.hotels, { name: '', image: '', description: '', rating: 4 }]
+            hotels: [...formData.hotels, { name: '', images: [], description: '', rating: 4 }]
         });
     };
 
@@ -614,6 +620,20 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                     </div>
                 </div>
 
+                {/* 1.2 Itinerary PDF */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 className="text-xl font-bold text-gray-800 border-b pb-4 mb-4">Itinerary Document</h2>
+                    <div className="grid grid-cols-1 gap-6">
+                        <PDFUpload 
+                            value={formData.itineraryPdf} 
+                            onChange={(url) => setFormData({ ...formData, itineraryPdf: url })} 
+                        />
+                        <p className="text-xs text-gray-400 mt-2">
+                            * This document will be available for download on the package page after user fills the lead form.
+                        </p>
+                    </div>
+                </div>
+
                 {/* 1.5 SEO Information */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 className="text-xl font-bold text-gray-800 border-b pb-4 mb-4">SEO Metadata</h2>
@@ -743,11 +763,11 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
                                 <button type="button" onClick={() => removeHotel(index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><Trash className="w-4 h-4" /></button>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     <div className="md:col-span-1">
-                                        <label className="text-xs text-gray-500 block mb-1">Hotel Image</label>
+                                        <label className="text-xs text-gray-500 block mb-1">Hotel Images (Rooms, Washroom, etc.)</label>
                                         <ImageUpload
-                                            value={hotel.image ? [hotel.image] : []}
-                                            onChange={(urls) => updateHotel(index, 'image', urls[0])}
-                                            maxFiles={1}
+                                            value={hotel.images || []}
+                                            onChange={(urls) => updateHotel(index, 'images', urls)}
+                                            maxFiles={10}
                                         />
                                     </div>
                                     <div className="md:col-span-2 space-y-3">

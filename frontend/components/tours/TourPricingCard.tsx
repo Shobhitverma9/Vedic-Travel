@@ -5,7 +5,7 @@ import AddToCartButton from '@/components/shared/AddToCartButton';
 import PackageEnquiryModal from '@/components/tours/PackageEnquiryModal';
 import EMIPlansModal from '@/components/tours/EMIPlansModal';
 import PayUWidget from '@/components/tours/PayUWidget';
-import { Phone, CreditCard, CheckCircle, Percent, Utensils, Hotel, Car, Camera } from 'lucide-react';
+import { Phone, CreditCard, CheckCircle, Percent, Utensils, Hotel, Car, Camera, Download } from 'lucide-react';
 import { paymentsService } from '@/services/payments.service';
 
 interface TourPricingCardProps {
@@ -13,19 +13,27 @@ interface TourPricingCardProps {
     originalPrice: number;
     isEnquiryModalOpen?: boolean;
     setIsEnquiryModalOpen?: (open: boolean) => void;
+    isDownloadModalOpen?: boolean;
+    setIsDownloadModalOpen?: (open: boolean) => void;
 }
 
 export default function TourPricingCard({
     tour,
     originalPrice,
     isEnquiryModalOpen: externalIsOpen,
-    setIsEnquiryModalOpen: externalSetIsOpen
+    setIsEnquiryModalOpen: externalSetIsOpen,
+    isDownloadModalOpen: externalIsDownloadOpen,
+    setIsDownloadModalOpen: externalSetIsDownloadOpen
 }: TourPricingCardProps) {
     const [internalIsOpen, internalSetIsOpen] = useState(false);
 
     // Use external state if provided, otherwise fallback to internal
     const isEnquiryModalOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
     const setIsEnquiryModalOpen = externalSetIsOpen !== undefined ? externalSetIsOpen : internalSetIsOpen;
+
+    const [internalIsDownloadOpen, internalSetIsDownloadOpen] = useState(false);
+    const isDownloadModalOpen = externalIsDownloadOpen !== undefined ? externalIsDownloadOpen : internalIsDownloadOpen;
+    const setIsDownloadModalOpen = externalSetIsDownloadOpen !== undefined ? externalSetIsDownloadOpen : internalSetIsDownloadOpen;
 
     const [isEmiModalOpen, setIsEmiModalOpen] = useState(false);
     const [emiInfo, setEmiInfo] = useState<any>(null);
@@ -114,6 +122,16 @@ export default function TourPricingCard({
                     </svg>
                     Plan Your Own Trip
                 </button>
+
+                {tour.itineraryPdf && (
+                    <button
+                        onClick={() => setIsDownloadModalOpen(true)}
+                        className="w-full py-3 bg-white border-2 border-saffron text-saffron font-bold rounded hover:bg-saffron hover:text-white transition-all uppercase tracking-wider flex items-center justify-center gap-2 group"
+                    >
+                        <Download className="w-5 h-5 group-hover:animate-bounce" />
+                        Download Itinerary
+                    </button>
+                )}
             </div>
 
             <PackageEnquiryModal

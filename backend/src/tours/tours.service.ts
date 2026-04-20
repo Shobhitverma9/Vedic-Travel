@@ -128,19 +128,51 @@ export class ToursService {
     }
 
     async findOne(id: string) {
-        const tour = await this.tourModel.findById(id);
+        const tour = await this.tourModel.findById(id).lean();
         if (!tour) {
             throw new NotFoundException('Tour not found');
         }
-        return tour;
+
+        // If tour has no slideshowImages but has a yatra category, fetch yatra thumbnailImages as fallback
+        let yatraData = null;
+        if ((!tour.slideshowImages || tour.slideshowImages.length === 0) && tour.category && tour.category.match(/^[0-9a-fA-F]{24}$/)) {
+            const yatra = await this.yatraModel.findById(tour.category).select('thumbnailImages heroImage').lean();
+            if (yatra) {
+                yatraData = {
+                    thumbnailImages: yatra.thumbnailImages || [],
+                    heroImage: yatra.heroImage
+                };
+            }
+        }
+
+        return {
+            ...tour,
+            yatraImages: yatraData
+        };
     }
 
     async findBySlug(slug: string) {
-        const tour = await this.tourModel.findOne({ slug, isActive: true });
+        const tour = await this.tourModel.findOne({ slug, isActive: true }).lean();
         if (!tour) {
             throw new NotFoundException('Tour not found');
         }
-        return tour;
+
+        // If tour has no slideshowImages but has a yatra category, fetch yatra thumbnailImages as fallback
+        let yatraData = null;
+        if ((!tour.slideshowImages || tour.slideshowImages.length === 0) && tour.category && tour.category.match(/^[0-9a-fA-F]{24}$/)) {
+            const yatra = await this.yatraModel.findById(tour.category).select('thumbnailImages heroImage').lean();
+            if (yatra) {
+                yatraData = {
+                    thumbnailImages: yatra.thumbnailImages || [],
+                    heroImage: yatra.heroImage
+                };
+            }
+        }
+
+        return {
+            ...tour,
+            yatraImages: yatraData
+        };
     }
 
     async update(id: string, updateTourDto: UpdateTourDto) {

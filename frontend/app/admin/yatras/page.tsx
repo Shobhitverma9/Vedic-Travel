@@ -12,10 +12,23 @@ export default function AdminYatrasPage() {
         fetchYatras();
     }, []);
 
+    const sortYatras = (yatrasList: any[]) => {
+        return [...yatrasList].sort((a, b) => {
+            const aActive = a.isActive !== false;
+            const bActive = b.isActive !== false;
+            // First Priority: Visibility
+            if (aActive && !bActive) return -1;
+            if (!aActive && bActive) return 1;
+            
+            // Second Priority: Alphabetical by title
+            return (a.title || '').localeCompare(b.title || '');
+        });
+    };
+
     const fetchYatras = async () => {
         try {
             const data = await yatrasService.getAllYatras({ isActive: 'all' }); // Fetch all including hidden
-            setYatras(data);
+            setYatras(sortYatras(data));
         } catch (error) {
             console.error('Error fetching yatras:', error);
         } finally {
@@ -27,9 +40,9 @@ export default function AdminYatrasPage() {
         try {
             const newStatus = !yatra.isActive;
             await yatrasService.updateYatra(yatra._id, { isActive: newStatus });
-            setYatras(yatras.map((y: any) => 
+            setYatras(prevYatras => sortYatras(prevYatras.map((y: any) => 
                 y._id === yatra._id ? { ...y, isActive: newStatus } : y
-            ));
+            )));
         } catch (error) {
             console.error('Toggle visibility failed:', error);
             alert('Failed to update visibility');

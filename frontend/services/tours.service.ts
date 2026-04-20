@@ -16,6 +16,10 @@ export interface Tour {
     slideshowImages?: string[];
     locations: string[];
     placesHighlights?: any[];
+    yatraImages?: {
+        thumbnailImages?: string[];
+        heroImage?: string;
+    };
     placesToVisit?: string;
     packageIncludes?: string[];
     hotels?: any[];

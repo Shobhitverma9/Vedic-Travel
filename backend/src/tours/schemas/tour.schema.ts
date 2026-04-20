@@ -73,7 +73,7 @@ export class Tour {
     @Prop({ type: [Object], default: [] })
     hotels: {
         name: string;
-        image: string;
+        images: string[];
         description: string;
         rating: number;
     }[];
@@ -212,6 +212,9 @@ export class Tour {
         description: string;
         keywords: string;
     };
+
+    @Prop({ required: false })
+    itineraryPdf?: string;
 }
 
 export const TourSchema = SchemaFactory.createForClass(Tour);
