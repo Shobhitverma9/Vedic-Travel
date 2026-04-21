@@ -33,7 +33,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
 
     // LOG THE ACTUAL ERROR FOR CLOUD RUN
+    const detailedMessage = exception instanceof HttpException ? exception.getResponse() : null;
     this.logger.error(`Exception caught for ${responseBody.path}:`);
+    if (detailedMessage) {
+        this.logger.error('Detailed Error Response:', JSON.stringify(detailedMessage, null, 2));
+    }
     this.logger.error(exception instanceof Error ? exception.stack : exception);
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);

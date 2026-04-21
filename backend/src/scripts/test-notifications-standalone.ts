@@ -60,6 +60,7 @@ async function runStandaloneTest() {
     // 3. Booking Confirmation
     console.log('🔹 Testing Booking Confirmation...');
     await emailService.sendBookingConfirmationEmail(testEmail, testName, {
+        bookingId: 'DUMMY_ID_123',
         bookingReference: dummyBooking.bookingReference,
         tourName: dummyBooking.tour.title,
         travelDate: dummyBooking.travelDate.toLocaleDateString('en-IN'),

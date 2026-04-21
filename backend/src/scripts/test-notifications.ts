@@ -51,6 +51,7 @@ async function bootstrap() {
         // 3. Test Booking Confirmation Email
         console.log('- Sending Booking Confirmation...');
         await emailService.sendBookingConfirmationEmail(testEmail, testName, {
+            bookingId: 'DUMMY_ID_456',
             bookingReference: dummyBooking.bookingReference,
             tourName: dummyBooking.tour.title,
             travelDate: dummyBooking.travelDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),

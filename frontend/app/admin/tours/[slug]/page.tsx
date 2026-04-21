@@ -418,9 +418,10 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        let payload: any = null;
 
         try {
-            const payload = {
+            payload = {
                 title: formData.title,
                 description: formData.description,
                 slug: formData.slug,
@@ -530,9 +531,10 @@ export default function TourEditorPage({ params }: { params: Promise<{ slug: str
     const handleDuplicateThisPackage = async () => {
         if (!confirm('Are you sure you want to duplicate this package?')) return;
         setLoading(true);
+        let payload: any = null;
 
         try {
-            const payload = {
+            payload = {
                 title: `${formData.title} (Copy)`,
                 description: formData.description,
                 slug: `${formData.slug}-copy`,
