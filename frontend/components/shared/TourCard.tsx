@@ -6,6 +6,7 @@ import { authService } from '@/services/auth.service';
 import { paymentsService } from '@/services/payments.service';
 import { useEffect } from 'react';
 import InquiryModal from './InquiryModal';
+import { calculateEstimatedEMI } from '@/lib/price-utils';
 
 interface TourCardProps {
     tour: any;
@@ -21,9 +22,8 @@ export default function TourCard({ tour, isTrending = false, isInternational = f
 
     useEffect(() => {
         if (tour.price) {
-            paymentsService.getEmiOptions(tour.price)
-                .then(data => setLowestEmi(data.lowestEmi))
-                .catch(err => console.error('Failed to fetch EMI options', err));
+            const estimated = calculateEstimatedEMI(tour.price);
+            setLowestEmi(estimated);
         }
     }, [tour.price]);
 

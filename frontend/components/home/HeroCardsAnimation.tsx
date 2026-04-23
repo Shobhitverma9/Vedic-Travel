@@ -1,5 +1,6 @@
 import { useTours } from '@/hooks/useTours';
 import Link from 'next/link';
+import TourCardSkeleton from '@/components/shared/TourCardSkeleton';
 
 export default function HeroCardsAnimation() {
     // 1. Fetch specifically selected Hero tours
@@ -33,9 +34,11 @@ export default function HeroCardsAnimation() {
     if (isLoading) {
         return (
             <div className="relative mt-8 overflow-hidden mx-auto w-full max-w-[1240px] h-64 flex items-center justify-center">
-                <div className="flex gap-4 animate-pulse">
+                <div className="flex gap-4">
                     {[1, 2, 3, 4, 5].map((i) => (
-                        <div key={i} className="w-44 h-52 md:h-60 bg-white/10 rounded-lg shrink-0" />
+                        <div key={i} className="w-44 h-52 md:h-60 shrink-0">
+                            <TourCardSkeleton />
+                        </div>
                     ))}
                 </div>
             </div>

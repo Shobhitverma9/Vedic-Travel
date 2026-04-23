@@ -3,12 +3,33 @@
 import { useRef } from 'react';
 import { useYatras } from '@/hooks/useYatras';
 import TourCard from '@/components/shared/TourCard';
+import TourCardSkeleton from '@/components/shared/TourCardSkeleton';
 import Link from 'next/link';
 
 export default function YatraSection() {
     const { data: yatras, isLoading: loading } = useYatras({ isActive: true, isVedicImprint: false, showOnHome: true });
 
-    if (loading) return null;
+    if (loading) {
+        return (
+            <div className="flex flex-col gap-12 py-10">
+                {[1, 2].map((i) => (
+                    <section key={i} className="container mx-auto px-6 md:px-8">
+                        <div className="text-center mb-8 max-w-4xl mx-auto">
+                            <div className="h-10 bg-gray-200 rounded w-1/2 mx-auto mb-4 animate-pulse"></div>
+                            <div className="h-6 bg-gray-100 rounded w-3/4 mx-auto animate-pulse"></div>
+                        </div>
+                        <div className="flex gap-6 overflow-hidden py-4">
+                            {[1, 2, 3, 4].map((j) => (
+                                <div key={j} className="w-[260px] md:w-[300px] flex-shrink-0">
+                                    <TourCardSkeleton />
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                ))}
+            </div>
+        );
+    }
     if (!yatras || yatras.length === 0) return null;
 
     return (

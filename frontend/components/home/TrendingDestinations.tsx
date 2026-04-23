@@ -3,9 +3,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTours } from '@/hooks/useTours';
 import TourCard from '@/components/shared/TourCard';
+import TourCardSkeleton from '@/components/shared/TourCardSkeleton';
 
 export default function TrendingDestinations() {
-    const { data, isLoading: loading } = useTours({ isTrending: true, limit: 10, sortBy: 'trendingRank', order: 'asc' });
+    const { data, isLoading: loading } = useTours({ 
+        isTrending: true, 
+        isActive: true, 
+        limit: 10, 
+        sortBy: 'trendingRank', 
+        order: 'asc' 
+    });
     const tours = data?.tours || [];
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +37,29 @@ export default function TrendingDestinations() {
         return () => el.removeEventListener('scroll', handleScroll);
     }, [tours]); // re-run once tours load and the carousel is in the DOM
 
-    if (loading) return null; // Or a skeleton loader
+    if (loading) {
+        return (
+            <section className="py-16 bg-white overflow-hidden">
+                <div className="container mx-auto px-6 md:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                        <div className="md:col-span-3">
+                            <div className="w-24 h-6 bg-gray-100 rounded-full mb-4 animate-pulse"></div>
+                            <div className="w-48 h-12 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                            <div className="w-32 h-6 bg-gray-100 rounded mb-8 animate-pulse"></div>
+                        </div>
+                        <div className="md:col-span-9 flex gap-6 overflow-hidden">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="w-[280px] md:w-[320px] flex-shrink-0">
+                                    <TourCardSkeleton />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     if (!tours || tours.length === 0) return null;
 
     return (

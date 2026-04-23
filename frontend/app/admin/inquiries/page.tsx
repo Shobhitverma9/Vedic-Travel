@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { inquiriesService } from '@/services/inquiries.service';
-import { Mail, Phone, Building2, Users, Wallet } from 'lucide-react';
+import { Mail, Phone, Building2, Users, Wallet, FileDown, Table } from 'lucide-react';
+import { exportToCSV, exportToExcel } from '@/lib/export-utils';
 
 export default function AdminInquiriesPage() {
     const [inquiries, setInquiries] = useState([]);
@@ -23,11 +24,54 @@ export default function AdminInquiriesPage() {
         }
     };
 
+    const handleExport = (format: 'csv' | 'excel') => {
+        const dataToExport = inquiries.map((inquiry: any) => ({
+            'Date': new Date(inquiry.createdAt).toLocaleDateString(),
+            'Name': inquiry.name,
+            'Email': inquiry.email,
+            'Mobile': inquiry.mobile,
+            'Type': inquiry.isCorporate ? 'Corporate' : 'General',
+            'Tour Name': inquiry.tourName || 'General Inquiry',
+            'Tour ID': inquiry.tourId || '-',
+            'Status': inquiry.status.toUpperCase(),
+            'Company Name': inquiry.companyName || '-',
+            'Team Size': inquiry.teamSize || '-',
+            'Budget': inquiry.isCustomizable ? 'Flexible' : (inquiry.budget || '-'),
+            'Office Address': inquiry.officeAddress || '-'
+        }));
+
+        const fileName = `inquiries_${new Date().toISOString().split('T')[0]}`;
+        
+        if (format === 'csv') {
+            exportToCSV(dataToExport, fileName);
+        } else {
+            exportToExcel(dataToExport, fileName);
+        }
+    };
+
     if (loading) return <div className="p-8 text-center">Loading inquiries...</div>;
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">User Inquiries</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold">User Inquiries</h1>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => handleExport('csv')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                        <FileDown size={16} />
+                        Export CSV
+                    </button>
+                    <button
+                        onClick={() => handleExport('excel')}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#1D6F42] text-white rounded-lg text-sm font-medium hover:bg-[#1A633B] transition-colors shadow-sm"
+                    >
+                        <Table size={16} />
+                        Export Excel
+                    </button>
+                </div>
+            </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto custom-scrollbar">
