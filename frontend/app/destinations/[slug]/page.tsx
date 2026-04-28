@@ -41,7 +41,11 @@ export default function DestinationPage({ params }: { params: Promise<{ slug: st
 
     return (
         <main>
-            <YatraHero title={destinationInfo.title} image={destinationInfo.heroImage} />
+            <YatraHero 
+                title={destinationInfo.title} 
+                image={destinationInfo.heroImage} 
+                thumbnailImages={destinationInfo.thumbnailImages} 
+            />
 
             {loading ? (
                 <div className="py-20 min-h-[400px]">

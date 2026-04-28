@@ -56,7 +56,7 @@ export default function TourCollectionPage({ params }: { params: Promise<{ slug:
 
     return (
         <main>
-            <YatraHero title={yatra.title} image={yatra.heroImage} mobileImage={yatra.mobileHeroImage} />
+            <YatraHero title={yatra.title} image={yatra.heroImage} mobileImage={yatra.mobileHeroImage} thumbnailImages={yatra.thumbnailImages} />
 
             <YatraPackages packages={yatra.packages} title={yatra.title} />
 

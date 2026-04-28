@@ -1,12 +1,14 @@
 export const destinationsData: Record<string, {
     title: string;
     heroImage: string;
+    thumbnailImages?: string[];
     description: string;
     faqs: { question: string; answer: string }[];
 }> = {
     'north-india': {
         title: 'North India',
         heroImage: '/images/tours/chardham_heli_yatra.png', // Placeholder, using existing image
+        thumbnailImages: ['/images/tours/chardham_heli_yatra.png', '/images/tours/kedar-kantha.jpg'],
         description: `
             <p>Welcome to <strong>North India</strong>, a land of majestic mountains, spiritual awakenings, and vibrant culture. From the snow-capped peaks of the Himalayas to the holy banks of the Ganges, North India offers a journey like no other.</p>
             <h3>Spiritual Significance</h3>
@@ -33,6 +35,7 @@ export const destinationsData: Record<string, {
     'south-india': {
         title: 'South India',
         heroImage: '/images/tours/divine_south_india.png', // Placeholder
+        thumbnailImages: ['/images/tours/divine_south_india.png', '/images/tours/tirupati.jpg'],
         description: `
             <p>Experience the divine charm of <strong>South India</strong>, known for its magnificent temples, rich heritage, and serene landscapes. Explore the architectural marvels of Dravidian style temples and the lush greenery of the Western Ghats.</p>
             <h3>Temple Architecture</h3>
@@ -58,6 +61,7 @@ export const destinationsData: Record<string, {
     'east-india': {
         title: 'East India',
         heroImage: '/images/tours/kamakhya-devi.jpg', // Placeholder
+        thumbnailImages: ['/images/tours/kamakhya-devi.jpg', '/images/tours/jagannath-puri.jpg'],
         description: `
             <p><strong>East India</strong> invites you to explore its mystical temples, tea gardens, and the abode of Goddess Shakti. It is a region of deep spiritual significance and natural beauty.</p>
             <h3>Shakti Peethas</h3>
@@ -79,6 +83,7 @@ export const destinationsData: Record<string, {
     'west-india': {
         title: 'West India',
         heroImage: '/images/tours/dwarka-somnath.jpg', // Placeholder
+        thumbnailImages: ['/images/tours/dwarka-somnath.jpg', '/images/tours/khatu-shyam.jpg'],
         description: `
             <p><strong>West India</strong> offers a blend of devotion and desert. From the holy Dwarkadhish temple to the first Jyotirlinga at Somnath, it is a land of vibrant devotion.</p>
             <h3>Sacred Sites</h3>
@@ -98,6 +103,7 @@ export const destinationsData: Record<string, {
     'central-india': {
         title: 'Central India',
         heroImage: '/images/tours/mahakaleshwar.jpg', // Placeholder
+        thumbnailImages: ['/images/tours/mahakaleshwar.jpg', '/images/tours/omkareshwar.jpg'],
         description: `
             <p>The heart of Incredible India, <strong>Central India</strong> is known for its two powerful Jyotirlingas in Ujjain and Omkareshwar.</p>
             <h3>Mahakaleshwar</h3>
@@ -117,6 +123,7 @@ export const destinationsData: Record<string, {
     'international': {
         title: 'International Vedic Tours',
         heroImage: '/images/tours/kailash-mansarovar.jpg', // Placeholder
+        thumbnailImages: ['/images/tours/kailash-mansarovar.jpg', '/images/tours/angkor-wat.jpg'],
         description: `
             <p>Embark on spiritual journeys beyond borders. Our <strong>International</strong> packages cover renowned pilgrimages like Kailash Mansarovar and temples in neighboring countries.</p>
             <h3>Kailash Mansarovar</h3>

@@ -15,9 +15,11 @@ const FALLBACK_THUMBNAILS = [
 ];
 
 export default function YatraHero({ title, image, mobileImage, thumbnailImages }: YatraHeroProps) {
-    // Use provided thumbnails, fall back to default decorative images
-    const thumb1 = thumbnailImages?.[0] ?? FALLBACK_THUMBNAILS[0];
-    const thumb2 = thumbnailImages?.[1] ?? FALLBACK_THUMBNAILS[1];
+    // Use provided thumbnails, fall back to default decorative images if none provided
+    // If only one is provided, we use the fallback for the second one, or repeat the first one?
+    // Let's use the first one twice or fallback to ensure variety.
+    const thumb1 = thumbnailImages?.[0] || FALLBACK_THUMBNAILS[0];
+    const thumb2 = thumbnailImages?.[1] || (thumbnailImages?.[0] ? thumbnailImages?.[0] : FALLBACK_THUMBNAILS[1]);
 
     return (
         <section className="relative w-full h-[450px] md:h-[650px] overflow-hidden">
