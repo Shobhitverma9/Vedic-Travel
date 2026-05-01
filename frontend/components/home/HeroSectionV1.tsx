@@ -13,10 +13,17 @@ const bgImages = [
     '/images/cards/varanasi.png',
 ];
 
-export default function HeroSectionV1() {
+interface HeroSectionV1Props {
+    initialImages?: string[] | null;
+    initialHeroTours?: any[];
+}
+
+export default function HeroSectionV1({ initialImages, initialHeroTours }: HeroSectionV1Props) {
+
     const router = useRouter();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [images, setImages] = useState<string[]>(bgImages);
+    const [images, setImages] = useState<string[]>(initialImages || bgImages);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -114,6 +121,7 @@ export default function HeroSectionV1() {
     }, []);
 
     useEffect(() => {
+        if (initialImages) return;
         const fetchImages = async () => {
             try {
                 const data = await settingsService.getSetting('hero_slider_images');
@@ -125,7 +133,7 @@ export default function HeroSectionV1() {
             }
         };
         fetchImages();
-    }, []);
+    }, [initialImages]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -319,7 +327,8 @@ export default function HeroSectionV1() {
 
                 {/* Animation below search bar */}
                 <div className="w-full transform translate-y-4">
-                    <HeroCardsAnimation />
+                    <HeroCardsAnimation initialTours={initialHeroTours} />
+
                 </div>
             </div>
 

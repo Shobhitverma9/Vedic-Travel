@@ -1,30 +1,44 @@
-'use client';
-
 import HeroSectionV1 from '@/components/home/HeroSectionV1';
 import TrendingDestinations from '@/components/home/TrendingDestinations';
-// import HeroSectionV2 from '@/components/home/HeroSectionV2'; // Ready for swap
 import AllTimeFavorites from '@/components/home/AllTimeFavorites';
 import WhyChooseUs from '@/components/home/WhyChooseUs';
 import YatraSection from '@/components/home/YatraSection';
-
 import TalkToExpert from '@/components/home/TalkToExpert';
 import InstagramFeedSection from '@/components/home/InstagramFeedSection';
 import BlogSection from '@/components/home/BlogSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import VedicImprintsSection from '@/components/home/VedicImprintsSection';
-import SectionDivider from '@/components/ui/SectionDivider';
+import { apiServer } from '@/lib/api-server';
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch hero slider images
+  const heroImagesData = await apiServer.getSetting('hero_slider_images');
+  const initialHeroImages = heroImagesData?.value || null;
+
+  // Fetch hero tours (for the animation cards)
+  const heroToursData = await apiServer.getAllTours({ showInHero: true, isActive: true });
+  const initialHeroTours = heroToursData?.tours || [];
+
+  // Fetch trending tours
+  const trendingToursData = await apiServer.getAllTours({ 
+    isTrending: true, 
+    isActive: true, 
+    limit: 10, 
+    sortBy: 'trendingRank', 
+    order: 'asc' 
+  });
+  const initialTrendingTours = trendingToursData?.tours || [];
 
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      {/* Hero Section - Switch between V1 and V2 here */}
-      <HeroSectionV1 />
-      {/* <HeroSectionV2 /> */}
+      <HeroSectionV1 
+        initialImages={initialHeroImages} 
+        initialHeroTours={initialHeroTours} 
+      />
 
       {/* Trending Destinations */}
-      <TrendingDestinations />
+      <TrendingDestinations initialTours={initialTrendingTours} />
 
       {/* All Time Favorites */}
       <AllTimeFavorites />
@@ -52,3 +66,4 @@ export default function HomePage() {
     </div>
   );
 }
+

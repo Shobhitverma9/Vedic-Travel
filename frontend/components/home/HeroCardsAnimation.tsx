@@ -2,7 +2,12 @@ import { useTours } from '@/hooks/useTours';
 import Link from 'next/link';
 import TourCardSkeleton from '@/components/shared/TourCardSkeleton';
 
-export default function HeroCardsAnimation() {
+interface HeroCardsAnimationProps {
+    initialTours?: any[];
+}
+
+export default function HeroCardsAnimation({ initialTours }: HeroCardsAnimationProps) {
+
     // 1. Fetch specifically selected Hero tours
     const { data: heroData, isLoading: heroLoading } = useTours({ showInHero: true, isActive: true });
     
@@ -15,12 +20,16 @@ export default function HeroCardsAnimation() {
         order: 'asc'
     });
 
-    const isLoading = heroLoading || trendingLoading;
+    const isLoading = (initialTours && initialTours.length > 0) ? false : (heroLoading || trendingLoading);
 
-    // Determine which tours to show: Prefer showInHero, fallback to Trending
-    const rawTours = (heroData?.tours?.length > 0) 
-        ? heroData.tours 
-        : (trendingData?.tours || []);
+
+    // Determine which tours to show: Prefer initialTours, then showInHero, fallback to Trending
+    const rawTours = (initialTours && initialTours.length > 0)
+        ? initialTours
+        : (heroData?.tours?.length > 0) 
+            ? heroData.tours 
+            : (trendingData?.tours || []);
+
 
     // Map backend tours to card format
     const cards = rawTours.map((tour: any) => ({

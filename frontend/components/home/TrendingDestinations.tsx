@@ -5,7 +5,12 @@ import { useTours } from '@/hooks/useTours';
 import TourCard from '@/components/shared/TourCard';
 import TourCardSkeleton from '@/components/shared/TourCardSkeleton';
 
-export default function TrendingDestinations() {
+interface TrendingDestinationsProps {
+    initialTours?: any[];
+}
+
+export default function TrendingDestinations({ initialTours }: TrendingDestinationsProps) {
+
     const { data, isLoading: loading } = useTours({ 
         isTrending: true, 
         isActive: true, 
@@ -13,7 +18,9 @@ export default function TrendingDestinations() {
         sortBy: 'trendingRank', 
         order: 'asc' 
     });
-    const tours = data?.tours || [];
+    const tours = (initialTours && initialTours.length > 0) ? initialTours : (data?.tours || []);
+    const isLoading = (initialTours && initialTours.length > 0) ? false : loading;
+
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const [scrollPos, setScrollPos] = useState(0);
@@ -37,7 +44,8 @@ export default function TrendingDestinations() {
         return () => el.removeEventListener('scroll', handleScroll);
     }, [tours]); // re-run once tours load and the carousel is in the DOM
 
-    if (loading) {
+    if (isLoading) {
+
         return (
             <section className="py-16 bg-white overflow-hidden">
                 <div className="container mx-auto px-6 md:px-8">
