@@ -83,7 +83,7 @@ export default function AllTimeFavorites() {
                                         </h3>
                                         <div className="flex items-center text-sm text-gray-200 gap-3">
                                             <span>
-                                                {tour.duration} Nights / {tour.duration + 1} Days
+                                                {tour.duration - 1} Nights / {tour.duration} Days
                                             </span>
                                         </div>
                                     </div>

@@ -54,7 +54,7 @@ export default function PackageCard({ package: pkg, viewMode }: PackageCardProps
                     <div className="flex items-center text-xs text-gray-500 mb-3 space-x-3">
                         <div className="flex items-center">
                             <Clock className="w-4 h-4 mr-1 text-saffron" />
-                            {pkg.duration} Night / {pkg.duration + 1} Days
+                            {pkg.duration - 1} Night / {pkg.duration} Days
                         </div>
                     </div>
 
