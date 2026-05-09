@@ -1,6 +1,5 @@
 "use client";
 
-import Shell from "@/components/layout/Shell";
 import CorporateHero from "@/components/corporate/CorporateHero";
 import ProgramDetails from "@/components/corporate/ProgramDetails";
 import CorporateGallery from "@/components/corporate/CorporateGallery";
@@ -19,7 +18,6 @@ export default function CorporateWellnessPage() {
   });
 
   return (
-    <Shell>
       <div className="min-h-screen bg-cream selection:bg-saffron/30">
         {/* Progress Bar */}
         <motion.div
@@ -38,6 +36,5 @@ export default function CorporateWellnessPage() {
           <CorporateInquiryForm />
         </div>
       </div>
-    </Shell>
   );
 }

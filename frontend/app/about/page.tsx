@@ -14,7 +14,7 @@ export default function AboutPage() {
     return (
         <div className="bg-cream-light min-h-screen text-deepBlue">
             {/* Hero Section - More Dynamic & Branded */}
-            <section className="relative h-[75vh] flex items-center justify-center overflow-hidden">
+            <section className="relative h-[75vh] flex items-center justify-center overflow-hidden pt-28 md:pt-36">
                 <Image
                     src="/header-vt.png"
                     alt="Ancient Temple"

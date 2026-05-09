@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, ChevronRight, ChevronDown, MoveUp, MoveDown, Save, RefreshCcw, ExternalLink } from 'lucide-react';
 import { settingsService } from '@/services/settings.service';
+import { yatrasService } from '@/services/yatras.service';
 import Preloader from '@/components/shared/Preloader';
 import { MenuItem } from '@/data/menu';
 
@@ -21,16 +22,55 @@ export default function NavigationEditorPage() {
     const fetchMenu = async () => {
         setLoading(true);
         try {
-            const data = await settingsService.getSetting('header_navigation');
+            const [data, yatrasData] = await Promise.all([
+                settingsService.getSetting('header_navigation'),
+                yatrasService.getAllYatras({ isActive: true })
+            ]);
+
+            let baseMenu: MenuItem[] = [];
             if (data && Array.isArray(data.value)) {
-                setMenuItems(data.value);
+                baseMenu = data.value;
             }
+
+            // Merge dynamic yatras into the menu structure for visibility in admin
+            const mergedMenu = mergeYatrasIntoMenu(baseMenu, yatrasData || []);
+            setMenuItems(mergedMenu);
         } catch (error) {
             console.error('Failed to fetch menu:', error);
             setMessage({ type: 'error', text: 'Failed to load navigation menu.' });
         } finally {
             setLoading(false);
         }
+    };
+
+    const mergeYatrasIntoMenu = (menu: MenuItem[], yatras: any[]) => {
+        const newMenu = JSON.parse(JSON.stringify(menu)) as MenuItem[];
+        const toursMenu = newMenu.find(item => item.label === 'Tours & Packages');
+        if (!toursMenu || !toursMenu.children) return newMenu;
+
+        yatras.forEach(yatra => {
+            const categoryLabel = (yatra.category || 'Pilgrimage Yatra Packages').trim();
+            const yatraItem: MenuItem = { label: yatra.title, href: `/yatras/${yatra.slug}` };
+
+            let categoryGroup = toursMenu.children?.find(child => child.label.trim().toLowerCase() === categoryLabel.toLowerCase());
+
+            if (categoryGroup) {
+                if (!categoryGroup.children) categoryGroup.children = [];
+                
+                const exists = categoryGroup.children.some(child => {
+                    if (child.href === yatraItem.href) return true;
+                    if (child.href && yatra.slug && child.href.split('/').pop() === yatra.slug) return true;
+                    if (child.label.trim().toLowerCase() === yatraItem.label.trim().toLowerCase()) return true;
+                    return false;
+                });
+
+                if (!exists) {
+                    categoryGroup.children.push(yatraItem);
+                }
+            }
+        });
+
+        return newMenu;
     };
 
     const handleSave = async () => {

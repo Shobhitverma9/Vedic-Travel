@@ -129,22 +129,38 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
         // Deep copy menu items so we don't mutate the original array
         const baseMenu = JSON.parse(JSON.stringify(dynamicMenu)) as MenuItem[];
 
-        // Find "Tours & Packages" main menu item
-        const toursMenu = dynamicMenu.find(item => item.label === 'Tours & Packages');
-        if (!toursMenu || !toursMenu.children) return dynamicMenu;
+        // Find "Tours & Packages" main menu item in the COPIED menu
+        const toursMenu = baseMenu.find(item => item.label === 'Tours & Packages');
+        if (!toursMenu || !toursMenu.children) return baseMenu;
 
         yatras.forEach(yatra => {
             const categoryLabel = (yatra.category || 'Pilgrimage Yatra Packages').trim();
             const yatraItem: MenuItem = { label: yatra.title, href: `/yatras/${yatra.slug}` };
 
             // Find the matching category group inside "Tours & Packages"
-            let categoryGroup = toursMenu.children?.find(child => child.label.trim() === categoryLabel);
+            let categoryGroup = toursMenu.children?.find(child => child.label.trim().toLowerCase() === categoryLabel.toLowerCase());
 
-            // If category doesn't exist, we could technically create it, but for now we expect them to match
             if (categoryGroup) {
                 if (!categoryGroup.children) categoryGroup.children = [];
-                // Check if already exists to prevent duplicates (though slug should be unique)
-                if (!categoryGroup.children.some(child => child.href === yatraItem.href)) {
+                
+                // Robust duplicate detection to prevent items showing twice
+                const alreadyExists = categoryGroup.children.some(child => {
+                    // 1. Exact href match
+                    if (child.href === yatraItem.href) return true;
+                    
+                    // 2. Slug match (handles /tours/ vs /yatras/ vs /package/ prefixes)
+                    if (child.href && yatra.slug) {
+                        const childSlug = child.href.split('/').pop();
+                        if (childSlug === yatra.slug) return true;
+                    }
+                    
+                    // 3. Label match (case-insensitive, trimmed)
+                    if (child.label.trim().toLowerCase() === yatraItem.label.trim().toLowerCase()) return true;
+
+                    return false;
+                });
+
+                if (!alreadyExists) {
                     categoryGroup.children.push(yatraItem);
                 }
             }
@@ -152,6 +168,7 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
 
         return baseMenu;
     };
+
 
     const currentMenuItems = getDynamicMenuItems();
 

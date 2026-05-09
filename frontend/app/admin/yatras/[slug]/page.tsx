@@ -41,7 +41,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
             try {
                 // Fetch packages (non-blocking - failure here should not stop yatra loading)
                 try {
-                    const toursData = await toursService.getAllTours({ limit: 200, isActive: 'all' });
+                    const toursData = await toursService.getAllTours({ limit: 1000, isActive: 'all' });
                     setAvailablePackages(toursData.tours || []);
                 } catch (toursError) {
                     console.warn('Could not load packages, continuing anyway:', toursError);
@@ -65,7 +65,7 @@ export default function YatraEditorPage({ params }: { params: Promise<{ slug: st
                         isActive: yatra.isActive,
                         isVedicImprint: yatra.isVedicImprint || false,
                         rank: yatra.rank || 0,
-                        packages: yatra.packages ? yatra.packages.map((p: any) => typeof p === 'string' ? p : p._id) : [],
+                        packages: yatra.packages ? yatra.packages.filter((p: any) => p !== null).map((p: any) => typeof p === 'string' ? p : p._id) : [],
                         faqs: yatra.faqs || [],
                         thumbnailImages: yatra.thumbnailImages || [],
                     });
