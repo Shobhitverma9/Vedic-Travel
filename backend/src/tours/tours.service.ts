@@ -176,6 +176,9 @@ export class ToursService {
     }
 
     async update(id: string, updateTourDto: UpdateTourDto) {
+        // Get the current state before update to compare category
+        const oldTour = await this.tourModel.findById(id).select('category').lean();
+
         const tour = await this.tourModel.findByIdAndUpdate(id, updateTourDto, {
             new: true,
         });
@@ -183,15 +186,17 @@ export class ToursService {
             throw new NotFoundException('Tour not found');
         }
 
-        // Manage Yatra association if category was updated
-        if ('category' in updateTourDto) {
-            // Remove from all yatras first
-            await this.yatraModel.updateMany(
-                { packages: tour._id },
-                { $pull: { packages: tour._id as any } }
-            );
+        // Manage Yatra association ONLY if category actually changed
+        if ('category' in updateTourDto && updateTourDto.category !== oldTour?.category) {
+            // Only pull from the PREVIOUS yatra if it was a valid ObjectId
+            if (oldTour?.category && oldTour.category.match(/^[0-9a-fA-F]{24}$/)) {
+                await this.yatraModel.findByIdAndUpdate(
+                    oldTour.category,
+                    { $pull: { packages: tour._id as any } }
+                );
+            }
 
-            // Add to new yatra if valid
+            // Add to the NEW yatra if it is a valid ObjectId
             if (updateTourDto.category && updateTourDto.category.match(/^[0-9a-fA-F]{24}$/)) {
                 await this.yatraModel.findByIdAndUpdate(
                     updateTourDto.category,
