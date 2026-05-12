@@ -237,7 +237,7 @@ export default function NavigationEditorPage() {
                         </div>
 
                         <div className="flex items-center gap-1">
-                            <label className="flex items-center gap-1 mr-4 cursor-pointer">
+                            <label className="flex items-center gap-1 mr-2 cursor-pointer">
                                 <input 
                                     type="checkbox" 
                                     checked={item.mobileOnly || false} 
@@ -245,6 +245,15 @@ export default function NavigationEditorPage() {
                                     className="w-3.5 h-3.5 rounded text-saffron"
                                 />
                                 <span className="text-[10px] uppercase font-bold text-gray-400">Mobile Only</span>
+                            </label>
+                            <label className="flex items-center gap-1 mr-4 cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    checked={item.isHidden || false} 
+                                    onChange={(e) => updateItem(currentPath, 'isHidden', e.target.checked)}
+                                    className="w-3.5 h-3.5 rounded text-saffron"
+                                />
+                                <span className="text-[10px] uppercase font-bold text-gray-400">Hidden</span>
                             </label>
 
                             <div className="flex border-l pl-2 gap-1">

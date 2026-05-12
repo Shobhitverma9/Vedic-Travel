@@ -106,4 +106,9 @@ export const toursService = {
         const response = await apiClient.delete(`/tours/${id}`);
         return response.data;
     },
+
+    reorderTours: async (updates: { id: string; trendingRank: number }[]) => {
+        const response = await apiClient.put('/tours/reorder', { updates });
+        return response.data;
+    },
 };

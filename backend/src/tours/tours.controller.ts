@@ -62,6 +62,17 @@ export class ToursController {
         return tour;
     }
 
+    @Put('reorder')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Reorder tours (Admin only)' })
+    async reorder(@Body('updates') updates: { id: string; trendingRank: number }[]) {
+        const result = await this.toursService.reorderTours(updates);
+        await this.cacheManager.clear(); // Invalidate all cache
+        return result;
+    }
+
     @Put(':id')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(UserRole.ADMIN)

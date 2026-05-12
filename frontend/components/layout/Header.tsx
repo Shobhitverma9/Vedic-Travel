@@ -95,10 +95,11 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
     const renderDesktopSubMenu = (items: MenuItem[], depth = 0) => {
         const isMain = depth === 0;
         const isL1 = depth === 1;
+        const hasChildren = items.some(item => item.children && item.children.length > 0);
 
         return (
             <div className={`absolute ${isMain ? 'top-full left-0 min-w-[260px] border-t-4 border-saffron translate-y-2 group-hover/main:opacity-100 group-hover/main:visible group-hover/main:translate-y-0' : `left-full top-0 min-w-[280px] ml-1 translate-x-2 ${isL1 ? 'group-hover/l1:opacity-100 group-hover/l1:visible group-hover/l1:translate-x-0' : 'group-hover/l2:opacity-100 group-hover/l2:visible group-hover/l2:translate-x-0'}`} bg-white shadow-2xl rounded-lg opacity-0 invisible transition-all duration-300 transform z-50`}>
-                <div className="py-2">
+                <div className={`py-2 ${!hasChildren ? 'max-h-[65vh] overflow-y-auto custom-scrollbar' : ''}`}>
                     {items.map((child, idx) => (
                         <div key={idx} className={`relative ${isMain ? 'group/l1' : isL1 ? 'group/l2' : 'group/l3'}`}>
                             {child.children ? (
@@ -129,9 +130,20 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
         // Deep copy menu items so we don't mutate the original array
         const baseMenu = JSON.parse(JSON.stringify(dynamicMenu)) as MenuItem[];
 
+        const filterHidden = (items: MenuItem[]): MenuItem[] => {
+            return items.filter(item => !item.isHidden).map(item => {
+                if (item.children) {
+                    item.children = filterHidden(item.children);
+                }
+                return item;
+            });
+        };
+
+        const visibleBaseMenu = filterHidden(baseMenu);
+
         // Find "Tours & Packages" main menu item in the COPIED menu
-        const toursMenu = baseMenu.find(item => item.label === 'Tours & Packages');
-        if (!toursMenu || !toursMenu.children) return baseMenu;
+        const toursMenu = visibleBaseMenu.find(item => item.label === 'Tours & Packages');
+        if (!toursMenu || !toursMenu.children) return visibleBaseMenu;
 
         yatras.forEach(yatra => {
             const categoryLabel = (yatra.category || 'Pilgrimage Yatra Packages').trim();
@@ -166,7 +178,7 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
             }
         });
 
-        return baseMenu;
+        return visibleBaseMenu;
     };
 
 

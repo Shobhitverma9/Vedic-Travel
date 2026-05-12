@@ -7,6 +7,7 @@ import { toursService } from '@/services/tours.service';
 export default function AdminToursList() {
     const [tours, setTours] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         fetchTours();
@@ -22,10 +23,10 @@ export default function AdminToursList() {
             if (!aActive && bActive) return 1;
             
             // Second Priority: Trending Rank (for items with same visibility)
-            // Smaller rank numbers (0, 1, 2, 3...) come first
+            // Smaller rank numbers (1, 2, 3...) come first
             // Undefined or null ranks come last in their section
-            const aRank = (a.trendingRank !== undefined && a.trendingRank !== null) ? a.trendingRank : 999999;
-            const bRank = (b.trendingRank !== undefined && b.trendingRank !== null) ? b.trendingRank : 999999;
+            const aRank = (typeof a.trendingRank === 'number') ? a.trendingRank : 999999;
+            const bRank = (typeof b.trendingRank === 'number') ? b.trendingRank : 999999;
             
             if (aRank !== bRank) return aRank - bRank;
             
@@ -43,6 +44,51 @@ export default function AdminToursList() {
             console.error('Error fetching tours:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDragStart = (e: React.DragEvent, index: number) => {
+        setDraggedIndex(index);
+        e.dataTransfer.effectAllowed = "move";
+        // Required for Firefox
+        if (e.dataTransfer.setData) {
+            e.dataTransfer.setData("text/html", "");
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent, index: number) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+    };
+
+    const handleDrop = async (e: React.DragEvent, index: number) => {
+        e.preventDefault();
+        if (draggedIndex === null || draggedIndex === index) {
+            setDraggedIndex(null);
+            return;
+        }
+
+        const newTours = [...tours];
+        const draggedItem = newTours[draggedIndex];
+        newTours.splice(draggedIndex, 1);
+        newTours.splice(index, 0, draggedItem);
+
+        // Assign new ranks starting from 1
+        const updatedTours = newTours.map((t, i) => ({
+            ...t,
+            trendingRank: i + 1
+        }));
+
+        setTours(updatedTours);
+        setDraggedIndex(null);
+
+        try {
+            const updates = updatedTours.map(t => ({ id: t._id, trendingRank: t.trendingRank }));
+            await toursService.reorderTours(updates);
+        } catch (error) {
+            console.error('Failed to reorder tours:', error);
+            alert('Failed to save new order');
+            fetchTours(); // Revert on failure
         }
     };
 
@@ -152,6 +198,7 @@ export default function AdminToursList() {
                     <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
+                            <th className="px-6 py-3 w-10"></th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
@@ -161,8 +208,20 @@ export default function AdminToursList() {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {tours.map((tour: any) => (
-                            <tr key={tour._id} className="hover:bg-gray-50">
+                        {tours.map((tour: any, index: number) => (
+                            <tr 
+                                key={tour._id} 
+                                className={`hover:bg-gray-50 transition-colors ${draggedIndex === index ? 'bg-indigo-50/50 opacity-50' : ''}`}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, index)}
+                                onDragOver={(e) => handleDragOver(e, index)}
+                                onDrop={(e) => handleDrop(e, index)}
+                            >
+                                <td className="px-6 py-4 whitespace-nowrap cursor-move text-gray-400 hover:text-gray-600 transition-colors" title="Drag to reorder">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+                                    </svg>
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="h-10 w-16 rounded overflow-hidden bg-gray-100 relative">
                                         {tour.images && tour.images[0] ? (

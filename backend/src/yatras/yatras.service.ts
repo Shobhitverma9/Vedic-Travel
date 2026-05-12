@@ -2,11 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Yatra, YatraDocument } from './schemas/yatra.schema';
+import { Tour, TourDocument } from '../tours/schemas/tour.schema';
 
 @Injectable()
 export class YatrasService {
     constructor(
         @InjectModel(Yatra.name) private yatraModel: Model<YatraDocument>,
+        @InjectModel(Tour.name) private tourModel: Model<TourDocument>,
     ) { }
 
     async create(createYatraDto: any): Promise<Yatra> {
@@ -24,6 +26,15 @@ export class YatrasService {
 
         const createdYatra = new this.yatraModel(createYatraDto);
         const saved = await createdYatra.save();
+
+        // Ensure associated tours have their category updated
+        if (saved.packages && saved.packages.length > 0) {
+            await this.tourModel.updateMany(
+                { _id: { $in: saved.packages } },
+                { $set: { category: String(saved._id) } }
+            );
+        }
+
         console.log('[YatraCreate] packages saved:', saved.packages);
         return saved;
     }
@@ -131,6 +142,9 @@ export class YatrasService {
             });
         }
 
+        // Get old yatra to find which packages were removed
+        const oldYatra = await this.yatraModel.findById(id).exec();
+
         const updatedYatra = await this.yatraModel
             .findByIdAndUpdate(id, updateYatraDto, { new: true })
             .populate('packages')
@@ -139,6 +153,30 @@ export class YatrasService {
         if (!updatedYatra) {
             throw new NotFoundException(`Yatra with ID ${id} not found`);
         }
+
+        // Sync tour categories if packages list changed
+        if (updateYatraDto.packages) {
+            // 1. Update category for current packages
+            await this.tourModel.updateMany(
+                { _id: { $in: updateYatraDto.packages } },
+                { $set: { category: String(id) } }
+            );
+
+            // 2. Clear category for removed packages (only if they were pointing to this yatra)
+            if (oldYatra && oldYatra.packages) {
+                const removedPackageIds = oldYatra.packages.filter(
+                    pkgId => !updateYatraDto.packages.some(newId => String(newId) === String(pkgId))
+                );
+
+                if (removedPackageIds.length > 0) {
+                    await this.tourModel.updateMany(
+                        { _id: { $in: removedPackageIds }, category: String(id) },
+                        { $set: { category: '' } }
+                    );
+                }
+            }
+        }
+
         return updatedYatra;
     }
 

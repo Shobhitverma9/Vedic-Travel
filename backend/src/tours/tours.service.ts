@@ -186,17 +186,20 @@ export class ToursService {
             throw new NotFoundException('Tour not found');
         }
 
-        // Manage Yatra association ONLY if category actually changed
-        if ('category' in updateTourDto && updateTourDto.category !== oldTour?.category) {
-            // Only pull from the PREVIOUS yatra if it was a valid ObjectId
-            if (oldTour?.category && oldTour.category.match(/^[0-9a-fA-F]{24}$/)) {
-                await this.yatraModel.findByIdAndUpdate(
-                    oldTour.category,
-                    { $pull: { packages: tour._id as any } }
-                );
+        // Yatra association logic
+        if ('category' in updateTourDto) {
+            // Only pull from the PREVIOUS yatra if it was a valid ObjectId AND it changed
+            if (updateTourDto.category !== oldTour?.category) {
+                if (oldTour?.category && oldTour.category.match(/^[0-9a-fA-F]{24}$/)) {
+                    await this.yatraModel.findByIdAndUpdate(
+                        oldTour.category,
+                        { $pull: { packages: tour._id as any } }
+                    );
+                }
             }
 
-            // Add to the NEW yatra if it is a valid ObjectId
+            // Ensure it is in the NEW/CURRENT yatra if it's a valid ObjectId
+            // We call $addToSet even if it hasn't changed to ensure synchronization
             if (updateTourDto.category && updateTourDto.category.match(/^[0-9a-fA-F]{24}$/)) {
                 await this.yatraModel.findByIdAndUpdate(
                     updateTourDto.category,
@@ -225,6 +228,20 @@ export class ToursService {
         );
 
         return { message: 'Tour deleted successfully' };
+    }
+
+    async reorderTours(updates: { id: string; trendingRank: number }[]) {
+        const bulkOps = updates.map(update => ({
+            updateOne: {
+                filter: { _id: update.id },
+                update: { $set: { trendingRank: update.trendingRank } }
+            }
+        }));
+
+        if (bulkOps.length > 0) {
+            await this.tourModel.bulkWrite(bulkOps);
+        }
+        return { message: 'Tours reordered successfully' };
     }
 
     private generateSlug(title: string): string {
