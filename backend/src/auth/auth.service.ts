@@ -13,6 +13,7 @@ import { LoginWithOTPDto } from './dto/login-otp.dto';
 import { OTPService } from './services/otp.service';
 import { OTPType, OTPPurpose } from './schemas/otp.schema';
 import { EmailService } from '../email/email.service';
+import { WhatsappService } from '../notifications/whatsapp.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
         private jwtService: JwtService,
         private otpService: OTPService,
         private emailService: EmailService,
+        private whatsappService: WhatsappService,
     ) { }
 
     async register(registerDto: RegisterDto) {
@@ -146,11 +148,14 @@ export class AuthService {
         // Cleanup OTPs
         await this.otpService.cleanupAfterRegistration(email, phone);
 
-        // Send welcome email
+        // Send welcome email & WhatsApp
         try {
             await this.emailService.sendWelcomeEmail(email, name);
+            if (phone) {
+                await this.whatsappService.sendWelcome(phone, name);
+            }
         } catch (error) {
-            // Don't fail registration if welcome email fails
+            // Don't fail registration if welcome fails
         }
 
         // Generate token
@@ -327,11 +332,14 @@ export class AuthService {
                     verifiedAt: new Date(),
                 });
 
-                // Send welcome email
+                // Send welcome email & WhatsApp
                 try {
                     await this.emailService.sendWelcomeEmail(email, displayName);
+                    if (user.phone) {
+                        await this.whatsappService.sendWelcome(user.phone, displayName);
+                    }
                 } catch (error) {
-                    // Don't fail if welcome email fails
+                    // Don't fail if welcome fails
                 }
             }
         }

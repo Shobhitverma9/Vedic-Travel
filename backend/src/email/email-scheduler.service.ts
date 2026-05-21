@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Booking, BookingDocument, BookingStatus, PaymentStatus } from '../bookings/schemas/booking.schema';
 import { Tour, TourDocument } from '../tours/schemas/tour.schema';
 import { EmailService } from './email.service';
+import { WhatsappService } from '../notifications/whatsapp.service';
 
 @Injectable()
 export class EmailSchedulerService {
@@ -14,6 +15,7 @@ export class EmailSchedulerService {
         @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
         @InjectModel(Tour.name) private tourModel: Model<TourDocument>,
         private emailService: EmailService,
+        private whatsappService: WhatsappService,
     ) { }
 
     /**
@@ -39,8 +41,10 @@ export class EmailSchedulerService {
         for (const booking of upcomingBookings) {
             try {
                 const recipientEmail = booking.email || (booking.user as any)?.email;
+                const recipientPhone = booking.phone || (booking.user as any)?.phone;
                 const billingName = (booking as any).billingAddress ? `${(booking as any).billingAddress.firstName} ${(booking as any).billingAddress.lastName}` : '';
                 const recipientName = billingName || (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
+                const travelDateFormatted = new Date(booking.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
 
                 if (recipientEmail) {
                     await this.emailService.sendTripReminderEmail(
@@ -49,11 +53,24 @@ export class EmailSchedulerService {
                         {
                             bookingReference: booking.bookingReference,
                             tourName: (booking.tour as any)?.title || 'Your Yatra',
-                            travelDate: new Date(booking.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }),
+                            travelDate: travelDateFormatted,
                             numberOfTravelers: booking.numberOfTravelers,
                         }
                     );
-                    this.logger.log(`Sent trip reminder to ${recipientEmail} for booking ${booking.bookingReference}`);
+                    this.logger.log(`Sent trip reminder email to ${recipientEmail} for booking ${booking.bookingReference}`);
+                }
+
+                if (recipientPhone) {
+                    await this.whatsappService.sendTripReminder(
+                        recipientPhone,
+                        recipientName,
+                        {
+                            bookingReference: booking.bookingReference,
+                            tourName: (booking.tour as any)?.title || 'Your Yatra',
+                            travelDate: travelDateFormatted,
+                        }
+                    );
+                    this.logger.log(`Sent trip reminder WhatsApp to ${recipientPhone} for booking ${booking.bookingReference}`);
                 }
             } catch (error) {
                 this.logger.error(`Failed to send trip reminder for booking ${booking.bookingReference}:`, error);
@@ -83,6 +100,7 @@ export class EmailSchedulerService {
         for (const booking of pendingBookings) {
             try {
                 const recipientEmail = booking.email || (booking.user as any)?.email;
+                const recipientPhone = booking.phone || (booking.user as any)?.phone;
                 const billingName = (booking as any).billingAddress ? `${(booking as any).billingAddress.firstName} ${(booking as any).billingAddress.lastName}` : '';
                 const recipientName = billingName || (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
 
@@ -96,7 +114,20 @@ export class EmailSchedulerService {
                             totalAmount: booking.totalAmount,
                         }
                     );
-                    this.logger.log(`Sent pending payment reminder to ${recipientEmail} for booking ${booking.bookingReference}`);
+                    this.logger.log(`Sent pending payment reminder email to ${recipientEmail} for booking ${booking.bookingReference}`);
+                }
+
+                if (recipientPhone) {
+                    await this.whatsappService.sendPendingPaymentReminder(
+                        recipientPhone,
+                        recipientName,
+                        {
+                            bookingReference: booking.bookingReference,
+                            tourName: (booking.tour as any)?.title || 'Your Yatra',
+                            totalAmount: booking.totalAmount,
+                        }
+                    );
+                    this.logger.log(`Sent pending payment reminder WhatsApp to ${recipientPhone} for booking ${booking.bookingReference}`);
                 }
             } catch (error) {
                 this.logger.error(`Failed to send pending payment reminder for booking ${booking.bookingReference}:`, error);
@@ -127,6 +158,7 @@ export class EmailSchedulerService {
         for (const booking of completedBookings) {
             try {
                 const recipientEmail = booking.email || (booking.user as any)?.email;
+                const recipientPhone = booking.phone || (booking.user as any)?.phone;
                 const billingName = (booking as any).billingAddress ? `${(booking as any).billingAddress.firstName} ${(booking as any).billingAddress.lastName}` : '';
                 const recipientName = billingName || (booking.user as any)?.name || booking.travelerDetails?.[0]?.name || 'Valued Guest';
 
@@ -139,7 +171,19 @@ export class EmailSchedulerService {
                             tourName: (booking.tour as any)?.title || 'Your Yatra',
                         }
                     );
-                    this.logger.log(`Sent feedback request to ${recipientEmail} for booking ${booking.bookingReference}`);
+                    this.logger.log(`Sent feedback request email to ${recipientEmail} for booking ${booking.bookingReference}`);
+                }
+
+                if (recipientPhone) {
+                    await this.whatsappService.sendFeedbackRequest(
+                        recipientPhone,
+                        recipientName,
+                        {
+                            bookingReference: booking.bookingReference,
+                            tourName: (booking.tour as any)?.title || 'Your Yatra',
+                        }
+                    );
+                    this.logger.log(`Sent feedback request WhatsApp to ${recipientPhone} for booking ${booking.bookingReference}`);
                 }
             } catch (error) {
                 this.logger.error(`Failed to send feedback request for booking ${booking.bookingReference}:`, error);

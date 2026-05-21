@@ -149,18 +149,19 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 4px;
+    height: 4px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 10px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
-    transition: background 0.3s ease;
+    border-radius: 10px;
+    transition: all 0.3s ease;
   }
 
   .custom-scrollbar:hover::-webkit-scrollbar-thumb {

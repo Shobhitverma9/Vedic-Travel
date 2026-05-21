@@ -99,12 +99,12 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
 
         return (
             <div className={`absolute ${isMain ? 'top-full left-0 min-w-[260px] border-t-4 border-saffron translate-y-2 group-hover/main:opacity-100 group-hover/main:visible group-hover/main:translate-y-0' : `left-full top-0 min-w-[280px] ml-1 translate-x-2 ${isL1 ? 'group-hover/l1:opacity-100 group-hover/l1:visible group-hover/l1:translate-x-0' : 'group-hover/l2:opacity-100 group-hover/l2:visible group-hover/l2:translate-x-0'}`} bg-white shadow-2xl rounded-lg opacity-0 invisible transition-all duration-300 transform z-50`}>
-                <div className={`py-2 ${!hasChildren ? 'max-h-[65vh] overflow-y-auto custom-scrollbar' : ''}`}>
+                <div className={`py-2 ${!hasChildren ? 'max-h-[50vh] overflow-y-auto custom-scrollbar' : ''}`}>
                     {items.map((child, idx) => (
                         <div key={idx} className={`relative ${isMain ? 'group/l1' : isL1 ? 'group/l2' : 'group/l3'}`}>
                             {child.children ? (
                                 <>
-                                    <div className={`px-4 py-2.5 hover:bg-orange-50 hover:text-saffron flex items-center justify-between cursor-pointer ${isMain ? 'text-deepBlue font-semibold' : 'text-sm text-gray-700 font-medium'}`}>
+                                    <div className={`px-4 py-1.5 hover:bg-orange-50 hover:text-saffron flex items-center justify-between cursor-pointer ${isMain ? 'text-deepBlue font-semibold' : 'text-sm text-gray-700 font-medium'}`}>
                                         <span className="whitespace-nowrap pr-6">{child.label}</span>
                                         <ChevronRight size={14} className="flex-shrink-0 text-gray-400" />
                                     </div>
@@ -113,7 +113,7 @@ export default function Header({ isEmbedded = false }: { isEmbedded?: boolean })
                             ) : (
                                 <Link
                                     href={child.href || '#'}
-                                    className={`block px-4 py-2.5 hover:bg-orange-50 hover:text-saffron transition-colors whitespace-nowrap ${isMain ? 'text-deepBlue font-medium' : 'text-sm text-gray-700'}`}
+                                    className={`block px-4 py-1.5 hover:bg-orange-50 hover:text-saffron transition-colors whitespace-nowrap ${isMain ? 'text-deepBlue font-medium' : 'text-sm text-gray-700'}`}
                                 >
                                     {child.label}
                                 </Link>

@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Inquiry, InquiryDocument } from './schemas/inquiry.schema';
 import { CreateInquiryDto } from './dto/create-inquiry.dto';
 import { EmailService } from '../email/email.service';
+import { WhatsappService } from '../notifications/whatsapp.service';
 import axios from 'axios';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class InquiriesService {
         @InjectModel(Inquiry.name) private inquiryModel: Model<InquiryDocument>,
         private emailService: EmailService,
         private configService: ConfigService,
+        private whatsappService: WhatsappService,
     ) { }
 
     private async verifyRecaptcha(token: string): Promise<boolean> {
@@ -74,6 +76,23 @@ export class InquiriesService {
                 message: savedInquiry.message,
             }
         ).catch(err => console.error('Failed to send admin notification email:', err));
+
+        // Send WhatsApp notifications (asynchronously)
+        if (savedInquiry.mobile) {
+            this.whatsappService.sendInquiryAcknowledgement(
+                savedInquiry.mobile,
+                savedInquiry.name,
+                { tourName: savedInquiry.tourName || savedInquiry.yatraName || 'Your Yatra' }
+            ).catch(err => console.error('Failed to send inquiry acknowledgement WhatsApp:', err));
+        }
+
+        // Send admin inquiry alert via inquiry_acknowledgement template
+        const adminWhatsappNumber = this.configService.get<string>('ADMIN_WHATSAPP_NUMBER') || '918587800062';
+        this.whatsappService.sendInquiryAcknowledgement(
+            adminWhatsappNumber,
+            `Admin (${savedInquiry.name})`,
+            { tourName: savedInquiry.tourName || savedInquiry.yatraName || 'New Inquiry' }
+        ).catch(err => console.error('Failed to send admin WhatsApp inquiry alert:', err));
 
         return savedInquiry;
     }

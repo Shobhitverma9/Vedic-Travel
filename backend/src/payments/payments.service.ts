@@ -436,6 +436,29 @@ export class PaymentsService {
                         paymentId: mihpayid,
                     });
                 }
+
+                // 4. Send Customer Booking Confirmation via WhatsApp
+                if (recipientPhone) {
+                    await this.whatsappService.sendBookingConfirmation(recipientPhone, recipientName, {
+                        bookingReference: (updatedBooking as any).bookingReference,
+                        tourName: tour?.title || 'Your Yatra',
+                        travelDate: travelDateFormatted,
+                        numberOfTravelers: (updatedBooking as any).numberOfTravelers,
+                        totalAmount: (updatedBooking as any).totalAmount,
+                        paidAmount: (updatedBooking as any).paidAmount,
+                    }).catch(err => console.error('[PaymentsService] Failed to send customer booking confirmation WhatsApp:', err));
+                }
+
+                // 5. Send Admin Booking Confirmed Alert via WhatsApp (using booking_confirmation template)
+                const adminWhatsappNumber = this.configService.get<string>('ADMIN_WHATSAPP_NUMBER') || '918587800062';
+                await this.whatsappService.sendBookingConfirmation(adminWhatsappNumber, `Admin (${recipientName})`, {
+                    bookingReference: (updatedBooking as any).bookingReference,
+                    tourName: tour?.title || 'Your Yatra',
+                    travelDate: travelDateFormatted,
+                    numberOfTravelers: (updatedBooking as any).numberOfTravelers,
+                    totalAmount: (updatedBooking as any).totalAmount,
+                    paidAmount: (updatedBooking as any).paidAmount,
+                }).catch(err => console.error('[PaymentsService] Failed to send Admin WhatsApp booking_confirmation:', err));
             } catch (emailErr) {
                 console.error('[PaymentsService] Failed to send notifications:', emailErr);
             }
@@ -452,6 +475,8 @@ export class PaymentsService {
                     : '';
                 const recipientName = billingName || firstname || (updatedBooking as any).user?.name
                     || (updatedBooking as any).travelerDetails?.[0]?.name || 'Valued Guest';
+                const recipientPhone = (updatedBooking as any).phone || (updatedBooking as any).user?.phone || '';
+
                 if (recipientEmail) {
                     await this.emailService.sendPaymentFailureEmail(recipientEmail, recipientName, {
                         bookingReference: (updatedBooking as any).bookingReference,
@@ -460,8 +485,16 @@ export class PaymentsService {
                         transactionId: txnid,
                     });
                 }
+
+                if (recipientPhone) {
+                    await this.whatsappService.sendPaymentFailure(recipientPhone, recipientName, {
+                        bookingReference: (updatedBooking as any).bookingReference,
+                        tourName: tour?.title || 'Your Yatra',
+                        totalAmount: (updatedBooking as any).totalAmount,
+                    }).catch(err => console.error('[PaymentsService] Failed to send payment failure WhatsApp:', err));
+                }
             } catch (emailErr) {
-                console.error('[PaymentsService] Payment failure email error:', emailErr);
+                console.error('[PaymentsService] Payment failure notification error:', emailErr);
             }
         }
 

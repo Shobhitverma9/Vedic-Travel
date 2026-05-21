@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OTP, OTPDocument, OTPType, OTPPurpose } from '../schemas/otp.schema';
 import { EmailService } from '../../email/email.service';
+import { WhatsappService } from '../../notifications/whatsapp.service';
 
 @Injectable()
 export class OTPService {
@@ -17,6 +18,7 @@ export class OTPService {
     constructor(
         @InjectModel(OTP.name) private otpModel: Model<OTPDocument>,
         private emailService: EmailService,
+        private whatsappService: WhatsappService,
     ) { }
 
     /**
@@ -131,11 +133,17 @@ export class OTPService {
             expiresAt,
         });
 
-        // Mock SMS - log to console
-        this.logger.log(`[MOCK SMS] Phone: ${phone}`);
-        this.logger.log(`[MOCK SMS] OTP Code: ${otpCode}`);
-        this.logger.log(`[MOCK SMS] Purpose: ${purpose}`);
-        this.logger.log(`[MOCK SMS] Message: Your VedicTravel OTP is ${otpCode}. Valid for ${this.OTP_EXPIRY_MINUTES} minutes.`);
+        // Send real WhatsApp message via Timespanel
+        try {
+            await this.whatsappService.sendOTP(phone, otpCode, 'Valued Guest', purpose);
+        } catch (error) {
+            this.logger.error(`Failed to send WhatsApp OTP to ${phone}:`, error);
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            this.logger.log(`[DEBUG] Phone OTP Code for ${phone}: ${otpCode}`);
+        }
+        this.logger.log(`OTP sent to phone via WhatsApp: ${phone} for purpose: ${purpose}`);
 
         return {
             success: true,
