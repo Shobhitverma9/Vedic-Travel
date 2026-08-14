@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Dancing_Script } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Shell from "@/components/layout/Shell";
 import { Toaster } from 'sonner';
@@ -48,6 +49,20 @@ export default function RootLayout({
           <Toaster richColors position="top-center" />
           <WhatsAppWidget />
         </QueryProvider>
+        
+        {/* Google tag (gtag.js) */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-6483KQJC54"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-6483KQJC54');
+          `}
+        </Script>
       </body>
     </html>
   );
