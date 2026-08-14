@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { Tour, TourDocument } from '../tours/schemas/tour.schema';
 import { Booking, BookingDocument, BookingStatus, PaymentStatus } from '../bookings/schemas/booking.schema';
+import { Inquiry, InquiryDocument } from '../inquiries/schemas/inquiry.schema';
 
 @Injectable()
 export class AdminService {
@@ -11,6 +12,7 @@ export class AdminService {
         @InjectModel(User.name) private userModel: Model<UserDocument>,
         @InjectModel(Tour.name) private tourModel: Model<TourDocument>,
         @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
+        @InjectModel(Inquiry.name) private inquiryModel: Model<InquiryDocument>,
     ) { }
 
     async getDashboardStats() {
@@ -85,5 +87,51 @@ export class AdminService {
         ]);
 
         return analytics;
+    }
+
+    async getMonthlyAnalytics() {
+        const bookingsAgg = await this.bookingModel.aggregate([
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' },
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const inquiriesAgg = await this.inquiryModel.aggregate([
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' },
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        // Combine into a map by YYYY-MM
+        const combined = new Map();
+        
+        bookingsAgg.forEach(b => {
+            const dateKey = `${b._id.year}-${String(b._id.month).padStart(2, '0')}`;
+            if (!combined.has(dateKey)) combined.set(dateKey, { name: dateKey, queries: 0, bookings: 0 });
+            combined.get(dateKey).bookings = b.count;
+        });
+
+        inquiriesAgg.forEach(i => {
+            const dateKey = `${i._id.year}-${String(i._id.month).padStart(2, '0')}`;
+            if (!combined.has(dateKey)) combined.set(dateKey, { name: dateKey, queries: 0, bookings: 0 });
+            combined.get(dateKey).queries = i.count;
+        });
+
+        // Convert to array and sort chronologically
+        const analyticsData = Array.from(combined.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+        return analyticsData;
     }
 }

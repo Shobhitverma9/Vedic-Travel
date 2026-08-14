@@ -5,9 +5,11 @@ import { AdminService } from './admin.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { Tour, TourSchema } from '../tours/schemas/tour.schema';
 import { Booking, BookingSchema } from '../bookings/schemas/booking.schema';
+import { Inquiry, InquirySchema } from '../inquiries/schemas/inquiry.schema';
 import { UsersModule } from '../users/users.module';
 import { ToursModule } from '../tours/tours.module';
 import { BookingsModule } from '../bookings/bookings.module';
+import { InquiriesModule } from '../inquiries/inquiries.module';
 
 @Module({
     imports: [
@@ -15,10 +17,12 @@ import { BookingsModule } from '../bookings/bookings.module';
             { name: User.name, schema: UserSchema },
             { name: Tour.name, schema: TourSchema },
             { name: Booking.name, schema: BookingSchema },
+            { name: Inquiry.name, schema: InquirySchema },
         ]),
         UsersModule,
         ToursModule,
         BookingsModule,
+        InquiriesModule,
     ],
     controllers: [AdminController],
     providers: [AdminService],

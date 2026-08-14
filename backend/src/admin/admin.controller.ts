@@ -63,4 +63,10 @@ export class AdminController {
         const endDate = query.endDate ? new Date(query.endDate) : undefined;
         return this.adminService.getRevenueAnalytics(startDate, endDate);
     }
+
+    @Get('analytics/monthly')
+    @ApiOperation({ summary: 'Get monthly inquiries and bookings analytics' })
+    async getMonthlyAnalytics() {
+        return this.adminService.getMonthlyAnalytics();
+    }
 }
