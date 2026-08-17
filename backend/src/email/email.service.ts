@@ -467,7 +467,7 @@ export class EmailService {
             </center>
 
             <p style="text-align: center; color: #718096; font-size: 13px;">
-                Have questions? Reply to this email or call our 24/7 dedicated helpline at <strong>+91 84474 70062</strong>.
+                Have questions? Reply to this email or call our 24/7 dedicated helpline at <strong>+91 97174 40062</strong>.
             </p>
         </div>
         ${this.getEmailFooter()}
@@ -1144,7 +1144,7 @@ export class EmailService {
             <div style="text-align: center; background: #f8f9fa; padding: 20px; border-radius: 12px;">
                 <p style="margin: 0; font-size: 14px; color: #4A5568;">
                     <strong>Need Help?</strong> Having trouble with payment or have more questions? 
-                    <br>Just reply to this email or WhatsApp us at <strong>+91 84474 70062</strong>.
+                    <br>Just reply to this email or WhatsApp us at <strong>+91 97174 40062</strong>.
                 </p>
             </div>
         </div>

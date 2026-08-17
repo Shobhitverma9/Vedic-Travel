@@ -6,7 +6,7 @@ import { WhatsappService } from '../notifications/whatsapp.service';
 import { InvoiceService } from '../email/invoice.service';
 import { ConfigService } from '@nestjs/config';
 
-const TEST_PHONE = '917011147999';
+const TEST_PHONE = '919717440062';
 const TEST_EMAIL = 'test@vedictravel.com';
 
 async function bootstrap() {

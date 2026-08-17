@@ -205,7 +205,7 @@ export class InvoiceService {
                         <div class="company-name">Travergetic Innovations PVT LTD</div>
                         <div>193/4, 2nd Floor, Sector 4, Aditya World City,<br>Bamheta, Ghaziabad, Uttar Pradesh, 201002</div>
                         <div style="margin-top: 5px;"><strong>Email:</strong> info@vedictravel.com</div>
-                        <div><strong>Phone:</strong> +91 84474 70062</div>
+                        <div><strong>Phone:</strong> +91 97174 40062</div>
                         <div style="margin-top: 10px; font-size: 10px;">
                             <div><strong>PAN:</strong> AAMCT0974F</div>
                             <div><strong>CIN:</strong> U79110UP2025PTC228487</div>
