@@ -219,7 +219,7 @@ export default function AboutPage() {
                         <div className="h-12 w-[1px] bg-gray-200 hidden md:block"></div>
                         <div className="text-center md:text-left">
                             <p className="text-sm text-gray-500 mb-1">Speak with our guides</p>
-                            <p className="text-xl font-black text-deepBlue">+91-8447470062</p>
+                            <p className="text-xl font-black text-deepBlue">+91-9717440062</p>
                         </div>
                     </div>
                 </div>

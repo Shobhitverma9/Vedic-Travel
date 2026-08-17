@@ -11,9 +11,9 @@ export default function TopBar() {
                         <Mail className="w-3.5 h-3.5 mr-2 text-saffron opacity-80 group-hover:opacity-100" />
                         <span>bookings@vedictravel.com</span>
                     </a>
-                    <a href="tel:+918447470062" className="flex items-center hover:text-saffron transition-colors group">
+                    <a href="tel:+919717440062" className="flex items-center hover:text-saffron transition-colors group">
                         <Phone className="w-3.5 h-3.5 mr-2 text-saffron opacity-80 group-hover:opacity-100" />
-                        <span>+91-8447470062</span>
+                        <span>+91-9717440062</span>
                     </a>
                     <div className="flex items-center text-gray-400">
                         <MapPin className="w-3.5 h-3.5 mr-2 text-saffron opacity-80" />

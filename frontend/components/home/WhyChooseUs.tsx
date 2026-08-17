@@ -71,7 +71,7 @@ export default function WhyChooseUs() {
                             </span>
                             <span className="hidden md:inline text-gray-400">|</span>
                             <span>
-                                <span className="font-bold">Contact No:</span> +91-8447470062
+                                <span className="font-bold">Contact No:</span> +91-9717440062
                             </span>
                         </div>
                     </div>

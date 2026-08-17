@@ -164,7 +164,7 @@ export default function ContactForm() {
 
             {/* WhatsApp Banner */}
             <a
-                href="https://wa.me/918510007751"
+                href="https://wa.me/919717440062"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between bg-white border border-red-100 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow group"
@@ -175,7 +175,7 @@ export default function ContactForm() {
                     </div>
                     <div>
                         <h4 className="font-bold text-deepBlue text-sm">Connect on WhatsApp</h4>
-                        <p className="text-xs text-gray-500">Call on +91-8510007751 or WhatsApp</p>
+                        <p className="text-xs text-gray-500">Call on +91-9717440062 or WhatsApp</p>
                     </div>
                 </div>
                 <ChevronRight size={20} className="text-red-500 transition-transform group-hover:translate-x-1" />

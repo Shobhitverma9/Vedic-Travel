@@ -101,7 +101,7 @@ export default function CorporateInquiryForm() {
                       </div>
                       <div>
                          <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Call Us</p>
-                         <p className="text-lg font-medium">+91 84474 70062</p>
+                         <p className="text-lg font-medium">+91 97174 40062</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-5 group">

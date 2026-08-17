@@ -138,9 +138,25 @@ export default function AdminInquiriesPage() {
                                         )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${inquiry.status === 'new' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-800 border border-gray-200'
-                                            }`}>
-                                            {inquiry.status.toUpperCase()}
+                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full ${
+                                            inquiry.status === 'new' || inquiry.status === 'pending'
+                                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                                : inquiry.status === 'contacted'
+                                                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                                : inquiry.status === 'converted'
+                                                ? 'bg-green-50 text-green-700 border border-green-200'
+                                                : 'bg-gray-100 text-gray-600 border border-gray-200'
+                                        }`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${
+                                                inquiry.status === 'new' || inquiry.status === 'pending'
+                                                    ? 'bg-amber-500'
+                                                    : inquiry.status === 'contacted'
+                                                    ? 'bg-blue-500'
+                                                    : inquiry.status === 'converted'
+                                                    ? 'bg-green-500'
+                                                    : 'bg-gray-400'
+                                            }`} />
+                                            {inquiry.status === 'new' ? 'Pending' : inquiry.status.charAt(0).toUpperCase() + inquiry.status.slice(1)}
                                         </span>
                                     </td>
                                 </tr>

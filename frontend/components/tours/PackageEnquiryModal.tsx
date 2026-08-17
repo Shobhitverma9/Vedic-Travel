@@ -194,7 +194,7 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
                     <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
                             <span className="text-[9px] uppercase font-bold text-gray-400 tracking-widest whitespace-nowrap">Support</span>
-                            <a href="tel:18002099100" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 whitespace-nowrap">
+                            <a href="tel:9717440062" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 whitespace-nowrap">
                                 <Phone className="w-3 h-3" />
                                 1800-2099-100
                             </a>

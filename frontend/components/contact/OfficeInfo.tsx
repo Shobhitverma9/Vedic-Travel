@@ -46,7 +46,7 @@ export default function OfficeInfo() {
                         </h3>
                         <ul className="space-y-4">
                             {[
-                                '+91-8447470062',
+                                '+91-9717440062',
                             ].map((num, i) => (
                                 <li key={i} className="flex items-center gap-3 text-gray-700">
                                     <div className="w-6 h-6 bg-purple-100 rounded flex items-center justify-center text-purple-600">
