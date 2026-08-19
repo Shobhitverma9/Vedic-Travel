@@ -8,7 +8,7 @@ const tours = [
         price: '150,000.00',
         oldPrice: '180,000.00',
         imageColor: 'from-blue-800 to-indigo-900', // Placeholder gradient
-        slug: 'kailash-mansarovar-yatra-2026'
+        slug: 'kailash-mansarovar-yatra-package'
     },
     {
         id: 'khatushyam',
@@ -17,7 +17,7 @@ const tours = [
         price: '15,000.00',
         oldPrice: '21,000.00',
         imageColor: 'from-orange-700 to-rose-900', // Placeholder gradient
-        slug: 'khatushyam-salasar-jaipur-yatra'
+        slug: 'khatu-shyam-salasar-jaipur-yatra-packages'
     },
     {
         id: 'char-dham',
@@ -26,7 +26,7 @@ const tours = [
         price: '90,000.00',
         oldPrice: '120,000.00',
         imageColor: 'from-amber-700 to-orange-900', // Placeholder gradient
-        slug: 'char-dham-yatra-2026'
+        slug: 'char-dham-yatra-packages'
     }
 ];
 

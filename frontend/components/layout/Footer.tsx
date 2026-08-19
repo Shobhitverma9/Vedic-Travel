@@ -75,61 +75,58 @@ export default function Footer() {
             title: "Quick Links",
             links: [
                 { name: "Home", href: "/" },
-                { name: "About us", href: "/about" },
+                { name: "About Us", href: "/about" },
                 { name: "Contact Us", href: "/contact" },
-                { name: "FAQs", href: "/faqs" },
-                { name: "Careers", href: "/careers" },
+                { name: "All Yatras", href: "/yatras" },
+                { name: "Corporate Wellness", href: "/corporate-wellness" },
                 { name: "Terms & Conditions", href: "/terms-and-conditions" },
                 { name: "Cancellation Policy", href: "/cancellation-policy" },
                 { name: "Privacy Policy", href: "/privacy-policy" }
             ]
         },
         {
-            title: "Tour Resources",
+            title: "Our Services",
             links: [
-                { name: "Videos", href: "/videos" },
-                { name: "Gallery", href: "/gallery" },
-                { name: "Traveller Reviews", href: "/reviews" },
-                { name: "News", href: "/news" },
-                { name: "Kailash Yatra FAQs", href: "/kailash-faqs" },
-                { name: "Download All Important Doc", href: "/downloads" },
-                { name: "Bank Details", href: "/bank-details" }
+                { name: "Flight Bookings", href: "/services/flight-bookings" },
+                { name: "Hotel Reservations", href: "/services/hotel-reservations" },
+                { name: "Visa Assistance", href: "/services/visa-assistance" },
+                { name: "Cab Transfers", href: "/services/cab-transfers" },
+                { name: "Travel Insurance", href: "/services/travel-insurance" },
+                { name: "Customized Packages", href: "/tours/customized-packages" }
             ]
         },
         {
-            title: "Temple Packages",
+            title: "Top Tour Packages",
             links: [
-                { name: "Mt. Kailash Aerial Darshan", href: "/packages/kailash-aerial" },
-                { name: "Kailash Yatra from India by Heli", href: "/packages/kailash-heli-india" },
-                { name: "Kailash Yatra by Road", href: "/packages/kailash-road" },
-                { name: "Kailash by Heli (5 D)", href: "/packages/kailash-heli-5d" },
-                { name: "Kailash by Heli Ex Kathmandu", href: "/packages/kailash-heli-kathmandu" },
-                { name: "Kailash Yatra Ex Lucknow (9 D)", href: "/packages/kailash-lucknow" },
-                { name: "Kailash Mansarovar Inner Kora", href: "/packages/kailash-inner-kora" }
+                { name: "Char Dham Yatra Package", href: "/tours/char-dham-yatra-packages" },
+                { name: "Kailash Mansarovar Yatra", href: "/tours/kailash-mansarovar-yatra-package" },
+                { name: "Adi Kailash – Om Parvat", href: "/tours/adi-kailash-om-parvat-yatra" },
+                { name: "Khatu Shyam – Salasar – Jaipur", href: "/tours/khatu-shyam-salasar-jaipur-yatra-packages" },
+                { name: "UP Golden Triangle Yatra", href: "/tours/varanasi-ayodhya-prayagraj-golden-yatra-packages-vt" },
+                { name: "Vaishno Devi Yatra", href: "/tours/vaishno-devi-yatra-package" },
+                { name: "Jagannath Puri Yatra", href: "/tours/jagannath-puri-yatra-packages" }
             ]
         },
         {
-            title: "Popular Destinations",
+            title: "Destinations",
             links: [
-                { name: "Kailash Yatra Packages", href: "/destinations/kailash" },
-                { name: "Char Dham Yatra", href: "/destinations/chardham" },
-                { name: "Adi Kailash Yatra", href: "/destinations/adi-kailash" },
-                { name: "Sri Lanka Tour Package", href: "/destinations/sri-lanka" },
-                { name: "Varanasi Tour Packages", href: "/destinations/varanasi" },
-                { name: "Nepal Tour Packages", href: "/destinations/nepal" },
-                { name: "Bhutan Tour Packages", href: "/destinations/bhutan" }
+                { name: "Himalayan & North India", href: "/destinations/north-india" },
+                { name: "Sacred South India", href: "/destinations/south-india" },
+                { name: "Eastern Cultural Routes", href: "/destinations/east-india" },
+                { name: "Royal Western India", href: "/destinations/west-india" },
+                { name: "Central India Legacy", href: "/destinations/central-india" },
+                { name: "International Vedic Tours", href: "/destinations/international" }
             ]
         },
         {
             title: "Knowledge Hub",
             links: [
-                { name: "About Mount Kailash", href: "/blog/about-kailash" },
-                { name: "History Of Kailash Mansarovar", href: "/blog/history-kailash" },
-                { name: "Adi Kailash", href: "/blog/adi-kailash" },
-                { name: "Shiva The God Of Gods", href: "/blog/shiva" },
-                { name: "Adi Kailash Tour Blogs", href: "/blog/adi-kailash-blogs" },
-                { name: "Chota Chardham Yatra", href: "/blog/chota-chardham" },
-                { name: "Customize Your Kailash Mansarovar", href: "/blog/customize-kailash" }
+                { name: "Varanasi Spiritual Guide", href: "/blogs/best-places-to-visit-in-varanasi-spiritual-guide" },
+                { name: "Ayodhya Travel Guide", href: "/blogs/best-places-to-visit-in-ayodhya-travel-guide" },
+                { name: "Himachal Family Tour Guide", href: "/blogs/guide-to-plan-himachal-pradesh-tour-with-family" },
+                { name: "Jaipur Best Places & Budget Tips", href: "/blogs/jaipur-travel-guide-best-places-budget-tips" },
+                { name: "Mysterious Temples in India", href: "/blogs/insanely-mysterious-temples-in-india-rituals" },
+                { name: "All Travel Blogs", href: "/blogs" }
             ]
         }
     ];

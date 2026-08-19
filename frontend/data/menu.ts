@@ -18,34 +18,40 @@ export const menuItems: MenuItem[] = [
             {
                 label: 'Trending Packages',
                 children: [
-                    { label: 'Char Dham Yatra Package', href: '/tours/char-dham-yatra' },
-                    { label: 'Kailash Mansarovar Yatra Package', href: '/tours/kailash-mansarovar-yatra' },
+                    { label: 'Char Dham Yatra Package', href: '/tours/char-dham-yatra-packages' },
+                    { label: 'Kailash Mansarovar Yatra Package', href: '/tours/kailash-mansarovar-yatra-package' },
                     { label: 'Adi Kailash – Om Parvat Yatra Package', href: '/tours/adi-kailash-om-parvat-yatra' },
-                    { label: 'KhatuShyam - Salasar - Jaipur Yatra Package', href: '/tours/khatushyam-salasar-jaipur' },
-                    { label: 'Varanasi, Ayodhya & Prayagraj Golden Triangle Yatra Package', href: '/package/up-golden-triangle-yatra-6d5n' },
-                    { label: 'Vaishno Devi Yatra Package', href: '/tours/vaishno-devi-yatra' },
+                    { label: 'KhatuShyam - Salasar - Jaipur Yatra Package', href: '/tours/khatu-shyam-salasar-jaipur-yatra-packages' },
+                    { label: 'Varanasi, Ayodhya & Prayagraj Golden Triangle Yatra Package', href: '/tours/varanasi-ayodhya-prayagraj-golden-yatra-packages-vt' },
+                    { label: 'Vaishno Devi Yatra Package', href: '/tours/vaishno-devi-yatra-package' },
                     { label: 'Shakti Circuit – Himachal Pradesh Yatra Package', href: '/tours/shakti-circuit-himachal' },
+                    { label: 'Mathura Vrindavan Dham Yatra', href: '/yatras/mathura-vrindavan-dham-yatra' },
                 ],
             },
             {
                 label: 'Pilgrimage Yatra Packages',
                 children: [
-                    { label: 'Char Dham Yatra Packages', href: '/tours/char-dham-yatra' },
-                    { label: 'Varanasi, Ayodhya & Prayagraj Golden Triangle Yatra Package', href: '/package/up-golden-triangle-yatra-6d5n' },
-                    { label: 'Dwadash Jyotirlinga Packages', href: '/tours/dwadash-jyotirlinga' },
+                    { label: 'Char Dham Yatra Packages', href: '/tours/char-dham-yatra-packages' },
+                    { label: 'Varanasi, Ayodhya & Prayagraj Golden Triangle Yatra Package', href: '/tours/varanasi-ayodhya-prayagraj-golden-yatra-packages-vt' },
                     { label: 'Vaishno Devi Yatra Packages', href: '/tours/vaishno-devi-yatra' },
+                    { label: 'Kamakhya Devi Yatra Packages', href: '/tours/kamakhya-devi-yatra-package-vedic-travel' },
+                    { label: 'Jagannatha Puri Yatra Packages', href: '/tours/jagannath-puri-yatra-packages' },
+                    { label: 'Dwadash Jyotirlinga Packages', href: '/tours/dwadash-jyotirlinga' },
                     { label: 'Tirupati Balaji – Srisailam Yatra Packages', href: '/tours/tirupati-balaji-srisailam' },
-                    { label: 'Ahobilam Packages', href: '/tours/ahobilam' },
-                    { label: 'Kamakhya Devi Yatra Packages', href: '/tours/kamakhya-devi-yatra' },
-                    { label: 'Jagannatha Puri Yatra Packages', href: '/tours/jagannatha-puri-yatra' },
+                    { label: 'Vaishno Devi Yatra Package', href: '/yatras/vaishno-devi-yatra-package' },
+                    { label: 'Char Dham Yatra', href: '/yatras/char-dham-yatra-packages' },
+                    { label: 'UP Golden Triangle', href: '/yatras/up-golden-triangle-vt' },
+                    { label: 'Tales of Tamil Nadu', href: '/yatras/tales-of-tamil-nadu' },
+                    { label: 'Grandeurs of Gujarat', href: '/yatras/grandeurs-of-gujarat' },
+                    { label: 'Adi Kailash & Om Parvat Yatra', href: '/yatras/adi-kailash-om-parvat-yatra' },
                 ],
             },
             {
                 label: 'Yoga & Wellness Retreats',
                 children: [
+                    { label: 'Shangarh - Himalayan Nature & Healing Retreats', href: '/tours/shangarh-himalayan-nature-healing-retreat' },
                     { label: 'Haridwar/Rishikesh- Sacred Yoga Sanctuary Retreat', href: '/tours/haridwar-rishikesh-wellness' },
                     { label: 'Kerala - Ayurvedic Healing Coast Retreat', href: '/tours/kerala-retreat' },
-                    { label: 'Shangarh - Himalayan Nature & Healing Retreats', href: '/tours/shangarh-tirthan-retreat' },
                     { label: 'Western Ghats- Mulsi/Sahyadri Wellness & Renewal Estate', href: '/tours/western-ghats-wellness' },
                 ],
             },
@@ -60,7 +66,7 @@ export const menuItems: MenuItem[] = [
                         label: 'Royal Rajasthan Cultural Odyssey',
                         children: [
                             { label: 'Udaipur Palace & Lake Heritage Escape', href: '/tours/udaipur-heritage' },
-                            { label: 'Royal Journey Rajasthan', href: '/tours/royal-journey-rajasthan' },
+                            { label: 'Royal Journey Rajasthan', href: '/tours/rajasthan-heritage-circuit-jaipur-jodhpur-udaipur-tour-vt' },
                         ]
                     },
                     {
@@ -102,15 +108,15 @@ export const menuItems: MenuItem[] = [
             {
                 label: 'Adventure & Eco Tours',
                 children: [
-                    { label: 'Ladakh – High-Altitude Luxury Adventure', href: '/tours/ladakh-adventure' },
+                    { label: 'Valley of Flowers National Park Trek – Scenic UNESCO Trail', href: '/tours/valley-of-flowers-trek-vedic-travel' },
+                    { label: 'Ladakh – High-Altitude Luxury Adventure', href: '/tours/ladakh-highaltitude-luxury-adventure' },
+                    { label: 'Kedar Kantha Trek – Premium Winter Trekking Experience', href: '/tours/kedar-kantha-trek' },
                     { label: 'Spiti Valley – Remote Himalayan Eco Wilderness', href: '/tours/spiti-valley' },
                     { label: 'Andaman and Nicobar Islands – Marine Eco Adventure', href: '/tours/andaman-eco' },
                     { label: 'Jim Corbett National Park – Luxury Wildlife & Eco Safaris', href: '/tours/jim-corbett-safari' },
                     { label: 'Kaziranga National Park – Exclusive Wildlife Expeditions', href: '/tours/kaziranga-expedition' },
                     { label: 'Chadar Trek – The Frozen River Expedition', href: '/tours/chadar-trek' },
-                    { label: 'Valley of Flowers National Park Trek – Scenic UNESCO Trail', href: '/tours/valley-of-flowers' },
                     { label: 'Hampta Pass Trek – Dramatic Landscape Transitions', href: '/tours/hampta-pass-trek' },
-                    { label: 'Kedar Kantha Trek – Premium Winter Trekking Experience', href: '/tours/kedar-kantha-trek' },
                     { label: 'Chandrashila Trek- Himalayan Sunrise Summit', href: '/tours/chandrashila-trek' },
                     { label: 'Roop Kund Trek- Mystical Lake Expedition', href: '/tours/roop-kund-trek' },
                     { label: 'Dayara Bugyal Trek- Alpine Meadow Escape', href: '/tours/dayara-bugyal-trek' },
@@ -119,14 +125,14 @@ export const menuItems: MenuItem[] = [
             {
                 label: 'Vedic Imprints (International)',
                 children: [
-                    { label: 'Sacred Ramayana Trails of Sri Lanka', href: '/tours/sri-lanka-ramayana' },
-                    { label: 'Nepal – Himalayan Spiritual Realm', href: '/tours/nepal-spiritual' },
-                    { label: 'Bhutan – The Last Himalayan Buddhist Kingdom', href: '/tours/bhutan-spiritual' },
+                    { label: 'Indonesia – Ancient Hindu-Buddhist Legacy (Bali & Java)', href: '/tours/bali-retreat-trail-vt' },
+                    { label: 'Vietnam – Cultural & Spiritual Landscapes', href: '/tours/vietnam-cultural-spiritual-landscapes-vt' },
+                    { label: 'Sacred Ramayana Trails of Sri Lanka', href: '/tours/sri-lanka-ramayana-trail-vt' },
+                    { label: 'Kailash Mansarovar Yatra', href: '/tours/kailash-mansarovar-yatra-package' },
+                    { label: 'Bhutan – The Last Himalayan Buddhist Kingdom', href: '/tours/blissful-butan-tour-package-vt' },
                     { label: 'Mauritius – Indian Ocean Spiritual Heritage', href: '/tours/mauritius-spiritual' },
                     { label: 'Malaysia – Temple & Cultural Traditions', href: '/tours/malaysia-cultural' },
-                    { label: 'Indonesia – Ancient Hindu-Buddhist Legacy (Bali & Java)', href: '/tours/indonesia-legacy' },
                     { label: 'Cambodia – Temple Civilisation Heritage', href: '/tours/cambodia-heritage' },
-                    { label: 'Vietnam – Cultural & Spiritual Landscapes', href: '/tours/vietnam-spiritual' },
                 ],
             },
             {
@@ -163,5 +169,4 @@ export const menuItems: MenuItem[] = [
         label: 'About Us',
         href: '/about',
     },
-
 ];
