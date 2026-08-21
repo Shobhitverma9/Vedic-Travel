@@ -1,52 +1,57 @@
-'use client';
+"use client"
 
-import React, { useState } from 'react';
-import { ChevronDown, Plus, Minus } from 'lucide-react';
+import * as React from "react"
+import * as AccordionPrimitive from "@radix-ui/react-accordion"
+import { ChevronDown } from "lucide-react"
 
-interface AccordionProps {
-    title: string;
-    children: React.ReactNode;
-    defaultOpen?: boolean;
-    variant?: 'default' | 'plus';
-}
+import { cn } from "@/lib/utils"
 
-const Accordion: React.FC<AccordionProps> = ({ title, children, defaultOpen = false, variant = 'plus' }) => {
-    const [isOpen, setIsOpen] = useState(defaultOpen);
+const Accordion = AccordionPrimitive.Root
 
-    return (
-        <div className="border border-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm transition-all hover:shadow-md">
-            <button
-                className={`w-full px-6 py-4 flex items-center justify-between text-left transition-colors ${
-                    isOpen ? 'bg-blue-50/50' : 'bg-gray-50/30'
-                }`}
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <span className={`font-bold text-sm tracking-wide uppercase ${isOpen ? 'text-deepBlue' : 'text-gray-600'}`}>
-                    {title}
-                </span>
-                <div className={`${isOpen ? 'rotate-180' : ''} transition-transform duration-300`}>
-                    {variant === 'plus' ? (
-                        isOpen ? (
-                            <Minus className="w-5 h-5 text-deepBlue" />
-                        ) : (
-                            <Plus className="w-5 h-5 text-deepBlue" />
-                        )
-                    ) : (
-                        <ChevronDown className={`w-5 h-5 ${isOpen ? 'text-deepBlue' : 'text-gray-400'}`} />
-                    )}
-                </div>
-            </button>
-            <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
-                }`}
-            >
-                <div className="px-6 py-5 bg-white prose prose-sm max-w-none text-gray-700 leading-relaxed border-t border-gray-100">
-                    {children}
-                </div>
-            </div>
-        </div>
-    );
-};
+const AccordionItem = React.forwardRef<
+    React.ElementRef<typeof AccordionPrimitive.Item>,
+    React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
+>(({ className, ...props }, ref) => (
+    <AccordionPrimitive.Item
+        ref={ref}
+        className={cn("border-b", className)}
+        {...props}
+    />
+))
+AccordionItem.displayName = "AccordionItem"
 
-export default Accordion;
+const AccordionTrigger = React.forwardRef<
+    React.ElementRef<typeof AccordionPrimitive.Trigger>,
+    React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+    <AccordionPrimitive.Header className="flex">
+        <AccordionPrimitive.Trigger
+            ref={ref}
+            className={cn(
+                "flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
+                className
+            )}
+            {...props}
+        >
+            {children}
+            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+        </AccordionPrimitive.Trigger>
+    </AccordionPrimitive.Header>
+))
+AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
+
+const AccordionContent = React.forwardRef<
+    React.ElementRef<typeof AccordionPrimitive.Content>,
+    React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+    <AccordionPrimitive.Content
+        ref={ref}
+        className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+        {...props}
+    >
+        <div className={cn("pb-4 pt-0", className)}>{children}</div>
+    </AccordionPrimitive.Content>
+))
+AccordionContent.displayName = AccordionPrimitive.Content.displayName
+
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }

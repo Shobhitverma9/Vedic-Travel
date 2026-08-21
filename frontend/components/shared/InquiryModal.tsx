@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { inquiriesService } from '@/services/inquiries.service';
 import ReCaptcha from './ReCaptcha';
 import { toast } from 'sonner';
@@ -23,7 +24,13 @@ export default function InquiryModal({ isOpen, onClose, tourId, tourName, tourIm
     const [success, setSuccess] = useState(false);
     const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
-    if (!isOpen) return null;
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!isOpen || !mounted) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,9 +63,15 @@ export default function InquiryModal({ isOpen, onClose, tourId, tourName, tourIm
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in relative">
+    const modalContent = (
+        <div 
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={onClose}
+        >
+            <div 
+                className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in relative"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <button
                     onClick={onClose}
                     className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 z-10 p-1"
@@ -132,4 +145,6 @@ export default function InquiryModal({ isOpen, onClose, tourId, tourName, tourIm
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 }

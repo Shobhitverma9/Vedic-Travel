@@ -82,8 +82,14 @@ export default function PackageEnquiryModal({ isOpen, onClose, tourName, tourId 
     ];
 
     const modalContent = (
-        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 py-8 sm:py-12 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative animate-slide-up">
+        <div 
+            className="fixed inset-0 z-[9999] flex items-start justify-center p-4 py-8 sm:py-12 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto"
+            onClick={onClose}
+        >
+            <div 
+                className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative animate-slide-up"
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Compact Header Section */}
                 <div className="bg-gradient-to-br from-[#003580] to-[#0052cc] p-4 text-white relative">
                     <button
