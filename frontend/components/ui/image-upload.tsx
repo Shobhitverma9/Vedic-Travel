@@ -6,7 +6,7 @@ import { Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { apiClient } from "@/lib/api-client";
+import apiClient from "@/lib/api-client";
 
 interface ImageUploadProps {
     value?: string;
@@ -35,7 +35,11 @@ export function ImageUpload({ value, onChange, endpoint = "/blog/upload", classN
         formData.append("file", file);
 
         try {
-            const data = await apiClient.upload<{ url: string }>(endpoint, formData);
+            const { data } = await apiClient.post<{ url: string }>(endpoint, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             onChange(data.url);
             toast.success("Image uploaded successfully");
         } catch (error: any) {

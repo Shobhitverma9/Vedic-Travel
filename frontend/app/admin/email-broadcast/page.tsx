@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { apiClient } from "@/lib/api-client"
+import apiClient from "@/lib/api-client"
 import {
     Table,
     TableBody,
@@ -25,7 +25,7 @@ export default function EmailBroadcastDashboard() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const data = await apiClient.get<any[]>("/email-broadcast/history")
+                const { data } = await apiClient.get<any[]>("/email-broadcast/history")
                 setBroadcasts(data)
             } catch (error) {
                 console.error("Failed to fetch history", error)

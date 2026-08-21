@@ -15,7 +15,7 @@ import DepartureCitySelect from "./DepartureCitySelect";
 import RoomConfiguration, { Room } from "./RoomConfiguration";
 import BookingCalendar from "./BookingCalendar";
 import PriceBreakup from "./PriceBreakup";
-import Accordion from "../../ui/Accordion";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "../../ui/accordion";
 import BookingAuthModal from "@/components/checkout/BookingAuthModal";
 
 interface CalculatePriceContainerProps {
@@ -349,14 +349,19 @@ const CalculatePriceContainer: React.FC<CalculatePriceContainerProps> = ({
 
     return (
       <div className="p-4 md:p-6 bg-white border-t animate-in fade-in slide-in-from-top-2 duration-300">
-        {sections.map((section, idx) => (
-          <Accordion key={idx} title={section.title} defaultOpen={true}>
-            <div
-              className="whitespace-pre-wrap text-sm leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: section.content.join("\n") }}
-            />
-          </Accordion>
-        ))}
+        <Accordion type="multiple" className="w-full" defaultValue={sections.map((_, i) => `item-${i}`)}>
+          {sections.map((section, idx) => (
+            <AccordionItem key={idx} value={`item-${idx}`}>
+              <AccordionTrigger className="text-left">{section.title}</AccordionTrigger>
+              <AccordionContent>
+                <div
+                  className="whitespace-pre-wrap text-sm leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: section.content.join("\n") }}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     );
   };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { apiClient } from "@/lib/api-client"
+import apiClient from "@/lib/api-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -35,7 +35,7 @@ export default function SendBroadcastPage() {
     useEffect(() => {
         const fetchTemplates = async () => {
             try {
-                const data = await apiClient.get<any[]>("/email-broadcast/templates")
+                const { data } = await apiClient.get<any[]>("/email-broadcast/templates")
                 setTemplates(data)
             } catch (error) {
                 toast.error("Failed to fetch templates")

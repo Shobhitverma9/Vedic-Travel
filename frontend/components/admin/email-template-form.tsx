@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { apiClient } from "@/lib/api-client"
+import apiClient from "@/lib/api-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -158,8 +158,8 @@ function ImportTourDialog({ onImport }: { onImport: (items: any[]) => void }) {
             const allItems: any[] = []
             
             // Assuming response could be paginated { data: ... } or array
-            const toursData = Array.isArray(toursRes) ? toursRes : (toursRes?.tours || toursRes?.data || []);
-            const yatrasData = Array.isArray(yatrasRes) ? yatrasRes : (yatrasRes?.yatras || yatrasRes?.data || []);
+            const toursData = Array.isArray(toursRes.data) ? toursRes.data : (toursRes.data?.tours || toursRes.data?.data || []);
+            const yatrasData = Array.isArray(yatrasRes.data) ? yatrasRes.data : (yatrasRes.data?.yatras || yatrasRes.data?.data || []);
 
             toursData.forEach((item: any) => {
                 allItems.push({
@@ -444,7 +444,7 @@ export function EmailTemplateForm({ id }: EmailTemplateFormProps) {
         if (id) {
             const fetchTemplate = async () => {
                 try {
-                    const data = await apiClient.get<any>(`/email-broadcast/templates/${id}`)
+                    const { data } = await apiClient.get<any>(`/email-broadcast/templates/${id}`)
                     form.reset({
                         name: data.name || "",
                         subject: data.subject || "",

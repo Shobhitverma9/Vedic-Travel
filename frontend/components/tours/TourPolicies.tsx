@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Accordion from '../ui/Accordion';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../ui/accordion';
 
 interface TourPoliciesProps {
     paymentTerms?: string;
@@ -84,14 +84,19 @@ const TourPolicies: React.FC<TourPoliciesProps> = ({ paymentTerms, cancellationP
 
         return (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {sections.map((section, idx) => (
-                    <Accordion key={idx} title={section.title} defaultOpen={idx === 0}>
-                        <div 
-                            className="whitespace-pre-wrap"
-                            dangerouslySetInnerHTML={{ __html: section.content.join('\n') }}
-                        />
-                    </Accordion>
-                ))}
+                <Accordion type="multiple" className="w-full" defaultValue={['item-0']}>
+                    {sections.map((section, idx) => (
+                        <AccordionItem key={idx} value={`item-${idx}`}>
+                            <AccordionTrigger className="text-left">{section.title}</AccordionTrigger>
+                            <AccordionContent>
+                                <div 
+                                    className="whitespace-pre-wrap"
+                                    dangerouslySetInnerHTML={{ __html: section.content.join('\n') }}
+                                />
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
             </div>
         );
     };

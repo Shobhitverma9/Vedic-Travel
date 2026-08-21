@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { apiClient } from "@/lib/api-client"
+import apiClient from "@/lib/api-client"
 import {
     Table,
     TableBody,
@@ -33,7 +33,7 @@ export default function EmailTemplatesPage() {
 
     const fetchTemplates = async () => {
         try {
-            const data = await apiClient.get<any[]>("/email-broadcast/templates")
+            const { data } = await apiClient.get<any[]>("/email-broadcast/templates")
             setTemplates(data)
         } catch (error) {
             console.error("Failed to fetch templates", error)
